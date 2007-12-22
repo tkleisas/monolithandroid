@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Monolith</string>
+    <string name="s_score">SCORE</string>
+    <string name="s_level">LEVEL</string>
+    <string name="s_lines">LINES</string>
+    <string name="s_energy">ENERGY</string>
+    <string name="m_game">Game</string>
+    <string name="m_m_options">Options</string>
+    <string name="m_m_new">New game</string>
+    <string name="s_next_level">+</string>
+    <string name="s_previous_level">-</string>
+    <string name="s_classic">Classic. "Tetris" style game.</string>
+    <string name="s_dizzy">Dizzy. "Tetris" style game with a twist!</string>
+    <string name="s_monolith">Monolith. "Tetris" meets Conway's game of life.</string>
+    <string name="s_dizzy_monolith">Dizzy Monolith. "Tetris" meets Conway's game of life with a twist!</string>
+    <string name="s_game_over">GAME OVER</string>
+    <string name="s_next_game_mode">next</string>
+    <string name="s_previous_game_mode">previous</string>
+    
 </resources>

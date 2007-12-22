@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.OpenGLContext;
 import android.graphics.Paint;
 //import android.os.Bundle;
+import android.content.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -40,15 +41,24 @@ public class GLView extends View
         mCube[5] = new Cube(0,0xff00,0xff00,0x10000);
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
         mCube[7] = new Cube(0,0xf000,0xf000,0x10000);
+        	
+        res = context.getResources();
+        this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0,true);
+        running=false;
+    }
+    /*
+     * Draw the playfield for the tetris field
+     * 
+     */
+    public void doInit()
+    {
     	xval = 0;
     	yval =0;
         zx=0.0f;
         zy=0.0f;
     	yoff = -17.0f;
     	zoff = -48.0f;
-        	
 
-        this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0,true);
         mAnimate = false;
         game = new SimpleGameData();
         game.initGame(1);
@@ -60,26 +70,57 @@ public class GLView extends View
         rangle=0;
         paint = new Paint();
         paint.setARGB(200, 0, 0, 0);
+        gameOverPaint = new Paint();
+        gameOverPaint.setARGB(128, 20, 20, 20);
+        gameOverPaint.setTextSize(30);
+    	
+    	float widths[] =new float[res.getString(R.string.s_game_over).length()];
+    	
+    	gameOverPaint.getTextWidths(res.getString(R.string.s_game_over),widths);
+    	
+    	int totalwidth=0;
+    	for(int i=0;i<widths.length;i++)
+    	{
+    		totalwidth+=widths[i];
+    	}
+    	
+        this.gameOverXPos = totalwidth;
+    	
     }
-    /*
-     * Draw the playfield for the tetris field
-     * 
-     */
     public void doMoveDown()
     {
+    	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
+    	{
+    		return;
+    	}
     	game.moveBlockDown();
     	game.gameLoop();
     }
     public void doMoveLeft()
     {
+    	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
+    	{
+    		return;
+    	}
+
     	game.moveBlockLeft();
     }
     public void doMoveRight()
     {
+    	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
+    	{
+    		return;
+    	}
+
     	game.moveBlockRight();
     }
     public void doRotateBlock()
     {
+    	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
+    	{
+    		return;
+    	}
+
     	game.rotateCurrentBlockClockwise();
     }
     protected void drawNextPiece(GL10 gl)
@@ -187,7 +228,7 @@ public class GLView extends View
      */
     @Override
     protected void onDraw(Canvas canvas) {
-        if (true) {
+        if (running) {
         /*
          * First, we need to get to the appropriate GL interface.
          * This is simply done by casting the GL context to either
@@ -279,13 +320,21 @@ public class GLView extends View
             drawNextPiece(gl);
             gl.glPopMatrix();
             
-            canvas.drawText("SCORE", 10, 14,paint);
+            canvas.drawText(res.getString(R.string.s_score), 10, 14,paint);
             canvas.drawText(""+game.score, 10, 34, paint);
-            canvas.drawText("LEVEL", 10, 54, paint);
+            canvas.drawText(res.getString(R.string.s_level), 10, 54, paint);
             canvas.drawText(""+game.level, 10, 74, paint);
-            canvas.drawText("LINES", 10, 94, paint);
+            canvas.drawText(res.getString(R.string.s_lines), 10, 94, paint);
             canvas.drawText(""+game.lines,10,114,paint);
-            canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
+            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
+            if(game.getStatus()==SimpleGameData.STATUS_GAME_OVER)
+            {
+
+            	canvas.drawText(res.getString(R.string.s_game_over), (getWidth()-this.gameOverXPos)/2, 50, gameOverPaint);
+            	
+            	
+            }
+            
             Cube c = this.mCube[0];
             c.setPosition(0.0f, 0.0f, -30.0f);
             mAngle += 1.2f;
@@ -293,9 +342,11 @@ public class GLView extends View
             now = SystemClock.uptimeMillis();
             if(now>lastcalltime+game.timer)
             {
-            	game.gameLoop();
-            	lastcalltime = now;
-
+            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING)
+            	{
+            		game.gameLoop();
+            		lastcalltime = now;
+            	}
             }
             //gl.glPopMatrix();
             //game.gameLoop();
@@ -379,6 +430,11 @@ public class GLView extends View
     private long now;
     private long lastcalltime;
     private Paint paint;
+    private Paint gameOverPaint;
+    private int gameOverXPos;
+    public boolean running;
+    private Resources res;
+    
 }
 
 
