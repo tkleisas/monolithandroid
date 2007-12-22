@@ -3,18 +3,98 @@ package org.teacake.monolith;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.Menu;
 
 public class Monolith extends Activity
 {
+    
+    
+    
+    GLView view;
+    OptionsView optionsView;
+ 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         view = new GLView( getApplication() );
-        //setContentView(R.layout.main);
-        setContentView(view);
+        optionsView = new OptionsView(getApplication());
+        //setContentView(view);
     }
-    GLView view;
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        
+        menu.add(0, 0, R.string.m_m_new, new Runnable() {
+            public void run() {
+                //mLunarView.doStart();
+
+
+            	view.doInit();
+            	view.running = true;
+            	setContentView(view);
+            }
+        });
+		menu.add(1, 0, R.string.m_m_options, new Runnable()
+		{
+			public void run() {
+				setContentView(R.layout.main);
+			}
+			
+		});
+		
+		
+		
+		
+
+        
+        
+        /*
+        menu.add(0, 0, R.string.menu_stop, new Runnable() {
+            public void run() {
+                mLunarView.setMode(LunarView.LOSE, LunarLander.this.
+                        getText(R.string.message_stopped));
+            }
+        });
+
+
+        menu.add(0, 0, R.string.menu_pause, new Runnable() {
+            public void run() {
+                mLunarView.doPause();
+            }
+        });
+
+        menu.add(0, 0, R.string.menu_resume, new Runnable() {
+            public void run() {
+                mLunarView.doResume();
+            }
+        });
+
+        menu.addSeparator(0, 0);
+
+        menu.add(0, 0, R.string.menu_easy, new Runnable() {
+            public void run() {
+                mLunarView.setDifficulty(LunarView.EASY);
+            }
+        });
+
+        menu.add(0, 0, R.string.menu_medium, new Runnable() {
+            public void run() {
+                mLunarView.setDifficulty(LunarView.MEDIUM);
+            }
+        });
+
+        menu.add(0, 0, R.string.menu_hard, new Runnable() {
+            public void run() {
+                mLunarView.setDifficulty(LunarView.HARD);
+            }
+        });
+		*/
+        return true;
+    }   
+    
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent msg) {
         boolean handled = false;

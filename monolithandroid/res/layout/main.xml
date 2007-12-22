@@ -4,9 +4,26 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
+
+<Button
+	id = "@+id/buttonnextlevel"
+	android:layout_width="33px" 
+    android:layout_height="wrap_content"
+	android:text="Next Level"
+	/>
+<Button
+	id = "@+id/buttonpreviouslevel"
+    android:layout_width="33px" 
+    android:layout_height="wrap_content"	
+	android:text="Previous Level"
+	
+	/>
 <TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="Hello World, Monolith"
+        android:layout_width="33px"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip"
+        android:text="1"
     />
-</LinearLayout>
+	
+	
+	</LinearLayout>
