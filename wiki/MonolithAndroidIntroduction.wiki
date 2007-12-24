@@ -3,6 +3,7 @@
 = Introduction =
 
 monolithandroid is a tetris like game for the android platform.
+
 http://monolithandroid.googlecode.com/files/monolithandroid.JPG
 
 = Details =
