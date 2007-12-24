@@ -7,6 +7,9 @@ monolithandroid is a tetris like game for the android platform.
 = Details =
 
 monolithandroid is released under the Apache 2.0 licence. The reasons that I decided to develop this application are:
-*Familiarization with the Android platform.
-*Development of a fun game to play on a mobile platform.
 
+
+*Familiarization with the Android platform.
+
+
+*Development of a fun game to play on a mobile platform.
