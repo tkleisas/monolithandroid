@@ -133,7 +133,7 @@ public class GLView extends View
     		gl.glLoadIdentity();
     		Cube c = this.mCube[game.nextBlock.color];
     		//gl.glTranslatef(10.0f, ystart, zoff);
-    		gl.glTranslatef(20.0f, 0.0f, 0.0f);
+    		gl.glTranslatef(16.0f, 0.0f, 0.0f);
     		gl.glRotatef(rangle, 0.0f, 0.0f, 1.0f);
     		gl.glTranslatef(-8.0f,-2.0f ,0.0f );
     		for(int i=0;i<4;i++)
@@ -263,6 +263,14 @@ public class GLView extends View
              */
 
             float ratio = (float)w / h;
+            if(w>h)
+            {
+            	ratio = (float)w/h;
+            }
+            else
+            {
+            	ratio = (float)(h/w);
+            }
             gl.glMatrixMode(GL10.GL_PROJECTION);
             gl.glLoadIdentity();
             gl.glFrustumf(-ratio, ratio, -1, 1, 2, 52);
@@ -330,7 +338,7 @@ public class GLView extends View
             if(game.getStatus()==SimpleGameData.STATUS_GAME_OVER)
             {
 
-            	canvas.drawText(res.getString(R.string.s_game_over), (getWidth()-this.gameOverXPos)/2, 50, gameOverPaint);
+            	canvas.drawText(res.getString(R.string.s_game_over), (getWidth()-this.gameOverXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
             	
             	
             }
