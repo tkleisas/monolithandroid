@@ -1,0 +1,14 @@
+#summary Monolithandroid - how to play.
+#labels howtoplay
+
+= Introduction =
+
+Monolithandroid at present provides two modes of game. "Classic" and "Monolith"
+
+
+= Details =
+*Classic Mode*
+"Classic" mode is a plain old Tetris game which most folks love to play. You move the falling blocks left and right with the D-Pad of your Android phone. You rotate the blocks if you press up on the D-Pad and you can make a block fall faster if you press down on the D-Pad. Plain and simple. As you complete more lines the game gets faster. That's all folks.
+
+*Monolith Mode*
+"Monolith" mode at first looks like a tetris game but there are special monolith blocks (which are colored black). When a line is completed with a monolith block in it, evolution of the grid begins. The grid changes according to the rules of Conway's Game of Life.
