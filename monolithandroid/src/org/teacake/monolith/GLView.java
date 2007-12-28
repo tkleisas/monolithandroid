@@ -16,13 +16,14 @@ import android.view.View;
 import javax.microedition.khronos.opengles.GL10;
 public class GLView extends View
 {
+
     /**
      * Standard override to get key events.
      */
     /**
      * The View constructor is a good place to allocate our OpenGL context
      */
-    public GLView(Context context)
+    public GLView(Context context,int gametype)
     {
         super(context);
 
@@ -40,11 +41,12 @@ public class GLView extends View
         mCube[4] = new Cube(0xff00,0,0xff00,0x10000);
         mCube[5] = new Cube(0,0xff00,0xff00,0x10000);
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
-        mCube[7] = new Cube(0,0xf000,0xf000,0x10000);
+        mCube[7] = new Cube(0,0x000,0x000,0x0000);
         	
         res = context.getResources();
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0,true);
         running=false;
+        this.gametype = gametype;
     }
     /*
      * Draw the playfield for the tetris field
@@ -60,11 +62,21 @@ public class GLView extends View
     	zoff = -48.0f;
 
         mAnimate = false;
-        game = new SimpleGameData();
+        if(gametype==Monolith.GAME_CLASSIC)
+        {
+        	game = new SimpleGameData();
+        }
+        if(gametype==Monolith.GAME_MONOLITH)
+        {
+        	game = new MonolithGameData();
+        }
+        
+       
+        
         game.initGame(1);
-        game.score = 0;
-        game.lines = 0;
-        game.timerEnabled = true;
+        game.setScore(0);
+        game.setLines(0);
+        game.setTimerEnabled(true);
         game.setStatus(SimpleGameData.STATUS_PLAYING);
         this.lastcalltime = SystemClock.uptimeMillis();
         rangle=0;
@@ -74,18 +86,23 @@ public class GLView extends View
         gameOverPaint.setARGB(128, 20, 20, 20);
         gameOverPaint.setTextSize(30);
     	
-    	float widths[] =new float[res.getString(R.string.s_game_over).length()];
     	
-    	gameOverPaint.getTextWidths(res.getString(R.string.s_game_over),widths);
+
     	
+        this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
+        this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
+    	
+    }
+    public int getTextWidth(String str,Paint paint)
+    {
+    	float widths[] =new float[str.length()];
+    	paint.getTextWidths(str,widths); 
     	int totalwidth=0;
     	for(int i=0;i<widths.length;i++)
     	{
     		totalwidth+=widths[i];
     	}
-    	
-        this.gameOverXPos = totalwidth;
-    	
+    	return totalwidth;
     }
     public void doMoveDown()
     {
@@ -128,10 +145,10 @@ public class GLView extends View
     	
     	//float ystart=10.0f;
     	
-    	if(game.nextBlock.color>=0 && game.nextBlock.color<this.mCube.length)
+    	if(game.getNextBlock().color>=0 && game.getNextBlock().color<this.mCube.length)
     	{
     		gl.glLoadIdentity();
-    		Cube c = this.mCube[game.nextBlock.color];
+    		Cube c = this.mCube[game.getNextBlock().color];
     		//gl.glTranslatef(10.0f, ystart, zoff);
     		gl.glTranslatef(16.0f, 0.0f, 0.0f);
     		gl.glRotatef(rangle, 0.0f, 0.0f, 1.0f);
@@ -139,7 +156,7 @@ public class GLView extends View
     		for(int i=0;i<4;i++)
     		{
     			gl.glPushMatrix();
-    			c.setPosition((game.nextBlock.xPos+game.nextBlock.subblocks[i].xpos)*2.0f,-(game.nextBlock.yPos+game.nextBlock.subblocks[i].ypos)*2.0f,zoff);
+    			c.setPosition((game.getNextBlock().xPos+game.getNextBlock().subblocks[i].xpos)*2.0f,-(game.getNextBlock().yPos+game.getNextBlock().subblocks[i].ypos)*2.0f,zoff);
     			c.draw(gl);
     			gl.glPopMatrix();
     		}
@@ -164,14 +181,14 @@ public class GLView extends View
     protected void drawFallingBlock(GL10 gl)
     {
     	float ystart=21.0f;
-    	if(game.currentBlock.color>=0 && game.currentBlock.color<this.mCube.length)
+    	if(game.getCurrentBlock().color>=0 && game.getCurrentBlock().color<this.mCube.length)
     	{
-    		Cube c = this.mCube[game.currentBlock.color];
+    		Cube c = this.mCube[game.getCurrentBlock().color];
     	
     		for(int i=0;i<4;i++)
     		{
     			gl.glLoadIdentity();
-    			c.setPosition(-10.0f+(game.currentBlock.xPos+game.currentBlock.subblocks[i].xpos)*2.0f,-(game.currentBlock.yPos+game.currentBlock.subblocks[i].ypos)*2.0f+ystart,zoff);
+    			c.setPosition(-10.0f+(game.getCurrentBlock().xPos+game.getCurrentBlock().subblocks[i].xpos)*2.0f,-(game.getCurrentBlock().yPos+game.getCurrentBlock().subblocks[i].ypos)*2.0f+ystart,zoff);
     			c.draw(gl);
     		}
     	}
@@ -310,7 +327,7 @@ public class GLView extends View
             gl.glScalef(0.5f, 0.5f, 0.5f);
             //gl.glRotatef(zy, 1, 0, 0);
             gl.glTranslatef(0, 0, zoff);
-            gl.glRotatef(rangle, 0, 1, 0);
+            //gl.glRotatef(rangle, 0, 1, 0);
             gl.glTranslatef(0,0,-zoff);
             gl.glMatrixMode(GL10.GL_MODELVIEW);
             gl.glPushMatrix();
@@ -329,11 +346,16 @@ public class GLView extends View
             gl.glPopMatrix();
             
             canvas.drawText(res.getString(R.string.s_score), 10, 14,paint);
-            canvas.drawText(""+game.score, 10, 34, paint);
+            canvas.drawText(""+game.getScore(), 10, 34, paint);
             canvas.drawText(res.getString(R.string.s_level), 10, 54, paint);
-            canvas.drawText(""+game.level, 10, 74, paint);
+            canvas.drawText(""+game.getLevel(), 10, 74, paint);
             canvas.drawText(res.getString(R.string.s_lines), 10, 94, paint);
-            canvas.drawText(""+game.lines,10,114,paint);
+            canvas.drawText(""+game.getLines(),10,114,paint);
+            if(this.gametype==Monolith.GAME_MONOLITH)
+            {
+            	canvas.drawText(res.getString(R.string.s_energy),10,134,paint);
+            	canvas.drawText(""+game.getEnergy(),10,154,paint);
+            }
             //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
             if(game.getStatus()==SimpleGameData.STATUS_GAME_OVER)
             {
@@ -342,15 +364,19 @@ public class GLView extends View
             	
             	
             }
+            if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+            {
+            	canvas.drawText(res.getString(R.string.s_evolving), (getWidth()-this.evolvingXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+            }
             
             Cube c = this.mCube[0];
             c.setPosition(0.0f, 0.0f, -30.0f);
             mAngle += 1.2f;
             
             now = SystemClock.uptimeMillis();
-            if(now>lastcalltime+game.timer)
+            if(now>lastcalltime+game.getTimer())
             {
-            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING)
+            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
             	{
             		game.gameLoop();
             		lastcalltime = now;
@@ -420,7 +446,7 @@ public class GLView extends View
 
         return true;
     }   
-    public SimpleGameData	game;
+    public Game	game;
     private OpenGLContext   mGLContext;
     private Cube[]          mCube;
     private Cube 			mPlayfieldCube;
@@ -440,8 +466,10 @@ public class GLView extends View
     private Paint paint;
     private Paint gameOverPaint;
     private int gameOverXPos;
+    private int evolvingXPos;
     public boolean running;
     private Resources res;
+    int gametype;
     
 }
 

@@ -17,6 +17,7 @@ public class Block
 	public static final int BLOCKTYPE_GAMMAINV=6;	
 	public Block()
 	{
+		
 		this.subblocks = new SubBlock[4];
 		this.subblocks[0] =new SubBlock();
 		this.subblocks[1] =new SubBlock();
@@ -24,7 +25,22 @@ public class Block
 		this.subblocks[3] =new SubBlock();
 		this.xPos = 3;
 		this.yPos = 0;
-		int blocktype = java.lang.Math.abs (randomgen.nextInt())%7;
+		int blocktype = randomgen.nextInt(7);
+		if(enableMonolithBlocks)
+		{
+			if(randomgen.nextInt(20)==10)
+			{
+				this.isMonolithBlock = true;
+			}
+			else
+			{
+				this.isMonolithBlock = false;
+			}
+		}
+		else
+		{
+			this.isMonolithBlock = false;
+		}
 		this.orientation = 0;
 		switch(blocktype)
 		{
@@ -57,7 +73,12 @@ public class Block
 			this.blocktype = BLOCKTYPE_GAMMAINV;
 			this.color = 6;
 			break;
+		
 
+		}
+		if(this.isMonolithBlock)
+		{
+			this.color = 7;
 		}
 		this.recalcBlockOrientation();
 	}
@@ -100,6 +121,11 @@ public class Block
 
 
 		}
+		if(this.isMonolithBlock)
+		{
+			this.color = 7;
+		}
+
 		this.recalcBlockOrientation();			
 	}
 	public void rotateClockwise()
@@ -393,7 +419,10 @@ public class Block
 	public int yPos;
 	public int height;
 	public int color;
+	public boolean isMonolithBlock;
 	public static java.util.Random randomgen = new java.util.Random();
+	public static boolean enableMonolithBlocks;
+	
 
 }
 

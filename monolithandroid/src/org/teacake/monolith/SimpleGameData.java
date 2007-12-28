@@ -1,13 +1,15 @@
 package org.teacake.monolith;
 
-	public class SimpleGameData
+	public class SimpleGameData implements Game
 	{
 		public static final int STATUS_STARTUP=0;
 		public static final int STATUS_PLAYING=1;
 		public static final int STATUS_PAUSE=2;
 		public static final int STATUS_GAME_OVER=3;
+		public static final int STATUS_EVOLVING=4;
 		public SimpleGameData()
 		{
+			Block.enableMonolithBlocks = false;
 			this.score =0;
 			this.lines =0;
 			this.level =1;
@@ -95,15 +97,15 @@ package org.teacake.monolith;
 		{
 			this.status = status;
 		}
-		int getStatus()
+		public int getStatus()
 		{
 			return this.status;
 		}
-		int getGridValue(int x, int y)
+		public int getGridValue(int x, int y)
 		{
 			return grid[x][y];
 		}
-		void gameLoop()
+		public void gameLoop()
 		{
 			if(this.moveBlockDown())
 			{
@@ -132,7 +134,7 @@ package org.teacake.monolith;
 
 			}			
 		}
-		void moveBlockLeft()
+		public void moveBlockLeft()
 		{
 			if(
 					(this.currentBlock.subblocks[0].xpos+this.currentBlock.xPos>0) &&
@@ -152,7 +154,7 @@ package org.teacake.monolith;
 					}
 				}			
 		}
-		void moveBlockRight()
+		public void moveBlockRight()
 		{
 			if(
 					(this.currentBlock.subblocks[0].xpos+this.currentBlock.xPos<gridMaxWidth-1) &&
@@ -172,7 +174,7 @@ package org.teacake.monolith;
 					}
 				}			
 		}
-		boolean moveBlockDown()
+		public boolean moveBlockDown()
 		{
 			for(int i=0;i<4;i++)
 			{
@@ -220,7 +222,7 @@ package org.teacake.monolith;
 		public Block currentBlock;
 		public Block nextBlock;
 		boolean timerEnabled;
-		void clearCompleteLines()
+		public void clearCompleteLines()
 		{
 			int currentline =gridMaxHeight-1;
 			int linescleared = 0;
@@ -341,7 +343,7 @@ package org.teacake.monolith;
 				return;
 			}			
 		}
-		void flagCompletedLines()
+		public void flagCompletedLines()
 		{
 			for(int y=0;y<gridMaxHeight;y++)
 			{
@@ -365,7 +367,7 @@ package org.teacake.monolith;
 				}
 			}			
 		}
-		int getClearedLineCount()
+		public int getClearedLineCount()
 		{
 			int cleared=0;
 			for(int line=0;line<gridMaxHeight;line++)
@@ -377,7 +379,7 @@ package org.teacake.monolith;
 			}
 			return cleared;			
 		}
-		void rotateCurrentBlockClockwise()
+		public void rotateCurrentBlockClockwise()
 		{
 			int currentorientation = this.currentBlock.orientation;
 			this.currentBlock.rotateClockwise();
@@ -405,6 +407,55 @@ package org.teacake.monolith;
 
 				}
 			}			
+		}
+		public void setScore(int score)
+		{
+			this.score = score;
+		}
+		public int getScore()
+		{
+			return this.score;
+		}
+		public void setLevel(int level)
+		{
+			this.level = level;
+		}
+		public int getLevel()
+		{
+			return this.level;
+		}
+		public void setLines(int lines)
+		{
+			this.lines = lines;
+			
+		}
+		public int getLines()
+		{
+			return this.lines;
+		}
+		public void setTimerEnabled(boolean flag)
+		{
+			this.timerEnabled = flag;
+		}
+		public boolean isTimerEnabled()
+		{
+			return this.timerEnabled;
+		}
+		public Block getCurrentBlock()
+		{
+			return this.currentBlock;
+		}
+		public Block getNextBlock()
+		{
+			return this.nextBlock;
+		}
+		public int getTimer()
+		{
+			return this.timer;
+		}
+		public int getEnergy()
+		{
+			return 0;
 		}
 		int newLevel;
 		int startingLevel;
