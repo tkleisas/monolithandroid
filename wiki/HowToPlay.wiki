@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Monolithandroid at present provides two modes of game. "Classic" and "Monolith"
+Monolithandroid at present provides two modes of gameplay. "Classic" and "Monolith"
 
 
 = Details =
