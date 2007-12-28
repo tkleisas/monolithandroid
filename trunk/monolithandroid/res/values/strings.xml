@@ -17,5 +17,6 @@
     <string name="s_game_over">GAME OVER</string>
     <string name="s_next_game_mode">next</string>
     <string name="s_previous_game_mode">previous</string>
+    <string name="s_evolving">EVOLVING...</string>
     
 </resources>

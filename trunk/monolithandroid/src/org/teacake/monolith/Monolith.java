@@ -9,7 +9,8 @@ public class Monolith extends Activity
 {
     
     
-    
+	public static final int GAME_CLASSIC = 0;
+	public static final int GAME_MONOLITH = 1;
     GLView view;
     OptionsView optionsView;
  
@@ -17,7 +18,7 @@ public class Monolith extends Activity
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        view = new GLView( getApplication() );
+        view = new GLView( getApplication(),GAME_MONOLITH );
         optionsView = new OptionsView(getApplication());
         //setContentView(view);
     }
@@ -120,7 +121,7 @@ public class Monolith extends Activity
         	view.doMoveRight();
         	handled = true;
         }
-        if(keyCode == KeyEvent.KEYCODE_SPACE)
+        if(keyCode == KeyEvent.KEYCODE_SPACE || keyCode == KeyEvent.KEYCODE_DPAD_UP)
         {
         	view.doRotateBlock();
         	handled = true;
