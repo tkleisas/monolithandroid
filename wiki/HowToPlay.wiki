@@ -1,3 +1,4 @@
+
 #summary Monolithandroid - how to play.
 
 = Introduction =
@@ -11,3 +12,4 @@ Monolithandroid at present provides two modes of gameplay. "Classic" and "Monoli
 
 *Monolith Mode*
 "Monolith" mode at first looks like a tetris game but there are special monolith blocks (which are colored black). When a line is completed with a monolith block in it, evolution of the grid begins. The grid changes according to the rules of Conway's Game of Life. The evolution of the cells takes place for the number of timesteps labeled as energy in the game. Energy is increased every time a line is cleared.
+http://monolithandroid.googlecode.com/files/20080102_2_monolithgame.JPG
