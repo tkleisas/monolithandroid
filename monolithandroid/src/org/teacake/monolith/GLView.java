@@ -16,7 +16,8 @@ import android.view.View;
 import javax.microedition.khronos.opengles.GL10;
 public class GLView extends View
 {
-
+	public static final int VIEW_INTRO=0;
+	public static final int VIEW_GAME=1;
     /**
      * Standard override to get key events.
      */
@@ -47,11 +48,31 @@ public class GLView extends View
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0,true);
         running=false;
         this.gametype = gametype;
+        this.setViewType(VIEW_INTRO);
+        
     }
-    /*
-     * Draw the playfield for the tetris field
-     * 
-     */
+
+    public void setupDemoGrid()
+    {
+    	java.util.Random randomgen = new java.util.Random();
+    	int result;
+    	for (int y=0;y<20;y++)
+    	{
+    		for (int x=0;x<10;x++)
+    		{
+    			result = randomgen.nextInt(21);
+    			if(result<7)
+    			{
+    			
+    				this.demogame.setGridValue(x, y, result % 6);
+    			}
+    			else
+    			{
+    				this.demogame.setGridValue(x, y, -1);
+    			}
+    		}
+    	}
+    }
     public void doInit()
     {
     	xval = 0;
@@ -59,7 +80,7 @@ public class GLView extends View
         zx=0.0f;
         zy=0.0f;
     	yoff = -17.0f;
-    	zoff = -48.0f;
+    	zoff = -53.0f;
 
         mAnimate = false;
         if(gametype==Monolith.GAME_CLASSIC)
@@ -78,6 +99,14 @@ public class GLView extends View
         game.setLines(0);
         game.setTimerEnabled(true);
         game.setStatus(SimpleGameData.STATUS_PLAYING);
+        demogame = new MonolithGameData();
+        demogame.initGame(1);
+        demogame.setScore(0);
+        demogame.setLines(0);
+        demogame.setEnergy(100);
+        
+        demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
+        this.setupDemoGrid();
         this.lastcalltime = SystemClock.uptimeMillis();
         rangle=0;
         paint = new Paint();
@@ -150,7 +179,7 @@ public class GLView extends View
     		gl.glLoadIdentity();
     		Cube c = this.mCube[game.getNextBlock().color];
     		//gl.glTranslatef(10.0f, ystart, zoff);
-    		gl.glTranslatef(16.0f, 0.0f, 0.0f);
+    		gl.glTranslatef(18.0f, 0.0f, 0.0f);
     		gl.glRotatef(rangle, 0.0f, 0.0f, 1.0f);
     		gl.glTranslatef(-8.0f,-2.0f ,0.0f );
     		for(int i=0;i<4;i++)
@@ -162,6 +191,23 @@ public class GLView extends View
     		}
     	}
     }
+
+    protected void drawBlocks(GL10 gl,Game thegame)
+    {
+    	for(int y=0;y<20;y++)
+    	{
+    		for(int x=0;x<10;x++)
+    		{
+    			if(thegame.getGridValue(x, y)!=-1)
+    			{
+    				Cube c = this.mCube[thegame.getGridValue(x, y)];
+    				gl.glLoadIdentity();
+    				c.setPosition(-10.0f+x*2.0f, 21.0f-y*2.0f, zoff);
+    				c.draw(gl);
+    			}
+    		}
+    	}
+    }    
     protected void drawBlocks(GL10 gl)
     {
     	for(int y=0;y<20;y++)
@@ -193,6 +239,10 @@ public class GLView extends View
     		}
     	}
     }
+    /*
+     * Draw the playfield for the tetris field
+     * 
+     */
     protected void drawPlayfield(GL10 gl)
     {
 
@@ -237,13 +287,24 @@ public class GLView extends View
         mAnimate = false;
         super.onDetachedFromWindow();
     }
-
+    protected void drawIntroScreen(GL10 gl,Canvas canvas, int w, int h)
+    {
+    	if(demogame.getEnergy()<=0)
+    	{
+    		setupDemoGrid();
+    		demogame.setEnergy(100);
+    	}
+    	this.drawBlocks(gl, demogame);
+    	
+    	
+    }
     /**
      * Draw the view content
      * 
      * @see android.view.View#onDraw(android.graphics.Canvas)
      */
     @Override
+
     protected void onDraw(Canvas canvas) {
         if (running) {
         /*
@@ -339,51 +400,70 @@ public class GLView extends View
             gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
             gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
-            drawPlayfield(gl);
-            drawFallingBlock(gl);
-            drawBlocks(gl);
-            drawNextPiece(gl);
-            gl.glPopMatrix();
-            
-            canvas.drawText(res.getString(R.string.s_score), 10, 14,paint);
-            canvas.drawText(""+game.getScore(), 10, 34, paint);
-            canvas.drawText(res.getString(R.string.s_level), 10, 54, paint);
-            canvas.drawText(""+game.getLevel(), 10, 74, paint);
-            canvas.drawText(res.getString(R.string.s_lines), 10, 94, paint);
-            canvas.drawText(""+game.getLines(),10,114,paint);
-            if(this.gametype==Monolith.GAME_MONOLITH)
-            {
-            	canvas.drawText(res.getString(R.string.s_energy),10,134,paint);
-            	canvas.drawText(""+game.getEnergy(),10,154,paint);
-            }
-            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
-            if(game.getStatus()==SimpleGameData.STATUS_GAME_OVER)
-            {
 
-            	canvas.drawText(res.getString(R.string.s_game_over), (getWidth()-this.gameOverXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
-            	
-            	
-            }
-            if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+            if (this.viewType==VIEW_INTRO)
             {
-            	canvas.drawText(res.getString(R.string.s_evolving), (getWidth()-this.evolvingXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+	            now = SystemClock.uptimeMillis();
+	            if(now>lastcalltime+demogame.getTimer())
+	            {
+
+	            		lastcalltime = now;
+	            		this.demogame.gameLoop();
+	            }
+            	this.drawIntroScreen(gl, canvas, w, h);
+            	String logo="MonolithAndroid";
+            	int textxpos = this.getTextWidth(logo,this.gameOverPaint);
+            	canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+            	
             }
-            
-            Cube c = this.mCube[0];
-            c.setPosition(0.0f, 0.0f, -30.0f);
-            mAngle += 1.2f;
-            
-            now = SystemClock.uptimeMillis();
-            if(now>lastcalltime+game.getTimer())
+            if (this.viewType==VIEW_GAME)
             {
-            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-            	{
-            		game.gameLoop();
-            		lastcalltime = now;
-            	}
+            	
+                drawPlayfield(gl);
+                drawFallingBlock(gl);
+                drawBlocks(gl);
+                drawNextPiece(gl);
+                gl.glPopMatrix();            
+	            canvas.drawText(res.getString(R.string.s_score), 10, 14,paint);
+	            canvas.drawText(""+game.getScore(), 10, 34, paint);
+	            canvas.drawText(res.getString(R.string.s_level), 10, 54, paint);
+	            canvas.drawText(""+game.getLevel(), 10, 74, paint);
+	            canvas.drawText(res.getString(R.string.s_lines), 10, 94, paint);
+	            canvas.drawText(""+game.getLines(),10,114,paint);
+	            if(this.gametype==Monolith.GAME_MONOLITH)
+	            {
+	            	canvas.drawText(res.getString(R.string.s_energy),10,134,paint);
+	            	canvas.drawText(""+game.getEnergy(),10,154,paint);
+	            }
+	            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
+	            if(game.getStatus()==SimpleGameData.STATUS_GAME_OVER)
+	            {
+	
+	            	canvas.drawText(res.getString(R.string.s_game_over), (getWidth()-this.gameOverXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+	            	
+	            	
+	            }
+	            if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+	            {
+	            	canvas.drawText(res.getString(R.string.s_evolving), (getWidth()-this.evolvingXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+	            }
+	            
+	            Cube c = this.mCube[0];
+	            c.setPosition(0.0f, 0.0f, -30.0f);
+	            mAngle += 1.2f;
+	            
+	            now = SystemClock.uptimeMillis();
+	            if(now>lastcalltime+game.getTimer())
+	            {
+	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+	            	{
+	            		game.gameLoop();
+	            		lastcalltime = now;
+	            	}
+	            }
+	            //gl.glPopMatrix();
+	            //game.gameLoop();
             }
-            //gl.glPopMatrix();
-            //game.gameLoop();
 
         /*
          * Once we're done with GL, we need to flush all GL commands and
@@ -445,8 +525,13 @@ public class GLView extends View
     	}
 
         return true;
-    }   
+    } 
+    public void setViewType(int viewtype)
+    {
+    	this.viewType = viewtype;
+    }
     public Game	game;
+    public Game demogame;
     private OpenGLContext   mGLContext;
     private Cube[]          mCube;
     private Cube 			mPlayfieldCube;
@@ -470,6 +555,7 @@ public class GLView extends View
     public boolean running;
     private Resources res;
     int gametype;
+    private int viewType;
     
 }
 

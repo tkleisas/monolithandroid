@@ -19,8 +19,11 @@ public class Monolith extends Activity
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         view = new GLView( getApplication(),GAME_MONOLITH );
+        view.setViewType(GLView.VIEW_INTRO);
+        view.doInit();
+        view.running=true;
         optionsView = new OptionsView(getApplication());
-        //setContentView(view);
+        setContentView(view);
     }
     
     @Override
@@ -28,20 +31,42 @@ public class Monolith extends Activity
         super.onCreateOptionsMenu(menu);
 
         
-        menu.add(0, 0, R.string.m_m_new, new Runnable() {
+        menu.add(0, 0, R.string.m_new_monolith, new Runnable() {
             public void run() {
                 //mLunarView.doStart();
 
 
-            	view.doInit();
-            	view.running = true;
-            	setContentView(view);
+            	view = new GLView( getApplication(),GAME_MONOLITH );
+                view.setViewType(GLView.VIEW_GAME);
+                view.doInit();
+                view.running=true;
+                optionsView = new OptionsView(getApplication());
+                setContentView(view);
+            	
+            	
             }
         });
-		menu.add(1, 0, R.string.m_m_options, new Runnable()
+        
+        menu.add(1, 0, R.string.m_new_classic, new Runnable() {
+            public void run() {
+                //mLunarView.doStart();
+
+
+            	view = new GLView( getApplication(),GAME_CLASSIC );
+                view.setViewType(GLView.VIEW_GAME);
+                view.doInit();
+                view.running=true;
+                optionsView = new OptionsView(getApplication());
+                setContentView(view);
+            	
+            	
+            }
+        });       
+        
+		menu.add(2, 0, R.string.m_m_options, new Runnable()
 		{
 			public void run() {
-				setContentView(R.layout.main);
+				setContentView(R.layout.options);
 			}
 			
 		});

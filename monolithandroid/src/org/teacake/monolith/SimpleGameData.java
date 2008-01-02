@@ -105,6 +105,10 @@ package org.teacake.monolith;
 		{
 			return grid[x][y];
 		}
+		public void setGridValue(int x, int y, int value)
+		{
+			grid[x][y]=value;
+		}		
 		public void gameLoop()
 		{
 			if(this.moveBlockDown())
@@ -456,6 +460,10 @@ package org.teacake.monolith;
 		public int getEnergy()
 		{
 			return 0;
+		}
+		public void setEnergy(int energy)
+		{
+			//do nothing;
 		}
 		int newLevel;
 		int startingLevel;
