@@ -35,4 +35,5 @@ public interface Game
 	public Block getCurrentBlock();
 	public Block getNextBlock();
 	public int getTimer();
+	public int[] getClearedLines();
 }

@@ -13,17 +13,42 @@ public class Monolith extends Activity
 	public static final int GAME_MONOLITH = 1;
     GLView view;
     OptionsView optionsView;
+    
  
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
         view = new GLView( getApplication(),GAME_MONOLITH );
         view.setViewType(GLView.VIEW_INTRO);
         view.doInit();
         view.running=true;
         optionsView = new OptionsView(getApplication());
+        android.content.AssetManager mgr = getApplication().getAssets();
+        //String[] assetlist=null;
+        /*
+        String message = "->";
+        try
+        {
+        	assetlist = mgr.list("/");
+        	if (assetlist!=null)
+        	{
+        		for(int i=0;i<assetlist.length;i++)
+        		{
+        			message+=assetlist[i]+"{";
+        		}
+        		view.message = message;
+        	}
+        }
+        catch(Exception e)
+        {
+        	
+        }
+        */
+        
         setContentView(view);
+         
     }
     
     @Override
@@ -62,11 +87,19 @@ public class Monolith extends Activity
             	
             }
         });       
-        
+        /*
 		menu.add(2, 0, R.string.m_m_options, new Runnable()
 		{
 			public void run() {
 				setContentView(R.layout.options);
+			}
+			
+		});*/
+		menu.add(2, 0, R.string.s_exit_game, new Runnable()
+		{
+			public void run() {
+				view.performCleanup();
+				finish();
 			}
 			
 		});
@@ -151,11 +184,13 @@ public class Monolith extends Activity
         	view.doRotateBlock();
         	handled = true;
         }
+        /*
         if(keyCode == KeyEvent.KEYCODE_ENDCALL)
         {
         	this.finish();
         	handled = true;
         }
+        */
         return handled;
     }
 

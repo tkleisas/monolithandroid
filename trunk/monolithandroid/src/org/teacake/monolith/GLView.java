@@ -10,10 +10,33 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
-
+import android.util.Log;
 
 
 import javax.microedition.khronos.opengles.GL10;
+class ExplodingCube
+{
+	public ExplodingCube(float x,float y,float z,float ux,float uy, float uz, int blocktype,int frame)
+	{
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.ux = ux;
+		this.uy = uy;
+		this.uz = uz;
+		this.blocktype = blocktype;
+		this.frame = frame;
+	}
+	public float x;
+	public float y;
+	public float z;
+	public float ux;
+	public float uy;
+	public float uz;
+	public int blocktype;
+	public int frame;
+	
+}
 public class GLView extends View
 {
 	public static final int VIEW_INTRO=0;
@@ -49,6 +72,9 @@ public class GLView extends View
         running=false;
         this.gametype = gametype;
         this.setViewType(VIEW_INTRO);
+        this.explodingCubes = new java.util.LinkedList<ExplodingCube>();
+        
+        
         
     }
 
@@ -73,13 +99,57 @@ public class GLView extends View
     		}
     	}
     }
+    public void performCleanup()
+    {
+    	
+    	try
+    	{
+    		this.mediaPlayer.stop();
+    	}
+    	catch(Exception e)
+    	{
+    		
+    	}
+    	this.running = false;
+    }
     public void doInit()
     {
+    	if(viewType==VIEW_INTRO)
+    	{
+    		try
+    		{
+        	//soundEngine = javax.sound.sampled.AndroidPlayBackEngine.getInstance();
+        	
+    			mediaPlayer = android.media.MediaPlayer.create(this.getContext(), R.raw.intro);
+        	
+    			mediaPlayer.prepare();
+    			mediaPlayer.setLooping(1);
+    			mediaPlayer.start();
+    		}
+    		catch(Exception e)
+    		{
+    			Log.e("music","error"+e.getMessage());
+    		} 
+    	}
+    	if(viewType==VIEW_GAME)
+    	{
+    		try
+    		{
+    			
+    		}
+    		catch(Exception e)
+    		{
+    			mediaPlayer.stop();
+    		}
+    	}
+    	
     	xval = 0;
     	yval =0;
         zx=0.0f;
         zy=0.0f;
-    	yoff = -17.0f;
+        xoff = -10.0f;
+        //-10.0f+x*2.0f, 21.0f-y*2.0f, zoff
+    	yoff = 21.0f;
     	zoff = -53.0f;
 
         mAnimate = false;
@@ -140,7 +210,10 @@ public class GLView extends View
     		return;
     	}
     	game.moveBlockDown();
+    
     	game.gameLoop();
+    	game.flagCompletedLines();
+    	this.createExplosions(game);
     }
     public void doMoveLeft()
     {
@@ -159,6 +232,7 @@ public class GLView extends View
     	}
 
     	game.moveBlockRight();
+    
     }
     public void doRotateBlock()
     {
@@ -191,7 +265,14 @@ public class GLView extends View
     		}
     	}
     }
-
+    
+    protected void drawExplodingCube(GL10 gl, ExplodingCube c)
+    {
+    	Cube dc = this.mCube[c.blocktype];
+    	gl.glLoadIdentity();
+    	dc.setPosition(c.x, c.y, c.z);
+    	dc.draw(gl);
+    }
     protected void drawBlocks(GL10 gl,Game thegame)
     {
     	for(int y=0;y<20;y++)
@@ -202,7 +283,7 @@ public class GLView extends View
     			{
     				Cube c = this.mCube[thegame.getGridValue(x, y)];
     				gl.glLoadIdentity();
-    				c.setPosition(-10.0f+x*2.0f, 21.0f-y*2.0f, zoff);
+    				c.setPosition(xoff+x*2.0f, yoff-y*2.0f, zoff);
     				c.draw(gl);
     			}
     		}
@@ -218,7 +299,7 @@ public class GLView extends View
     			{
     				Cube c = this.mCube[game.getGridValue(x, y)];
     				gl.glLoadIdentity();
-    				c.setPosition(-10.0f+x*2.0f, 21.0f-y*2.0f, zoff);
+    				c.setPosition(xoff+x*2.0f, yoff-y*2.0f, zoff);
     				c.draw(gl);
     			}
     		}
@@ -239,6 +320,61 @@ public class GLView extends View
     		}
     	}
     }
+    
+    protected void drawCubeExplosion(GL10 gl)
+    {
+    	
+    	java.util.ListIterator<ExplodingCube > iter=this.explodingCubes.listIterator();
+    	ExplodingCube c = null;
+    	if(iter!=null)
+    	{
+    		
+    		while(iter.hasNext())
+    		{
+    			c=iter.next();
+    			if(c.frame>GLView.MAX_EXPLOSION_FRAME)
+    			{
+    				
+    				iter.remove();
+    			}
+    			else
+    			{
+    				drawExplodingCube(gl, c);
+    				c.x = c.x + c.ux*c.frame;
+    				c.y = c.y + c.uy*c.frame;
+    				c.z = c.z + c.uz*c.frame;
+    				c.uz = c.uz+c.frame*Z_ACCELERATION;
+    				c.frame++;
+    			}
+    		}
+    	}
+    }
+    public void createExplosions(Game game)
+    {
+    	int[] clearedLines = game.getClearedLines();
+    	for (int y=0;y<clearedLines.length;y++)
+    	{
+    		if (clearedLines[y]==1)
+    		{
+    			for(int x=0;x<10;x++)
+    			{
+    				ExplodingCube c = new ExplodingCube
+    				(
+    						xoff+x*2.0f,
+    						yoff-y*2.0f,
+    						zoff,
+    						(x-5.0f)/10.0f,
+    						0.5f,
+    						0.5f,
+    						game.getGridValue(x, y),
+    						0
+    						
+    				);
+    				this.explodingCubes.add(c);
+    			}
+    		}
+    	}
+    }
     /*
      * Draw the playfield for the tetris field
      * 
@@ -249,16 +385,16 @@ public class GLView extends View
     	for(int i=0;i<20;i++)
     	{
     		gl.glLoadIdentity();
-    		mPlayfieldCube.setPosition(-12.0f,yoff+i*2.0f, zoff);
+    		mPlayfieldCube.setPosition(xoff-2.0f,yoff-i*2.0f, zoff);
     		mPlayfieldCube.draw(gl);
     		gl.glLoadIdentity();
-    		mPlayfieldCube.setPosition(10.0f,yoff+i*2.0f, zoff);
+    		mPlayfieldCube.setPosition(xoff+2.0f*10,yoff-i*2.0f, zoff);
     		mPlayfieldCube.draw(gl);
     	}
     	for(int i=0;i<10;i++)
     	{
     		gl.glLoadIdentity();
-    		mPlayfieldCube.setPosition(-10.0f+i*2.0f,yoff-2.0f, zoff);
+    		mPlayfieldCube.setPosition(xoff+i*2.0f,yoff-(20*2.0f), zoff);
     		mPlayfieldCube.draw(gl);
     		
     	}
@@ -294,6 +430,7 @@ public class GLView extends View
     		setupDemoGrid();
     		demogame.setEnergy(100);
     	}
+    	
     	this.drawBlocks(gl, demogame);
     	
     	
@@ -388,7 +525,11 @@ public class GLView extends View
             gl.glScalef(0.5f, 0.5f, 0.5f);
             //gl.glRotatef(zy, 1, 0, 0);
             gl.glTranslatef(0, 0, zoff);
-            //gl.glRotatef(rangle, 0, 1, 0);
+            if(this.viewType==VIEW_INTRO)
+            {
+            	gl.glRotatef(rangle, 0.0f, 0.0f, 1.0f);
+            }
+            
             gl.glTranslatef(0,0,-zoff);
             gl.glMatrixMode(GL10.GL_MODELVIEW);
             gl.glPushMatrix();
@@ -400,7 +541,7 @@ public class GLView extends View
             gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
             gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
-
+            //canvas.drawText(message, 10, 10, paint);
             if (this.viewType==VIEW_INTRO)
             {
 	            now = SystemClock.uptimeMillis();
@@ -453,11 +594,17 @@ public class GLView extends View
 	            mAngle += 1.2f;
 	            
 	            now = SystemClock.uptimeMillis();
+	            if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+	            {
+	            	this.drawCubeExplosion(gl);
+	            }
 	            if(now>lastcalltime+game.getTimer())
 	            {
 	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 	            	{
 	            		game.gameLoop();
+	            		game.flagCompletedLines();
+	            		this.createExplosions(game);
 	            		lastcalltime = now;
 	            	}
 	            }
@@ -543,7 +690,7 @@ public class GLView extends View
     private int yval;
     private float zx=0.0f;
     private float zy=0.0f;
-    //private float xoff;
+    private float xoff;
     private float yoff;
     private float zoff;
     private long now;
@@ -556,6 +703,13 @@ public class GLView extends View
     private Resources res;
     int gametype;
     private int viewType;
+    //private javax.sound.midi.AndroidMIDIPlayBackEngine soundEngine;
+    private android.media.MediaPlayer mediaPlayer;
+    public String message;
+    private java.util.LinkedList<ExplodingCube> explodingCubes;
+    public static final float Z_ACCELERATION=0.2f;
+    public static final int MAX_EXPLOSION_FRAME=20;
+    private javax.sound.sampled.AndroidPlayBackEngine soundEngine;
     
 }
 

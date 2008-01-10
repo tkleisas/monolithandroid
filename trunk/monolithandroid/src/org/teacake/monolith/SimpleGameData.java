@@ -465,6 +465,10 @@ package org.teacake.monolith;
 		{
 			//do nothing;
 		}
+		public int[] getClearedLines()
+		{
+			return this.clearedLines;
+		}
 		int newLevel;
 		int startingLevel;
 		public int gridMaxHeight;

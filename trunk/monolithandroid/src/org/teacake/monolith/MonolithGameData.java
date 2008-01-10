@@ -677,7 +677,10 @@ public class MonolithGameData implements Game
 	{
 		this.energy=energy;
 	}
-	
+	public int[] getClearedLines()
+	{
+		return this.clearedLines;
+	}
 	int newLevel;
 	int startingLevel;
 	public int gridMaxHeight;
