@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Monolith</string>
+    <string name="app_name">MonolithAndroid</string>
     <string name="s_score">SCORE</string>
     <string name="s_level">LEVEL</string>
     <string name="s_lines">LINES</string>
@@ -20,5 +20,6 @@
     <string name="s_evolving">EVOLVING...</string>
     <string name="m_new_monolith">New Monolith Game</string>
     <string name="m_new_classic">New Classic Game</string>
+    <string name="s_exit_game">Exit Game</string>
     
 </resources>
