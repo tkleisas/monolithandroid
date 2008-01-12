@@ -11,7 +11,9 @@ public interface Game
 	public void initGame(int theStartingLevel);
 	public void setStatus(int status);
 	public int getStatus();
+	public void setTimer(int time);
 	public int getGridValue(int x, int y);
+	public int getPreviousGridValue(int x, int y);
 	public void setGridValue(int x, int y, int value);
 	public void gameLoop();
 	public void moveBlockLeft();

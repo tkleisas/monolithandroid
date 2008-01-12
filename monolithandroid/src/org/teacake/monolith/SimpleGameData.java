@@ -105,6 +105,10 @@ package org.teacake.monolith;
 		{
 			return grid[x][y];
 		}
+		public int getPreviousGridValue(int x, int y)
+		{
+			return grid[x][y];
+		}
 		public void setGridValue(int x, int y, int value)
 		{
 			grid[x][y]=value;
@@ -215,6 +219,10 @@ package org.teacake.monolith;
 			this.grid[this.currentBlock.subblocks[2].xpos+this.currentBlock.xPos][this.currentBlock.subblocks[2].ypos+this.currentBlock.yPos]=this.currentBlock.color;
 			this.grid[this.currentBlock.subblocks[3].xpos+this.currentBlock.xPos][this.currentBlock.subblocks[3].ypos+this.currentBlock.yPos]=this.currentBlock.color;
 			return false;
+		}
+		public void setTimer(int time)
+		{
+			this.timer = time;
 		}
 		private int[][] grid;
 		private int[] clearedLines;
