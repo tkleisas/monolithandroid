@@ -20,6 +20,7 @@ public class MonolithGameData implements Game
 		this.gridMaxHeight = 20;
 		this.grid = new int[gridMaxWidth][gridMaxHeight];
 		this.newgrid = new int[gridMaxWidth][gridMaxHeight];
+		this.oldgrid = new int[gridMaxWidth][gridMaxHeight];
 		this.randomgen = new java.util.Random();
 		this.energy = 0;
 		for(int y=0;y<gridMaxHeight;y++)
@@ -27,6 +28,7 @@ public class MonolithGameData implements Game
 			for(int x=0;x<gridMaxWidth;x++)
 			{
 				this.grid[x][y]=-1;
+				this.oldgrid[x][y]=-1;
 			}
 		}
 		
@@ -107,6 +109,10 @@ public class MonolithGameData implements Game
 	public int getGridValue(int x, int y)
 	{
 		return grid[x][y];
+	}
+	public int getPreviousGridValue(int x, int y)
+	{
+		return oldgrid[x][y];
 	}
 	public void setGridValue(int x, int y, int value)
 	{
@@ -253,6 +259,7 @@ public class MonolithGameData implements Game
 			{
 				for(int x=0;x<gridMaxWidth;x++)
 				{
+					oldgrid[x][y]=grid[x][y];
 					int count=getNeighbourCount(x,y);
 					if(grid[x][y]!=-1)
 					{
@@ -415,6 +422,7 @@ public class MonolithGameData implements Game
 		this.grid[this.currentBlock.subblocks[3].xpos+this.currentBlock.xPos][this.currentBlock.subblocks[3].ypos+this.currentBlock.yPos]=this.currentBlock.color;
 		return false;
 	}
+	private int[][] oldgrid;
 	private int[][] grid;
 	private int[][] newgrid;
 	
@@ -427,6 +435,10 @@ public class MonolithGameData implements Game
 	public Block currentBlock;
 	public Block nextBlock;
 	boolean timerEnabled;
+	public void setTimer(int time)
+	{
+		this.timer = time;
+	}
 
 	public void clearCompleteLines()
 	{
@@ -447,7 +459,7 @@ public class MonolithGameData implements Game
 			{
 				for(int x=0;x<gridMaxWidth;x++)
 				{
-					if(grid[x][currentline]==7)
+					if(grid[x][currentline]==7 && this.energy>0 )
 					{
 						this.status=STATUS_EVOLVING;
 						

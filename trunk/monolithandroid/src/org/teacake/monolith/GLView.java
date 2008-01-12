@@ -174,6 +174,7 @@ public class GLView extends View
         demogame.setScore(0);
         demogame.setLines(0);
         demogame.setEnergy(100);
+        //demogame.setTimer(5000);
         
         demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
         this.setupDemoGrid();
@@ -288,7 +289,48 @@ public class GLView extends View
     			}
     		}
     	}
-    }    
+    }
+    protected void drawBlocks(GL10 gl,Game thegame, int currentFrame,int maxFrame)
+    {
+    	float upscalef = (float)currentFrame/(float)maxFrame;
+    	float downscalef = 1.0f-upscalef;
+    	for(int y=0;y<20;y++)
+    	{
+    		for(int x=0;x<10;x++)
+    		{
+    			
+    			if(thegame.getGridValue(x, y)!=-1)
+    			{
+    				if(thegame.getPreviousGridValue(x, y)==-1)
+    				{
+        				Cube c = this.mCube[thegame.getGridValue(x, y)];
+        				gl.glLoadIdentity();
+        				c.setPosition(xoff+x*2.0f, yoff-y*2.0f, zoff);
+        				c.draw(gl,upscalef);     					
+    				}
+    				else
+    				{
+    					Cube c = this.mCube[thegame.getGridValue(x, y)];
+    					gl.glLoadIdentity();
+    				
+    					c.setPosition(xoff+x*2.0f, yoff-y*2.0f, zoff);
+    					c.draw(gl);
+    				}
+    			}
+    			else
+    			{
+    				if(thegame.getPreviousGridValue(x, y)!=-1)
+    				{
+        				Cube c = this.mCube[thegame.getPreviousGridValue(x, y)];
+        				gl.glLoadIdentity();
+        				c.setPosition(xoff+x*2.0f, yoff-y*2.0f, zoff);
+        				c.draw(gl,downscalef);   					
+    				}
+    				
+    			}
+    		}
+    	}
+    } 
     protected void drawBlocks(GL10 gl)
     {
     	for(int y=0;y<20;y++)
@@ -425,13 +467,20 @@ public class GLView extends View
     }
     protected void drawIntroScreen(GL10 gl,Canvas canvas, int w, int h)
     {
+    	long now = SystemClock.uptimeMillis();;
     	if(demogame.getEnergy()<=0)
     	{
     		setupDemoGrid();
     		demogame.setEnergy(100);
     	}
+    	int result = (int)((now-lastcalltime)%demogame.getTimer());
+    	result = (result*10)/demogame.getTimer();
+    	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
+
+    	this.drawBlocks(gl,demogame,result,10);
     	
-    	this.drawBlocks(gl, demogame);
+    	lastdrawtime = System.currentTimeMillis();
+    	//this.drawBlocks(gl, demogame);
     	
     	
     }
@@ -562,7 +611,20 @@ public class GLView extends View
             	
                 drawPlayfield(gl);
                 drawFallingBlock(gl);
-                drawBlocks(gl);
+                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+                {
+                	long now = SystemClock.uptimeMillis();;
+
+                	int result = (int)((now-lastcalltime)%game.getTimer());
+                	result = (result*10)/game.getTimer();
+            	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
+
+            		this.drawBlocks(gl,game,result,10);
+                }
+                else
+                {
+                 	drawBlocks(gl);
+                }
                 drawNextPiece(gl);
                 gl.glPopMatrix();            
 	            canvas.drawText(res.getString(R.string.s_score), 10, 14,paint);
@@ -710,7 +772,7 @@ public class GLView extends View
     public static final float Z_ACCELERATION=0.2f;
     public static final int MAX_EXPLOSION_FRAME=20;
     private javax.sound.sampled.AndroidPlayBackEngine soundEngine;
-    
+    private long lastdrawtime;
 }
 
 
