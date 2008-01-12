@@ -467,8 +467,12 @@ public class GLView extends View
     }
     protected void drawIntroScreen(GL10 gl,Canvas canvas, int w, int h)
     {
-    	long now = SystemClock.uptimeMillis();;
-    	if(demogame.getEnergy()<=0)
+    	long now = SystemClock.uptimeMillis();
+    	if(demogame.getStatus()!=SimpleGameData.STATUS_EVOLVING)
+    	{
+    		demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
+    	}
+    	if(demogame.getEnergy()<=1)
     	{
     		setupDemoGrid();
     		demogame.setEnergy(100);
@@ -479,7 +483,7 @@ public class GLView extends View
 
     	this.drawBlocks(gl,demogame,result,10);
     	
-    	lastdrawtime = System.currentTimeMillis();
+    	//lastdrawtime = System.currentTimeMillis();
     	//this.drawBlocks(gl, demogame);
     	
     	

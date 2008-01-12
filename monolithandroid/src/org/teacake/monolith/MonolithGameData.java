@@ -251,9 +251,27 @@ public class MonolithGameData implements Game
 		return 0;
 		
 	}
+	
+	public boolean isGridEmpty()
+	{
+		
+		for(int y=0;y<gridMaxHeight;y++)
+		{
+			for(int x=0;x<gridMaxWidth;x++)
+			{
+				if(getGridValue(x, y)!=-1)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+		
+	}
 	public void evolve()
 	{
-		if(energy>0)
+		
+		if(energy>0 && !isGridEmpty())
 		{
 			for(int y=0;y<gridMaxHeight;y++)
 			{
@@ -304,7 +322,10 @@ public class MonolithGameData implements Game
 		}
 		else
 		{
-			this.energy=0;
+			if (this.energy<0)
+			{
+				energy=0;
+			}
 			this.status=STATUS_PLAYING;
 		}
 	}
