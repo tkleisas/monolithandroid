@@ -46,6 +46,7 @@ public class MonolithGameData implements Game
 			for(int y=0;y<gridMaxHeight;y++)
 			{
 				this.grid[x][y]=-1;
+				this.oldgrid[x][y]=-1;
 			}
 		}
 		for(int y=0;y<gridMaxHeight;y++)

@@ -576,13 +576,15 @@ public class GLView extends View
             
             
             gl.glScalef(0.5f, 0.5f, 0.5f);
+
             //gl.glRotatef(zy, 1, 0, 0);
             gl.glTranslatef(0, 0, zoff);
             if(this.viewType==VIEW_INTRO)
             {
             	gl.glRotatef(rangle, 0.0f, 0.0f, 1.0f);
             }
-            
+            gl.glRotatef(zx, 0.0f, 1.0f, 0.0f);
+            gl.glRotatef(zy, 1.0f, 0.0f, 0.0f);
             gl.glTranslatef(0,0,-zoff);
             gl.glMatrixMode(GL10.GL_MODELVIEW);
             gl.glPushMatrix();
@@ -720,24 +722,35 @@ public class GLView extends View
     public boolean onMotionEvent(MotionEvent event)
     {
     	int action = event.getAction();
+    	boolean handled = false;
     	if(action==MotionEvent.ACTION_DOWN)
     	{
-    	  xval=(int)event.getX();
-    	  yval=(int)event.getY();
+    		xval=(int)event.getX();
+    		yval=(int)event.getY();
+    		handled = true;
     	}
+    	
     	if(action==MotionEvent.ACTION_UP)
     	{
-    		
+    		int xnow = (int)event.getX();
+    		int ynow = (int)event.getY();
+    		if(xnow<20 && ynow<20)
+    		{
+    			zx =0 ;
+    			zy =0 ;
+    		}
+    		handled=true;
     	}
     	if(action==MotionEvent.ACTION_MOVE)
     	{
-            zx = (zx-xval)/10.0f;
-            zy = (zy-yval)/10.0f;
+            zx = zx+((int)event.getX()-xval);
+            zy = zy+((int)event.getY()-yval);
       	  	xval=(int)event.getX();
       	  	yval=(int)event.getY();
+      	  	handled = true;
     	}
 
-        return true;
+        return handled;
     } 
     public void setViewType(int viewtype)
     {
@@ -777,6 +790,8 @@ public class GLView extends View
     public static final int MAX_EXPLOSION_FRAME=20;
     private javax.sound.sampled.AndroidPlayBackEngine soundEngine;
     private long lastdrawtime;
+    
+    
 }
 
 
