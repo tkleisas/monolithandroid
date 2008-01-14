@@ -1,8 +1,8 @@
-= MonolithAndroid - how to play. =
+= MonolithAndroid,  how to play. =
 
 = Introduction =
 
-Monolithandroid at present provides two modes of gameplay. "Classic" and "Monolith"
+MonolithAndroid at present provides two modes of gameplay. "Classic" and "Monolith"
 
 
 = Details =
