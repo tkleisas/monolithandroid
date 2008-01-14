@@ -1,3 +1,4 @@
+#summary How to play MonolithAndroid.
 = MonolithAndroid,  how to play. =
 
 = Introduction =
