@@ -1,5 +1,4 @@
-
-#summary Monolithandroid - how to play.
+=Monolithandroid - how to play.=
 
 = Introduction =
 
