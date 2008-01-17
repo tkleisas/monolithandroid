@@ -479,6 +479,17 @@ package org.teacake.monolith;
 		}
 		int newLevel;
 		int startingLevel;
+		private int step;
+		public int getCurrentStep()
+		{
+			return step;
+		}
+		public void setStep(int step)
+		{
+			this.step = step;
+		}
+		
+		
 		public int gridMaxHeight;
 		public int gridMaxWidth;
 		public static void main(String[] args) {

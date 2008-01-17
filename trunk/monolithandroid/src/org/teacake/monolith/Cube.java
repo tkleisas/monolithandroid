@@ -213,7 +213,15 @@ class Cube
         gl.glScalef(scale, scale, scale);
         gl.glDrawElements(GL10.GL_TRIANGLES, 36, GL10.GL_UNSIGNED_BYTE, mIndexBuffer);    	
     }
-
+    public void draw(GL10 gl, float scalex, float scaley, float scalez)
+    {
+        gl.glFrontFace(GL10.GL_CW);
+        gl.glVertexPointer(3, GL10.GL_FIXED, 0, mVertexBuffer);
+        gl.glColorPointer(4, GL10.GL_FIXED, 0, mColorBuffer);
+        gl.glTranslatef(xpos, ypos, zpos);
+        gl.glScalef(scalex, scaley, scalez);
+        gl.glDrawElements(GL10.GL_TRIANGLES, 36, GL10.GL_UNSIGNED_BYTE, mIndexBuffer);    	
+    }
     private IntBuffer   mVertexBuffer;
     private IntBuffer   mColorBuffer;
     private ByteBuffer  mIndexBuffer;
