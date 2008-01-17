@@ -16,7 +16,30 @@ import android.util.Log;
 import javax.microedition.khronos.opengles.GL10;
 class ExplodingCube
 {
+	public static final int EXPLOSION_TYPE_NORMAL=0;
+	public static final int EXPLOSION_TYPE_SINGLE=1;
+	public static final int EXPLOSION_TYPE_SPIRAL=2;
+	public static final int EXPLOSION_TYPE_SPHERE=3;
 	public ExplodingCube(float x,float y,float z,float ux,float uy, float uz, int blocktype,int frame)
+	{
+		
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.ux = ux;
+		this.uy = uy;
+		this.uz = uz;
+		this.blocktype = blocktype;
+		this.frame = frame;
+		this.anglex = 0.0f;
+		this.angley = 0.0f;
+		this.anglez = 0.0f;
+		this.uax = 0.0f;
+		this.uay = 0.0f;
+		this.uaz = 0.0f;
+		this.explosionType = EXPLOSION_TYPE_NORMAL;
+	}
+	public ExplodingCube(float x,float y,float z,float ux,float uy, float uz, float anglex,float angley, float anglez, float uax, float uay, float uaz, int blocktype,int frame)
 	{
 		this.x = x;
 		this.y = y;
@@ -26,6 +49,12 @@ class ExplodingCube
 		this.uz = uz;
 		this.blocktype = blocktype;
 		this.frame = frame;
+		this.anglex = 0.0f;
+		this.angley = 0.0f;
+		this.anglez = 0.0f;
+		this.uax = 0.0f;
+		this.uay = 0.0f;
+		this.uaz = 0.0f;		
 	}
 	public float x;
 	public float y;
@@ -33,8 +62,15 @@ class ExplodingCube
 	public float ux;
 	public float uy;
 	public float uz;
+	public float anglex; //rotation around x axis;
+	public float angley; //rotation around y axis;
+	public float anglez; //rotation around z axis;
+	public float uax; //angular velocity around x
+	public float uay; //angular velocity around y
+	public float uaz; //angular velocity around z
 	public int blocktype;
 	public int frame;
+	public int explosionType;
 	
 }
 public class GLView extends View
@@ -65,14 +101,17 @@ public class GLView extends View
         mCube[4] = new Cube(0xff00,0,0xff00,0x10000);
         mCube[5] = new Cube(0,0xff00,0xff00,0x10000);
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
-        mCube[7] = new Cube(0,0x000,0x000,0x0000);
+        mCube[7] = new Cube(0xffff,0x0ffff,0xffff,0x00ff);
         	
         res = context.getResources();
-        this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0,true);
+        this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
         running=false;
         this.gametype = gametype;
         this.setViewType(VIEW_INTRO);
         this.explodingCubes = new java.util.LinkedList<ExplodingCube>();
+        randomgen = new java.util.Random(SystemClock.uptimeMillis());
+        this.background = android.graphics.BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
+        this.backgroundInitialized = false;
         
         
         
@@ -181,7 +220,15 @@ public class GLView extends View
         this.lastcalltime = SystemClock.uptimeMillis();
         rangle=0;
         paint = new Paint();
-        paint.setARGB(200, 0, 0, 0);
+        paint2 = new Paint();
+        bgpaint = new Paint();
+        paint.setARGB(200, 255, 0, 0);
+        //paint.setFakeBoldText(true);
+        paint.setTextSize(14);
+        paint2.setTextSize(14);
+        paint2.setARGB(255, 128, 128, 128);
+        
+        
         gameOverPaint = new Paint();
         gameOverPaint.setARGB(128, 20, 20, 20);
         gameOverPaint.setTextSize(30);
@@ -203,6 +250,11 @@ public class GLView extends View
     		totalwidth+=widths[i];
     	}
     	return totalwidth;
+    }
+    public void drawString(Canvas canvas,String str,int x,int y)
+    {
+    	canvas.drawText(str, x+1, y+1, paint2);
+    	canvas.drawText(str, x, y, paint);
     }
     public void doMoveDown()
     {
@@ -406,8 +458,8 @@ public class GLView extends View
     						yoff-y*2.0f,
     						zoff,
     						(x-5.0f)/10.0f,
-    						0.5f,
-    						0.5f,
+    						randomgen.nextFloat()*2.0f+0.2f,
+    						randomgen.nextFloat()*2.0f+0.2f,
     						game.getGridValue(x, y),
     						0
     						
@@ -424,6 +476,7 @@ public class GLView extends View
     protected void drawPlayfield(GL10 gl)
     {
 
+    	/*
     	for(int i=0;i<20;i++)
     	{
     		gl.glLoadIdentity();
@@ -440,6 +493,19 @@ public class GLView extends View
     		mPlayfieldCube.draw(gl);
     		
     	}
+    	*/
+    	gl.glLoadIdentity();
+		mPlayfieldCube.setPosition(xoff-2.0f,yoff-9.5f*2.0f, zoff);
+		mPlayfieldCube.draw(gl,1.0f, 20.0f,1.0f);
+    	gl.glLoadIdentity();
+		mPlayfieldCube.setPosition(xoff+2.0f*10,yoff-9.5f*2.0f, zoff);
+		mPlayfieldCube.draw(gl,1.0f,20.0f,1.0f);
+    	gl.glLoadIdentity();
+		mPlayfieldCube.setPosition(xoff+4.5f*2.0f,yoff-(20*2.0f), zoff);
+		mPlayfieldCube.draw(gl,10.0f,1.0f,1.0f);
+		
+		
+		
     }
     /*
      * Start the animation only once we're attached to a window
@@ -472,15 +538,16 @@ public class GLView extends View
     	{
     		demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
     	}
-    	if(demogame.getEnergy()<=1)
+    	if(demogame.getCurrentStep()>50)
     	{
     		setupDemoGrid();
     		demogame.setEnergy(100);
+    		demogame.setStep(0);
     	}
     	int result = (int)((now-lastcalltime)%demogame.getTimer());
     	result = (result*10)/demogame.getTimer();
     	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
-
+    	//canvas.drawText("energy="+demogame.getEnergy()+" result="+org.teacake.util.FixedPointFloat.floatToFixedPoint(0.25f), 10, 10, paint);
     	this.drawBlocks(gl,demogame,result,10);
     	
     	//lastdrawtime = System.currentTimeMillis();
@@ -595,7 +662,31 @@ public class GLView extends View
             gl.glColor4f(0.7f, 0.7f, 0.7f, 1.0f);
             gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
             gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+            int bg_width = background.width();
+            int bg_height = background.height();
+            int bg_new_width = 0;
+            int bg_new_height = 0;
 
+            if(!this.backgroundInitialized)
+            {
+                //if(w>h)
+                //{
+                //	bg_new_width = bg_width;
+                //	bg_new_height = (bg_height*h)/w;
+                //}
+                //else
+                //{
+                //	bg_new_height = bg_height;
+                //	bg_new_width = (bg_width*w)/h;
+                //}
+            	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(int)(bg_width-bg_new_width)/2,(int)(bg_height-bg_new_height)/2,(int)(bg_width-(bg_width-bg_new_width)/2)-1,(int)(bg_height-(bg_height-bg_new_height)/2-1),new android.graphics.Matrix(),false);
+            	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.drawableBackground,(this.drawableBackground.width()-w-1)/2,(this.drawableBackground.height()-h-1)/2,w,h);
+            	this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(bg_width-w)/2-1, (bg_height-h)/2-1,w+1,h+1,new android.graphics.Matrix(),false);
+            	this.backgroundInitialized = true;
+            }
+            android.graphics.Rect rect = new android.graphics.Rect(0,0,drawableBackground.width()-1,drawableBackground.height()-1);
+            canvas.drawBitmap(drawableBackground, rect, rect, bgpaint);
+            //canvas.drawText("width ="+drawableBackground.width()+" height="+this.drawableBackground.height()+" new_w="+bg_new_width+" new_h="+bg_new_height,10,300,  paint);
             //canvas.drawText(message, 10, 10, paint);
             if (this.viewType==VIEW_INTRO)
             {
@@ -632,17 +723,19 @@ public class GLView extends View
                  	drawBlocks(gl);
                 }
                 drawNextPiece(gl);
-                gl.glPopMatrix();            
-	            canvas.drawText(res.getString(R.string.s_score), 10, 14,paint);
-	            canvas.drawText(""+game.getScore(), 10, 34, paint);
-	            canvas.drawText(res.getString(R.string.s_level), 10, 54, paint);
-	            canvas.drawText(""+game.getLevel(), 10, 74, paint);
-	            canvas.drawText(res.getString(R.string.s_lines), 10, 94, paint);
-	            canvas.drawText(""+game.getLines(),10,114,paint);
+                gl.glPopMatrix();
+                this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
+                this.drawString(canvas,""+game.getScore(), 10, 34);
+                this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
+                this.drawString(canvas,""+game.getLevel(), 10, 74);
+                this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
+                this.drawString(canvas,""+game.getLines(),10,114);
+
 	            if(this.gametype==Monolith.GAME_MONOLITH)
 	            {
-	            	canvas.drawText(res.getString(R.string.s_energy),10,134,paint);
-	            	canvas.drawText(""+game.getEnergy(),10,154,paint);
+	            	this.drawString(canvas,res.getString(R.string.s_energy),10,134);
+	            	this.drawString(canvas,""+game.getEnergy(),10,154);
+
 	            }
 	            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
 	            if(game.getStatus()==SimpleGameData.STATUS_GAME_OVER)
@@ -775,6 +868,8 @@ public class GLView extends View
     private long now;
     private long lastcalltime;
     private Paint paint;
+    private Paint paint2;
+    private Paint bgpaint;
     private Paint gameOverPaint;
     private int gameOverXPos;
     private int evolvingXPos;
@@ -786,12 +881,15 @@ public class GLView extends View
     private android.media.MediaPlayer mediaPlayer;
     public String message;
     private java.util.LinkedList<ExplodingCube> explodingCubes;
-    public static final float Z_ACCELERATION=0.2f;
+    public static final float Z_ACCELERATION=1.0f;
     public static final int MAX_EXPLOSION_FRAME=20;
     private javax.sound.sampled.AndroidPlayBackEngine soundEngine;
     private long lastdrawtime;
-    
-    
+    private java.util.Random randomgen;
+    private android.graphics.Bitmap background;
+    private android.graphics.Bitmap drawableBackground;
+    private boolean backgroundInitialized;
+    private int steps;
 }
 
 

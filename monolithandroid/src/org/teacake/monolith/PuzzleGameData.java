@@ -1,14 +1,14 @@
 package org.teacake.monolith;
 
-public class MonolithGameData implements Game
+public class PuzzleGameData implements Game
 {
 	public static int BOUNDARY_CONDITION_ZEROES=0;
 	public static int BOUNDARY_CONDITION_WRAPAROUND=1;
 
-	public MonolithGameData()
+	public PuzzleGameData()
 	{
 		this.boundaryCondition = BOUNDARY_CONDITION_ZEROES;
-		Block.enableMonolithBlocks=true;
+		Block.enableMonolithBlocks=false;
 		this.score =0;
 		this.lines =0;
 		this.level =1;
@@ -23,7 +23,6 @@ public class MonolithGameData implements Game
 		this.oldgrid = new int[gridMaxWidth][gridMaxHeight];
 		this.randomgen = new java.util.Random();
 		this.energy = 0;
-		this.step = 0;
 		for(int y=0;y<gridMaxHeight;y++)
 		{
 			for(int x=0;x<gridMaxWidth;x++)
@@ -270,102 +269,30 @@ public class MonolithGameData implements Game
 		return true;
 		
 	}
-	public void evolve()
-	{
-		
-		if(energy>0 && !isGridEmpty())
-		{
-			for(int y=0;y<gridMaxHeight;y++)
-			{
-				for(int x=0;x<gridMaxWidth;x++)
-				{
-					oldgrid[x][y]=grid[x][y];
-					int count=getNeighbourCount(x,y);
-					if(grid[x][y]!=-1)
-					{
-						if(count<2)
-						{
-							newgrid[x][y]=-1;
-						}
-						if(count==3)
-						{
-							newgrid[x][y]=grid[x][y];
-							score = score+3;
-						}
-						if(count>3)
-						{
-							newgrid[x][y]=-1;
-						}
-					}
-					else
-					{
-						if(count==3)
-						{
-							newgrid[x][y]=randomgen.nextInt(7);
-							this.score = this.score+3;
-						}
-						else
-						{
-							newgrid[x][y]=grid[x][y];
-						}
-					}
-					
 
-				}
-			}
-			energy--;
-			for(int y=0;y<gridMaxHeight;y++)
-			{
-				for(int x=0;x<gridMaxWidth;x++)
-				{
-					grid[x][y]=newgrid[x][y];
-				}
-			}
-		}
-		else
-		{
-			if (this.energy<0)
-			{
-				energy=0;
-			}
-			this.status=STATUS_PLAYING;
-		}
-	}
 	public void gameLoop()
 	{
-		step++;
-		if(this.status==STATUS_EVOLVING)
+		if(this.moveBlockDown())
 		{
-			evolve();
+			this.clearCompleteLines();
+			if(this.newLevel!=this.level)
+			{
+				level=newLevel;
+			}
 		}
 		else
 		{
-			if(this.moveBlockDown())
+			for (int i=0;i<4;i++)
 			{
-				this.clearCompleteLines();
-				if(this.newLevel!=this.level)
+				if (this.grid[this.nextBlock.subblocks[0].xpos+this.nextBlock.xPos][this.currentBlock.subblocks[0].ypos+this.nextBlock.yPos]!=-1)
 				{
-					level=newLevel;
+					this.setStatus(STATUS_GAME_OVER);
+					return;
 				}
 			}
-			else
-			{
-				
-				for (int i=0;i<4;i++)
-				{
-					if (this.grid[this.nextBlock.subblocks[0].xpos+this.nextBlock.xPos][this.currentBlock.subblocks[0].ypos+this.nextBlock.yPos]!=-1)
-					{
-						this.setStatus(STATUS_GAME_OVER);
-						
-						return;
-					}
-				}
-				this.currentBlock=this.nextBlock;
-				Block bl = new Block();
-				
-				this.nextBlock= bl;
-	
-			}
+			this.currentBlock=this.nextBlock;
+			Block bl = new Block();
+			this.nextBlock= bl;
 		}
 	}
 	public void moveBlockLeft()
@@ -449,7 +376,8 @@ public class MonolithGameData implements Game
 	private int[][] oldgrid;
 	private int[][] grid;
 	private int[][] newgrid;
-	
+	private int[][] puzzlegrid;
+	private int[] pieces;
 	private int[] clearedLines;
 	private int status;
 	public int score;
@@ -724,11 +652,14 @@ public class MonolithGameData implements Game
 	{
 		return this.clearedLines;
 	}
+	public int getBlockIndex()
+	{
+		return this.blockIndex;
+	}
+	
+	int blockIndex;
 	int newLevel;
 	int startingLevel;
-	public int gridMaxHeight;
-	public int gridMaxWidth;
-	public int energy;
 	private int step;
 	public int getCurrentStep()
 	{
@@ -738,12 +669,14 @@ public class MonolithGameData implements Game
 	{
 		this.step = step;
 	}
+	public int gridMaxHeight;
+	public int gridMaxWidth;
+	public int energy;
 	private int boundaryCondition;
 	private java.util.Random randomgen;
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 	}	
-	
-
 }

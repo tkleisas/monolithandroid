@@ -38,4 +38,6 @@ public interface Game
 	public Block getNextBlock();
 	public int getTimer();
 	public int[] getClearedLines();
+	public int getCurrentStep();
+	public void setStep(int step);
 }
