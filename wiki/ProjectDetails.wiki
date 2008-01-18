@@ -1,0 +1,17 @@
+#summary MonolithAndroid project details
+
+= Development Environment =
+The code is currently developed using Eclipse with the ADT plugin. The current Android SDK used is m3-rc37a. The development machine is a Fujitsu Siemens Amilo M 1437 -p @2.13 GHz with 1Gig of RAM, running Windows XP Home Edition.
+
+= Problems =
+
+# Emulator speed. The emulator speed (Especially when using OpenGL/ES) is very slow. So development of responsive applications like games becomes very difficult.
+# Sound problems. Sound emulation is not mature. Sound presents a lot of pauses and hiccups, and it takes some time to start and stop audio playback. This problem is probably related to the emulator speed problems.
+# SDK documentation is incomplete. Some areas of the API are not covered with examples and useful function reference. For example javax.sound.sampled package is not documented in detail. I hope that this will change when the first actual devices emerge.
+
+= Planned Features =
+To be available
+
+= Other Tools =
+
+The game is being developed using Open Source Tools. Graphics and bitmaps are created using the GIMP paint program. Music is created using Audacity and OpenMPT tracker. Demo videos are created using CamStudio.
