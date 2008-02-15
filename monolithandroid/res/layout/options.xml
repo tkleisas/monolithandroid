@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-id="@+id/widget24"
+android:id="@+id/widget24"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 android:background="#ffffffff"
@@ -9,7 +9,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
 android:orientation="vertical"
 >
 <TableRow
-id="@+id/widget31"
+android:id="@+id/widget31"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:background="#ffffffff"
@@ -20,7 +20,7 @@ android:layout_weight="0"
 android:layout_gravity="left"
 >
 <TextView
-id="@+id/textviewgamemode"
+android:id="@+id/textviewgamemode"
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
 android:padding="0px"
@@ -33,7 +33,7 @@ android:layout_gravity="left"
 >
 </TextView>
 <Spinner
-id="@+id/spinnergamemode"
+android:id="@+id/spinnergamemode"
 android:layout_width="206px"
 android:layout_height="24px"
 android:padding="0px"
@@ -44,7 +44,7 @@ android:layout_gravity="left"
 </Spinner>
 </TableRow>
 <TableRow
-id="@+id/widget32"
+android:id="@+id/widget32"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:background="#ffffffff"
@@ -55,7 +55,7 @@ android:layout_weight="0"
 android:layout_gravity="left"
 >
 <TextView
-id="@+id/textviewstartinglevel"
+android:id="@+id/textviewstartinglevel"
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
 android:padding="0px"
@@ -68,7 +68,7 @@ android:layout_gravity="left"
 >
 </TextView>
 <Spinner
-id="@+id/levelspinner"
+android:id="@+id/levelspinner"
 android:layout_width="104px"
 android:layout_height="24px"
 android:padding="0px"
@@ -79,7 +79,7 @@ android:layout_gravity="left"
 </Spinner>
 </TableRow>
 <TableRow
-id="@+id/widget30"
+android:id="@+id/widget30"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:background="#ffffffff"
@@ -90,7 +90,7 @@ android:layout_weight="0"
 android:layout_gravity="left"
 >
 <CheckBox
-id="@+id/checksmooth"
+android:id="@+id/checksmooth"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:padding="0px"
@@ -105,7 +105,7 @@ android:layout_gravity="right"
 </CheckBox>
 </TableRow>
 <CheckBox
-id="@+id/checkexplosions"
+android:id="@+id/checkexplosions"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:padding="0px"

@@ -6,13 +6,13 @@
     >
 
 <Button
-	id = "@+id/buttonnextlevel"
+	android:id = "@+id/buttonnextlevel"
 	android:layout_width="33px" 
     android:layout_height="wrap_content"
 	android:text="Next Level"
 	/>
 <Button
-	id = "@+id/buttonpreviouslevel"
+	android:id = "@+id/buttonpreviouslevel"
     android:layout_width="33px" 
     android:layout_height="wrap_content"	
 	android:text="Previous Level"
