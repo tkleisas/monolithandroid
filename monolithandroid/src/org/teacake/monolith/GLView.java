@@ -577,8 +577,9 @@ public class GLView extends View
          * waitNative() to accomplish this. Once this is done, no native
          * calls should be issued.
          */
-        mGLContext.waitNative(canvas, this);
-
+        //mGLContext.waitNative(canvas, this);
+        mGLContext.waitNative();
+        mGLContext.makeCurrent(this);
             int w = getWidth();
             int h = getHeight();
 
@@ -812,7 +813,7 @@ public class GLView extends View
     };
     
     @Override
-    public boolean onMotionEvent(MotionEvent event)
+    public boolean onTouchEvent(MotionEvent event)
     {
     	int action = event.getAction();
     	boolean handled = false;
