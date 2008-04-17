@@ -18,4 +18,4 @@ The game is being developed using Open Source Tools. Graphics and bitmaps are cr
 
 = Media =
 
-The game uses an image of the Tycho moon crater from Wikipedia. See http://en.wikipedia.org/wiki/Image:Tycho_Crater.jpg
+The game uses an image of the Tycho moon crater from Wikipedia found [http://en.wikipedia.org/wiki/Image:Tycho_Crater.jpg here]
