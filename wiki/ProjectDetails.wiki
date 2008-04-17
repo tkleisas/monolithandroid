@@ -15,3 +15,7 @@ To be available
 = Other Tools =
 
 The game is being developed using Open Source Tools. Graphics and bitmaps are created using the GIMP paint program. Music is created using Audacity and OpenMPT tracker. Demo videos are created using CamStudio.
+
+= Media =
+
+The game uses an image of the Tycho moon crater from Wikipedia. See http://en.wikipedia.org/wiki/Image:Tycho_Crater.jpg
