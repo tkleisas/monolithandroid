@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.*;
 
 public class Monolith extends Activity
 {
@@ -12,6 +13,8 @@ public class Monolith extends Activity
 	public static final int GAME_CLASSIC = 0;
 	public static final int GAME_MONOLITH = 1;
     GLView view;
+    GameSurfaceView gsf;
+    GameOverlay overlay;
     OptionsView optionsView;
     
  
@@ -19,13 +22,21 @@ public class Monolith extends Activity
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
-        view = new GLView( getApplication(),GAME_MONOLITH );
-        view.setViewType(GLView.VIEW_INTRO);
-        view.doInit();
-        view.running=true;
+        
+        //view = new GLView( getApplication(),GAME_MONOLITH );
+        //view.setViewType(GLView.VIEW_INTRO);
+        //view.doInit();
+        //view.running=true;
+        overlay = new GameOverlay(this);
         optionsView = new OptionsView(getApplication());
         android.content.AssetManager mgr = getApplication().getAssets();
+        gsf = new GameSurfaceView(this,overlay);
+        gsf.setViewType(GLThread.VIEW_GAME);
+        gsf.setGameType(Monolith.GAME_MONOLITH);
+        //overlay.setVisibility(View.VISIBLE);
+        
+        
+        
         //String[] assetlist=null;
         /*
         String message = "->";
@@ -46,8 +57,12 @@ public class Monolith extends Activity
         	
         }
         */
+        //this.addContentView(gsf,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
+        //this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
+        setContentView(overlay);
         
-        setContentView(view);
+        
+        
          
     }
     
@@ -87,15 +102,16 @@ public class Monolith extends Activity
             	
             }
         });       
-        /*
-		menu.add(2, 0, R.string.m_m_options, new Runnable()
+        
+		menu.add(2, 0, "test", new Runnable()
 		{
 			public void run() {
-				setContentView(R.layout.options);
+				setContentView(gsf);
+				
 			}
 			
-		});*/
-		menu.add(2, 0, R.string.s_exit_game, new Runnable()
+		});
+		menu.add(3, 0, R.string.s_exit_game, new Runnable()
 		{
 			public void run() {
 				view.performCleanup();
@@ -157,6 +173,7 @@ public class Monolith extends Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent msg) {
         boolean handled = false;
+        /*
         if(view.game!=null)
         {
         	if (view.game.getStatus()!= SimpleGameData.STATUS_PLAYING)
@@ -164,24 +181,58 @@ public class Monolith extends Activity
         		return handled;
         	}
         }
+        */
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
         {
-        	view.doMoveDown();
+        	try
+        	{
+        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_MOVE_DOWN);
+        		message.sendToTarget();
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
         	handled = true;
         }
         if(keyCode == KeyEvent.KEYCODE_DPAD_LEFT)
         {
-        	view.doMoveLeft();
+        	try
+        	{
+        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_MOVE_LEFT);
+        		message.sendToTarget();
+        		
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
         	handled = true;
         }
         if(keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
         {
-        	view.doMoveRight();
+        	try
+        	{
+        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_MOVE_RIGHT);
+        		message.sendToTarget();
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
         	handled = true;
         }
         if(keyCode == KeyEvent.KEYCODE_SPACE || keyCode == KeyEvent.KEYCODE_DPAD_UP)
         {
-        	view.doRotateBlock();
+        	try
+        	{
+        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_ROTATE);
+        		message.sendToTarget();
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
         	handled = true;
         }
         /*

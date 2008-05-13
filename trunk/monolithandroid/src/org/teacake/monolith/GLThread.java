@@ -1,39 +1,24 @@
 package org.teacake.monolith;
-import android.content.Context;
+import android.content.Resources;
 import android.graphics.Canvas;
 import android.graphics.OpenGLContext;
 import android.graphics.Paint;
-//import android.os.Bundle;
-import android.content.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.view.View;
 import android.util.Log;
 
-
 import javax.microedition.khronos.opengles.GL10;
-public class GLView extends View
+public class GLThread extends Thread
 {
-	public static final int VIEW_INTRO=0;
-	public static final int VIEW_GAME=1;
-    /**
-     * Standard override to get key events.
-     */
-    /**
-     * The View constructor is a good place to allocate our OpenGL context
-     */
-    public GLView(Context context,int gametype)
-    {
-        super(context);
 
-        /* 
-         * Create an OpenGL|ES context. This must be done only once, an
-         * OpenGL context is a somewhat heavy object.
-         */
-        mGLContext = new OpenGLContext(OpenGLContext.DEPTH_BUFFER );
-        //mCube = new Cube(0x10000,0,0,0x10000);
+	private final org.teacake.monolith.GameSurfaceView view;
+	private boolean done;
+	public GLThread(org.teacake.monolith.GameSurfaceView view, GameOverlay overlay)
+	{
+		done=false;
+		this.view = view;
+		this.overlay = overlay;
         mCube = new Cube[8];
         mCube[0] = new Cube(0xff00,0,0,0x10000);
         mCube[1] = new Cube(0,0xff00,0,0x10000);
@@ -44,84 +29,64 @@ public class GLView extends View
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
         mCube[7] = new Cube(0xffff,0x0ffff,0xffff,0x00ff);
         	
-        res = context.getResources();
+        
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
         running=false;
-        this.gametype = gametype;
-        this.setViewType(VIEW_INTRO);
+        
         this.explodingCubes = new java.util.LinkedList<ExplodingCube>();
         randomgen = new java.util.Random(SystemClock.uptimeMillis());
-        this.background = android.graphics.BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
-        this.backgroundInitialized = false;
-        
-        
-        
-    }
+	
+	}
+	public void setViewType(int viewtype)
+	{
+		this.viewType = VIEW_GAME;
+	}
+	public void setGameType(int gametype)
+	{
+		this.gametype = gametype;
+	}
+	
+	
 
-    public void setupDemoGrid()
-    {
-    	java.util.Random randomgen = new java.util.Random();
-    	int result;
-    	for (int y=0;y<20;y++)
-    	{
-    		for (int x=0;x<10;x++)
-    		{
-    			result = randomgen.nextInt(21);
-    			if(result<7)
-    			{
-    			
-    				this.demogame.setGridValue(x, y, result % 6);
-    			}
-    			else
-    			{
-    				this.demogame.setGridValue(x, y, -1);
-    			}
-    		}
-    	}
-    }
-    public void performCleanup()
-    {
-    	
-    	try
-    	{
-    		this.mediaPlayer.stop();
-    	}
-    	catch(Exception e)
-    	{
-    		
-    	}
-    	this.running = false;
-    }
-    public void doInit()
-    {
-    	if(viewType==VIEW_INTRO)
-    	{
-    		try
-    		{
-        	//soundEngine = javax.sound.sampled.AndroidPlayBackEngine.getInstance();
-        	
-    			mediaPlayer = android.media.MediaPlayer.create(this.getContext(), R.raw.intro);
-        	
-    			mediaPlayer.prepare();
-    			mediaPlayer.setLooping(1);
-    			mediaPlayer.start();
-    		}
-    		catch(Exception e)
-    		{
-    			Log.e("music","error"+e.getMessage());
-    		} 
-    	}
-    	if(viewType==VIEW_GAME)
-    	{
-    		try
-    		{
-    			
-    		}
-    		catch(Exception e)
-    		{
-    			mediaPlayer.stop();
-    		}
-    	}
+	public void requestExitAndWait()
+	{
+		// Tell the thread to quit
+		done = true;
+		try
+		{
+			join();
+		}
+		catch (InterruptedException ex)
+		{
+		// Ignore
+		}
+	}
+	@Override
+	public void run()
+	{
+		//Initialize OpenGL...
+		OpenGLContext glc = new OpenGLContext(
+		OpenGLContext.DEPTH_BUFFER);
+		// Bind context to current thread and surface
+		
+		glc.makeCurrent(view.getHolder());
+		
+		GL10 gl = (GL10) (glc.getGL());
+		init(gl);
+		while (!done)
+		{
+		// Draw a single frame here...
+			drawFrame(gl);
+			glc.post();
+			
+		}
+		
+		// Free OpenGL resources
+			glc.destroy();
+	}
+	private void init(GL10 gl)
+	{
+
     	
     	xval = 0;
     	yval =0;
@@ -174,29 +139,13 @@ public class GLView extends View
         gameOverPaint.setARGB(128, 20, 20, 20);
         gameOverPaint.setTextSize(30);
     	
-    	
+    	this.running = true;
 
     	
-        this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
-        this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
+        //this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
+        //this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
     	
-    }
-    public int getTextWidth(String str,Paint paint)
-    {
-    	float widths[] =new float[str.length()];
-    	paint.getTextWidths(str,widths); 
-    	int totalwidth=0;
-    	for(int i=0;i<widths.length;i++)
-    	{
-    		totalwidth+=widths[i];
-    	}
-    	return totalwidth;
-    }
-    public void drawString(Canvas canvas,String str,int x,int y)
-    {
-    	canvas.drawText(str, x+1, y+1, paint2);
-    	canvas.drawText(str, x, y, paint);
-    }
+    }		
     public void doMoveDown()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
@@ -448,30 +397,27 @@ public class GLView extends View
 		
 		
     }
-    /*
-     * Start the animation only once we're attached to a window
-     * @see android.view.View#onAttachedToWindow()
-     */
-    @Override
-    protected void onAttachedToWindow() {
-        mAnimate = true;
-        Message msg = mHandler.obtainMessage(INVALIDATE);
-        mNextTime = SystemClock.uptimeMillis();
-        mHandler.sendMessageAtTime(msg, mNextTime);
-        super.onAttachedToWindow();
-    }
-
-    /*
-     * Make sure to stop the animation when we're no longer on screen,
-     * failing to do so will cause most of the view hierarchy to be
-     * leaked until the current process dies.
-     * @see android.view.View#onDetachedFromWindow()
-     */
-    @Override
-    protected void onDetachedFromWindow() {
-        mAnimate = false;
-        super.onDetachedFromWindow();
-    }
+    public void setupDemoGrid()
+    {
+    	java.util.Random randomgen = new java.util.Random();
+    	int result;
+    	for (int y=0;y<20;y++)
+    	{
+    		for (int x=0;x<10;x++)
+    		{
+    			result = randomgen.nextInt(21);
+    			if(result<7)
+    			{
+    			
+    				this.demogame.setGridValue(x, y, result % 6);
+    			}
+    			else
+    			{
+    				this.demogame.setGridValue(x, y, -1);
+    			}
+    		}
+    	}
+    }    
     protected void drawIntroScreen(GL10 gl,Canvas canvas, int w, int h)
     {
     	long now = SystemClock.uptimeMillis();
@@ -496,21 +442,57 @@ public class GLView extends View
     	
     	
     }
-    /**
-     * Draw the view content
-     * 
-     * @see android.view.View#onDraw(android.graphics.Canvas)
-     */
-    @Override
-
-    protected void onDraw(Canvas canvas) {
-        if (running) {
+    protected void drawIntroScreen(GL10 gl,int w, int h)
+    {
+    	long now = SystemClock.uptimeMillis();
+    	if(demogame.getStatus()!=SimpleGameData.STATUS_EVOLVING)
+    	{
+    		demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
+    	}
+    	if(demogame.getCurrentStep()>50)
+    	{
+    		setupDemoGrid();
+    		demogame.setEnergy(100);
+    		demogame.setStep(0);
+    	}
+    	int result = (int)((now-lastcalltime)%demogame.getTimer());
+    	result = (result*10)/demogame.getTimer();
+    	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
+    	//canvas.drawText("energy="+demogame.getEnergy()+" result="+org.teacake.util.FixedPointFloat.floatToFixedPoint(0.25f), 10, 10, paint);
+    	this.drawBlocks(gl,demogame,result,10);
+    	
+    	//lastdrawtime = System.currentTimeMillis();
+    	//this.drawBlocks(gl, demogame);
+    	
+    	
+    }
+    private void drawFrame(GL10 gl)
+	{
+		
+	    
+		if (running)
+		{
+			overlay.postInvalidate();
+			long current = SystemClock.uptimeMillis();
+             
+			if (mNextTime < current)
+			{
+             	
+                 mNextTime = current + 20;
+            }
+             
+            mNextTime += 20;
+         	rangle=rangle+1.0f;
+         	if(rangle>360.0f)
+         	{
+         		rangle=0.0f;
+         	}			
         /*
          * First, we need to get to the appropriate GL interface.
          * This is simply done by casting the GL context to either
          * GL10 or GL11.
          */
-        GL10 gl = (GL10)(mGLContext.getGL());
+         	//gl = (GL10)(mGLContext.getGL());
 
         /*
          * Before we can issue GL commands, we need to make sure all
@@ -519,10 +501,10 @@ public class GLView extends View
          * calls should be issued.
          */
         //mGLContext.waitNative(canvas, this);
-        mGLContext.waitNative();
-        mGLContext.makeCurrent(this);
-            int w = getWidth();
-            int h = getHeight();
+        //mGLContext.waitNative();
+        //mGLContext.makeCurrent(view.getHolder());
+            int w = view.getWidth();
+            int h = view.getHeight();
 
             /*
              * Set the viewport. This doesn't have to be done each time
@@ -604,10 +586,10 @@ public class GLView extends View
             gl.glColor4f(0.7f, 0.7f, 0.7f, 1.0f);
             gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
             gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-            int bg_width = background.width();
-            int bg_height = background.height();
-            int bg_new_width = 0;
-            int bg_new_height = 0;
+            //int bg_width = background.width();
+            //int bg_height = background.height();
+            //int bg_new_width = 0;
+            //int bg_new_height = 0;
 
             if(!this.backgroundInitialized)
             {
@@ -623,11 +605,11 @@ public class GLView extends View
                 //}
             	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(int)(bg_width-bg_new_width)/2,(int)(bg_height-bg_new_height)/2,(int)(bg_width-(bg_width-bg_new_width)/2)-1,(int)(bg_height-(bg_height-bg_new_height)/2-1),new android.graphics.Matrix(),false);
             	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.drawableBackground,(this.drawableBackground.width()-w-1)/2,(this.drawableBackground.height()-h-1)/2,w,h);
-            	this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(bg_width-w)/2-1, (bg_height-h)/2-1,w+1,h+1,new android.graphics.Matrix(),false);
+            	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(bg_width-w)/2-1, (bg_height-h)/2-1,w+1,h+1,new android.graphics.Matrix(),false);
             	this.backgroundInitialized = true;
             }
-            android.graphics.Rect rect = new android.graphics.Rect(0,0,drawableBackground.width()-1,drawableBackground.height()-1);
-            canvas.drawBitmap(drawableBackground, rect, rect, bgpaint);
+            //android.graphics.Rect rect = new android.graphics.Rect(0,0,drawableBackground.width()-1,drawableBackground.height()-1);
+            //canvas.drawBitmap(drawableBackground, rect, rect, bgpaint);
             //canvas.drawText("width ="+drawableBackground.width()+" height="+this.drawableBackground.height()+" new_w="+bg_new_width+" new_h="+bg_new_height,10,300,  paint);
             //canvas.drawText(message, 10, 10, paint);
             if (this.viewType==VIEW_INTRO)
@@ -639,10 +621,11 @@ public class GLView extends View
 	            		lastcalltime = now;
 	            		this.demogame.gameLoop();
 	            }
-            	this.drawIntroScreen(gl, canvas, w, h);
+	            this.drawIntroScreen(gl,w,h);
+            	//this.drawIntroScreen(gl, canvas, w, h);
             	String logo="MonolithAndroid";
-            	int textxpos = this.getTextWidth(logo,this.gameOverPaint);
-            	canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+            	//int textxpos = this.getTextWidth(logo,this.gameOverPaint);
+            	//canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
             	
             }
             if (this.viewType==VIEW_GAME)
@@ -666,30 +649,30 @@ public class GLView extends View
                 }
                 drawNextPiece(gl);
                 gl.glPopMatrix();
-                this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
-                this.drawString(canvas,""+game.getScore(), 10, 34);
-                this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
-                this.drawString(canvas,""+game.getLevel(), 10, 74);
-                this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
-                this.drawString(canvas,""+game.getLines(),10,114);
+                //this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
+                //this.drawString(canvas,""+game.getScore(), 10, 34);
+                //this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
+                //this.drawString(canvas,""+game.getLevel(), 10, 74);
+                //this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
+                //this.drawString(canvas,""+game.getLines(),10,114);
 
 	            if(this.gametype==Monolith.GAME_MONOLITH)
 	            {
-	            	this.drawString(canvas,res.getString(R.string.s_energy),10,134);
-	            	this.drawString(canvas,""+game.getEnergy(),10,154);
+	            	//this.drawString(canvas,res.getString(R.string.s_energy),10,134);
+	            	//this.drawString(canvas,""+game.getEnergy(),10,154);
 
 	            }
 	            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
 	            if(game.getStatus()==SimpleGameData.STATUS_GAME_OVER)
 	            {
 	
-	            	canvas.drawText(res.getString(R.string.s_game_over), (getWidth()-this.gameOverXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+	            	//canvas.drawText(res.getString(R.string.s_game_over), (getWidth()-this.gameOverXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
 	            	
 	            	
 	            }
 	            if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 	            {
-	            	canvas.drawText(res.getString(R.string.s_evolving), (getWidth()-this.evolvingXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+	            	//canvas.drawText(res.getString(R.string.s_evolving), (getWidth()-this.evolvingXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
 	            }
 	            
 	            Cube c = this.mCube[0];
@@ -720,7 +703,7 @@ public class GLView extends View
          * make sure they complete before we can issue more native
          * drawing commands. This is done by calling waitGL().
          */
-        mGLContext.waitGL();
+        //mGLContext.waitGL();
         }
     }
 
@@ -729,68 +712,14 @@ public class GLView extends View
 
     private static final int INVALIDATE = 1;
 
-    private final Handler mHandler = new Handler() {
-        @Override
-                public void handleMessage(Message msg) {
-            if (mAnimate && msg.what == INVALIDATE) {
-                invalidate();
-                msg = obtainMessage(INVALIDATE);
-                long current = SystemClock.uptimeMillis();
-                
-                if (mNextTime < current) {
-                	
-                    mNextTime = current + 20;
-                }
-                
-                sendMessageAtTime(msg, mNextTime);
-                mNextTime += 20;
-            	rangle=rangle+1.0f;
-            	if(rangle>360.0f)
-            	{
-            		rangle=0.0f;
-            	}
-            }
-        }
-    };
-    
-    @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-    	int action = event.getAction();
-    	boolean handled = false;
-    	if(action==MotionEvent.ACTION_DOWN)
-    	{
-    		xval=(int)event.getX();
-    		yval=(int)event.getY();
-    		handled = true;
-    	}
-    	
-    	if(action==MotionEvent.ACTION_UP)
-    	{
-    		int xnow = (int)event.getX();
-    		int ynow = (int)event.getY();
-    		if(xnow<20 && ynow<20)
-    		{
-    			zx =0 ;
-    			zy =0 ;
-    		}
-    		handled=true;
-    	}
-    	if(action==MotionEvent.ACTION_MOVE)
-    	{
-            zx = zx+((int)event.getX()-xval);
-            zy = zy+((int)event.getY()-yval);
-      	  	xval=(int)event.getX();
-      	  	yval=(int)event.getY();
-      	  	handled = true;
-    	}
 
-        return handled;
-    } 
-    public void setViewType(int viewtype)
-    {
-    	this.viewType = viewtype;
-    }
+    
+	public static final int VIEW_INTRO=0;
+	public static final int VIEW_GAME=1;
+	public static final int MSG_ROTATE=0;
+	public static final int MSG_MOVE_LEFT=1;
+	public static final int MSG_MOVE_RIGHT=2;
+	public static final int MSG_MOVE_DOWN=3;
     public Game	game;
     public Game demogame;
     private OpenGLContext   mGLContext;
@@ -832,6 +761,37 @@ public class GLView extends View
     private android.graphics.Bitmap drawableBackground;
     private boolean backgroundInitialized;
     private int steps;
+    private GameOverlay overlay;
+    public final Handler messageHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg)
+        {
+        	try
+        	{
+        		if (msg.what == MSG_ROTATE)
+        		{
+        			doRotateBlock();
+        		}
+        		if (msg.what == MSG_MOVE_LEFT)
+        		{
+        			doMoveLeft();
+            	
+        		}
+        		if (msg.what == MSG_MOVE_RIGHT)
+        		{
+        			doMoveRight();
+        		}
+        		if (msg.what == MSG_MOVE_DOWN)
+        		{
+        			doMoveDown();
+        		}
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
+        }
+    };
+	
+	
 }
-
-
