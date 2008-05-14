@@ -19,7 +19,13 @@ public class GameOverlay extends View {
         statusTextPaint1.setTextSize(14);
         statusTextPaint2.setTextSize(14);
         statusTextPaint2.setARGB(255, 128, 128, 128);   	
-    	
+        score="0";
+        level="1";
+        hiscore="0";
+        lines="0";
+        energy="0";
+        message="monolith android";
+        
 
     	
 
