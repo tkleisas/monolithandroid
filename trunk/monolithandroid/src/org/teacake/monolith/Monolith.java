@@ -2,8 +2,6 @@ package org.teacake.monolith;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.*;
 
 public class Monolith extends Activity
@@ -272,8 +270,44 @@ public class Monolith extends Activity
 		*/
         return handled;
     }
-    
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+    	int action = event.getAction();
+    	boolean handled = false;
+    	if(action==MotionEvent.ACTION_DOWN)
+    	{
+    		xval=(int)event.getX();
+    		yval=(int)event.getY();
+    		handled = true;
+    	}
+    	
+    	if(action==MotionEvent.ACTION_UP)
+    	{
+    		int xnow = (int)event.getX();
+    		int ynow = (int)event.getY();
+    		if(xnow<20 && ynow<20)
+    		{
+    			zx =0 ;
+    			zy =0 ;
+    		}
+    		handled=true;
+    	}
+    	if(action==MotionEvent.ACTION_MOVE)
+    	{
+            zx = zx+((int)event.getX()-xval);
+            zy = zy+((int)event.getY()-yval);
+      	  	xval=(int)event.getX();
+      	  	yval=(int)event.getY();
+      	  	handled = true;
+    	}
 
+        return handled;
+    } 
+    private int xval;
+    private int yval;
+    private int zx;
+    private int zy;
     
      
 }
