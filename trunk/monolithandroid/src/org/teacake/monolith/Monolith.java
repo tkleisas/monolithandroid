@@ -33,6 +33,7 @@ public class Monolith extends Activity
         gsf = new GameSurfaceView(this,overlay);
         gsf.setViewType(GLThread.VIEW_GAME);
         gsf.setGameType(Monolith.GAME_MONOLITH);
+        
         //overlay.setVisibility(View.VISIBLE);
         
         
@@ -59,7 +60,9 @@ public class Monolith extends Activity
         */
         //this.addContentView(gsf,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
         //this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
-        setContentView(overlay);
+        setContentView(gsf);
+        gsf.setVisibility(View.VISIBLE);
+        this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
         
         
         

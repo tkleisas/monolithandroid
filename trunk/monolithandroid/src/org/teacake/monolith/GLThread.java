@@ -29,7 +29,7 @@ public class GLThread extends Thread
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
         mCube[7] = new Cube(0xffff,0x0ffff,0xffff,0x00ff);
         	
-        
+        mMoon = new Square(0xffff,0x0ffff,0xffff,0x00ff);
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
         running=false;
         
@@ -95,7 +95,7 @@ public class GLThread extends Thread
         xoff = -10.0f;
         //-10.0f+x*2.0f, 21.0f-y*2.0f, zoff
     	yoff = 21.0f;
-    	zoff = -53.0f;
+    	zoff = -63.0f;
 
         mAnimate = false;
         if(gametype==Monolith.GAME_CLASSIC)
@@ -140,7 +140,10 @@ public class GLThread extends Thread
         gameOverPaint.setTextSize(30);
     	
     	this.running = true;
-
+    	//gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+    	//gl.glEnable(GL10.GL_TEXTURE_2D);
+    	Square.loadTexture(gl, view.getContext(), R.drawable.moon3);
+    	//gl.glDisable(GL10.GL_TEXTURE_2D);
     	
         //this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
         //this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
@@ -348,8 +351,8 @@ public class GLThread extends Thread
     						yoff-y*2.0f,
     						zoff,
     						(x-5.0f)/10.0f,
-    						randomgen.nextFloat()*2.0f+0.2f,
-    						randomgen.nextFloat()*2.0f+0.2f,
+    						randomgen.nextFloat()+0.2f,
+    						randomgen.nextFloat()+0.2f,
     						game.getGridValue(x, y),
     						0
     						
@@ -472,21 +475,26 @@ public class GLThread extends Thread
 	    
 		if (running)
 		{
-			overlay.postInvalidate();
+			//overlay.postInvalidate();
 			long current = SystemClock.uptimeMillis();
              
 			if (mNextTime < current)
 			{
              	
                  mNextTime = current + 20;
+                 return;
             }
+			else
+			{
+	         	rangle=rangle+1.0f;
+	         	if(rangle>360.0f)
+	         	{
+	         		rangle=0.0f;
+	         	}			
+				
+			}
              
-            mNextTime += 20;
-         	rangle=rangle+1.0f;
-         	if(rangle>360.0f)
-         	{
-         		rangle=0.0f;
-         	}			
+            
         /*
          * First, we need to get to the appropriate GL interface.
          * This is simply done by casting the GL context to either
@@ -522,7 +530,7 @@ public class GLThread extends Thread
              */
 
             float ratio = (float)w / h;
-            if(w>h)
+            if(w<h)
             {
             	ratio = (float)w/h;
             }
@@ -548,13 +556,14 @@ public class GLThread extends Thread
              * correctly first. The scissor is always specified in window
              * coordinates:
              */
-            gl.glClearColor(1,1,1,1);
+            gl.glClearColor(0,0,0,0);
             
             
             gl.glEnable(GL10.GL_SCISSOR_TEST);
             gl.glScissor(0, 0, w, h);
             gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
             gl.glEnable(GL10.GL_CULL_FACE);
+            //gl.glCullFace(GL10.GL_CW);
             gl.glShadeModel(GL10.GL_SMOOTH);
             //gl.glDepthFunc(GL10.GL_GREATER);
             //gl.glDepthRangef(1, 100);
@@ -648,7 +657,15 @@ public class GLThread extends Thread
                  	drawBlocks(gl);
                 }
                 drawNextPiece(gl);
-                gl.glPopMatrix();
+            	gl.glLoadIdentity();
+            	
+            	
+            	//gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        		mMoon.setPosition(xoff,yoff, zoff-30);
+        		mMoon.draw(gl,60.0f,60.0f,1.0f);
+        		//gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+        		
+        		gl.glPopMatrix();
                 //this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
                 //this.drawString(canvas,""+game.getScore(), 10, 34);
                 //this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
@@ -725,6 +742,7 @@ public class GLThread extends Thread
     private OpenGLContext   mGLContext;
     private Cube[]          mCube;
     private Cube 			mPlayfieldCube;
+    private Square			mMoon;
     private float           mAngle;
     private long            mNextTime;
     private boolean         mAnimate;
