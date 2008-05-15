@@ -475,7 +475,7 @@ public class GLThread extends Thread
 	    
 		if (running)
 		{
-			//overlay.postInvalidate();
+			
 			long current = SystemClock.uptimeMillis();
              
 			if (mNextTime < current)
@@ -486,6 +486,7 @@ public class GLThread extends Thread
             }
 			else
 			{
+				overlay.postInvalidate();
 	         	rangle=rangle+1.0f;
 	         	if(rangle>360.0f)
 	         	{
@@ -540,7 +541,7 @@ public class GLThread extends Thread
             }
             gl.glMatrixMode(GL10.GL_PROJECTION);
             gl.glLoadIdentity();
-            gl.glFrustumf(-ratio, ratio, -1, 1, 2, 52);
+            gl.glFrustumf(-ratio, ratio, -ratio, ratio, 2, 60);
 
             /*
              * dithering is enabled by default in OpenGL, unfortunately
@@ -661,8 +662,8 @@ public class GLThread extends Thread
             	
             	
             	//gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        		mMoon.setPosition(xoff,yoff, zoff-30);
-        		mMoon.draw(gl,60.0f,60.0f,1.0f);
+        		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
+        		mMoon.draw(gl,28.0f,28.0f,1.0f);
         		//gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
         		
         		gl.glPopMatrix();
@@ -672,25 +673,31 @@ public class GLThread extends Thread
                 //this.drawString(canvas,""+game.getLevel(), 10, 74);
                 //this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
                 //this.drawString(canvas,""+game.getLines(),10,114);
-
+        		this.overlay.setLevel(""+game.getLevel());
+        		this.overlay.setScore(""+game.getScore());
+        		this.overlay.setLines(""+game.getLines());
 	            if(this.gametype==Monolith.GAME_MONOLITH)
 	            {
+	            	
+	            	this.overlay.setEnergy(""+game.getEnergy());
 	            	//this.drawString(canvas,res.getString(R.string.s_energy),10,134);
 	            	//this.drawString(canvas,""+game.getEnergy(),10,154);
 
 	            }
 	            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
-	            if(game.getStatus()==SimpleGameData.STATUS_GAME_OVER)
+	            switch (game.getStatus())
 	            {
-	
-	            	//canvas.drawText(res.getString(R.string.s_game_over), (getWidth()-this.gameOverXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
-	            	
-	            	
+	            case SimpleGameData.STATUS_GAME_OVER:
+	            	this.overlay.setMessage("Game Over");
+	            	break;
+	            case SimpleGameData.STATUS_EVOLVING:
+	            	this.overlay.setMessage("Evolving...");
+	            	break;
+	            	default:
+	            		this.overlay.setMessage("");	
+	            		break;
 	            }
-	            if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-	            {
-	            	//canvas.drawText(res.getString(R.string.s_evolving), (getWidth()-this.evolvingXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
-	            }
+
 	            
 	            Cube c = this.mCube[0];
 	            c.setPosition(0.0f, 0.0f, -30.0f);
@@ -737,6 +744,7 @@ public class GLThread extends Thread
 	public static final int MSG_MOVE_LEFT=1;
 	public static final int MSG_MOVE_RIGHT=2;
 	public static final int MSG_MOVE_DOWN=3;
+	public static final int MSG_ROTATE_PLAYFIELD=4;
     public Game	game;
     public Game demogame;
     private OpenGLContext   mGLContext;
@@ -749,8 +757,8 @@ public class GLThread extends Thread
     private float			rangle;
     private int xval;
     private int yval;
-    private float zx=0.0f;
-    private float zy=0.0f;
+    public float zx=0.0f;
+    public float zy=0.0f;
     private float xoff;
     private float yoff;
     private float zoff;
@@ -802,6 +810,11 @@ public class GLThread extends Thread
         		if (msg.what == MSG_MOVE_DOWN)
         		{
         			doMoveDown();
+        		}
+        		if (msg.what == MSG_ROTATE_PLAYFIELD)
+        		{
+        			zx=msg.arg1;
+        			zy=msg.arg2;
         		}
         	}
         	catch(Exception e)

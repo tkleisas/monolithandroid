@@ -11,8 +11,8 @@ public class GameOverlay extends View {
 		this.overlayType = OVERLAY_TYPE_GAME_MONOLITH;
 		res = context.getResources();
 		gameOverPaint = new Paint();
-        gameOverPaint.setARGB(128, 20, 20, 20);
-        gameOverPaint.setTextSize(30);
+        gameOverPaint.setARGB(190, 190, 190, 0);
+        gameOverPaint.setTextSize(40);
         statusTextPaint1 = new Paint();
         statusTextPaint2 = new Paint();
         statusTextPaint1.setARGB(200, 255, 0, 0);
@@ -25,6 +25,8 @@ public class GameOverlay extends View {
         lines="0";
         energy="0";
         message="monolith android";
+        goalpha=0;
+        direction=8;
         
 
     	
@@ -33,6 +35,18 @@ public class GameOverlay extends View {
 	}
 	@Override protected void onDraw(Canvas canvas)
 	{
+		goalpha=goalpha+direction;
+		if(goalpha>255)
+		{
+			direction=-8;
+			goalpha=goalpha+direction;
+		}
+		if(goalpha<32)
+		{
+			direction=8;
+			goalpha=goalpha+direction;
+		}
+		this.gameOverPaint.setAlpha(goalpha);
         this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
         this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
 	
@@ -154,6 +168,8 @@ public class GameOverlay extends View {
 	private int gameOverXPos;
 	private int evolvingXPos;
 	private Resources res;
+	private int goalpha;
+	private int direction;
 	public static final int OVERLAY_TYPE_INTRO = 0;
 	public static final int OVERLAY_TYPE_GAME_CLASSIC=1;
 	public static final int OVERLAY_TYPE_GAME_MONOLITH=2;
