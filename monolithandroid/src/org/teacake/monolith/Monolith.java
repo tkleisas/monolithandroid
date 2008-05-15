@@ -115,7 +115,8 @@ public class Monolith extends Activity
 		menu.add(3, 0, R.string.s_exit_game, new Runnable()
 		{
 			public void run() {
-				view.performCleanup();
+				
+				
 				finish();
 			}
 			
@@ -279,6 +280,7 @@ public class Monolith extends Activity
     	{
     		xval=(int)event.getX();
     		yval=(int)event.getY();
+
     		handled = true;
     	}
     	
@@ -290,6 +292,17 @@ public class Monolith extends Activity
     		{
     			zx =0 ;
     			zy =0 ;
+        		try
+        		{
+        			android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_ROTATE_PLAYFIELD);
+        			message.arg1 = zx;
+        			message.arg2 = zy;
+        			message.sendToTarget();
+        		}
+        		catch(Exception e)
+        		{
+        			
+        		}
     		}
     		handled=true;
     	}
@@ -299,6 +312,17 @@ public class Monolith extends Activity
             zy = zy+((int)event.getY()-yval);
       	  	xval=(int)event.getX();
       	  	yval=(int)event.getY();
+    		try
+    		{
+    			android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_ROTATE_PLAYFIELD);
+    			message.arg1 = zx;
+    			message.arg2 = zy;
+    			message.sendToTarget();
+    		}
+    		catch(Exception e)
+    		{
+    			
+    		}      	  	
       	  	handled = true;
     	}
 
