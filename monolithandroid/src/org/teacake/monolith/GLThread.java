@@ -29,7 +29,7 @@ public class GLThread extends Thread
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
         mCube[7] = new Cube(0xffff,0x0ffff,0xffff,0x00ff);
         	
-        mMoon = new Square(0xffff,0x0ffff,0xffff,0x00ff);
+        mMoon = new Square(0xffff,0x0ffff,0xffff,0xffff);
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
         running=false;
         
@@ -39,7 +39,7 @@ public class GLThread extends Thread
 	}
 	public void setViewType(int viewtype)
 	{
-		this.viewType = VIEW_GAME;
+		this.viewType = viewtype;
 	}
 	public void setGameType(int gametype)
 	{
@@ -61,6 +61,11 @@ public class GLThread extends Thread
 		// Ignore
 		}
 	}
+	
+	
+
+	
+	
 	@Override
 	public void run()
 	{
@@ -77,6 +82,7 @@ public class GLThread extends Thread
 		{
 		// Draw a single frame here...
 			drawFrame(gl);
+			
 			glc.post();
 			
 		}
@@ -84,6 +90,49 @@ public class GLThread extends Thread
 		// Free OpenGL resources
 			glc.destroy();
 	}
+	
+	public void reinit()
+	{
+    	xval = 0;
+    	yval =0;
+        zx=0.0f;
+        zy=0.0f;
+        xoff = -10.0f;
+        //-10.0f+x*2.0f, 21.0f-y*2.0f, zoff
+    	yoff = 21.0f;
+    	zoff = -63.0f;
+
+        mAnimate = false;
+        if(gametype==Monolith.GAME_CLASSIC)
+        {
+        	game = new SimpleGameData();
+        }
+        if(gametype==Monolith.GAME_MONOLITH)
+        {
+        	game = new MonolithGameData();
+        }
+        
+       
+        
+        game.initGame(1);
+        game.setScore(0);
+        game.setLines(0);
+        game.setTimerEnabled(true);
+        game.setStatus(SimpleGameData.STATUS_PLAYING);
+        demogame = new MonolithGameData();
+        demogame.initGame(1);
+        demogame.setScore(0);
+        demogame.setLines(0);
+        demogame.setEnergy(100);
+        //demogame.setTimer(5000);
+        
+        demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
+        this.setupDemoGrid();
+        this.lastcalltime = SystemClock.uptimeMillis();
+        rangle=0;	
+        this.running = true;
+	}
+	
 	private void init(GL10 gl)
 	{
 
@@ -149,7 +198,7 @@ public class GLThread extends Thread
         //this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
     	
     }		
-    public void doMoveDown()
+    public synchronized void doMoveDown()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
     	{
@@ -161,7 +210,7 @@ public class GLThread extends Thread
     	game.flagCompletedLines();
     	this.createExplosions(game);
     }
-    public void doMoveLeft()
+    public synchronized void doMoveLeft()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
     	{
@@ -170,7 +219,7 @@ public class GLThread extends Thread
 
     	game.moveBlockLeft();
     }
-    public void doMoveRight()
+    public synchronized void doMoveRight()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
     	{
@@ -180,7 +229,12 @@ public class GLThread extends Thread
     	game.moveBlockRight();
     
     }
-    public void doRotateBlock()
+    public synchronized void doRotatePlayfield(int zx,int zy)
+    {
+    	this.zx = zx;
+    	this.zy = zy;
+    }
+    public synchronized void doRotateBlock()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
     	{
@@ -439,7 +493,7 @@ public class GLThread extends Thread
     	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
     	//canvas.drawText("energy="+demogame.getEnergy()+" result="+org.teacake.util.FixedPointFloat.floatToFixedPoint(0.25f), 10, 10, paint);
     	this.drawBlocks(gl,demogame,result,10);
-    	
+
     	//lastdrawtime = System.currentTimeMillis();
     	//this.drawBlocks(gl, demogame);
     	
@@ -462,6 +516,8 @@ public class GLThread extends Thread
     	result = (result*10)/demogame.getTimer();
     	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
     	//canvas.drawText("energy="+demogame.getEnergy()+" result="+org.teacake.util.FixedPointFloat.floatToFixedPoint(0.25f), 10, 10, paint);
+		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
+		mMoon.draw(gl,28.0f,28.0f,1.0f);
     	this.drawBlocks(gl,demogame,result,10);
     	
     	//lastdrawtime = System.currentTimeMillis();
@@ -478,7 +534,7 @@ public class GLThread extends Thread
 			
 			long current = SystemClock.uptimeMillis();
              
-			if (mNextTime < current)
+			if (mNextTime < current && action==MSG_DO_NOTHING)
 			{
              	
                  mNextTime = current + 20;
@@ -487,7 +543,7 @@ public class GLThread extends Thread
 			else
 			{
 				overlay.postInvalidate();
-	         	rangle=rangle+1.0f;
+	         	rangle=rangle+2.0f;
 	         	if(rangle>360.0f)
 	         	{
 	         		rangle=0.0f;
@@ -634,13 +690,34 @@ public class GLThread extends Thread
 	            this.drawIntroScreen(gl,w,h);
             	//this.drawIntroScreen(gl, canvas, w, h);
             	String logo="MonolithAndroid";
+
             	//int textxpos = this.getTextWidth(logo,this.gameOverPaint);
             	//canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
             	
             }
             if (this.viewType==VIEW_GAME)
             {
+            	if (action == MSG_ROTATE)
+        		{
+        			action=MSG_DO_NOTHING;
+        			doRotateBlock();
+        		}
+        		if (action == MSG_MOVE_LEFT)
+        		{
+        			action=MSG_DO_NOTHING;
+        			doMoveLeft();
             	
+        		}
+        		if (action == MSG_MOVE_RIGHT)
+        		{
+        			action=MSG_DO_NOTHING;
+        			doMoveRight();
+        		}
+        		if (action == MSG_MOVE_DOWN)
+        		{
+        			action=MSG_DO_NOTHING;
+        			doMoveDown();
+        		}            	
                 drawPlayfield(gl);
                 drawFallingBlock(gl);
                 if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
@@ -740,6 +817,7 @@ public class GLThread extends Thread
     
 	public static final int VIEW_INTRO=0;
 	public static final int VIEW_GAME=1;
+	public static final int MSG_DO_NOTHING=-1;
 	public static final int MSG_ROTATE=0;
 	public static final int MSG_MOVE_LEFT=1;
 	public static final int MSG_MOVE_RIGHT=2;
@@ -788,33 +866,21 @@ public class GLThread extends Thread
     private boolean backgroundInitialized;
     private int steps;
     private GameOverlay overlay;
+    public int action;
     public final Handler messageHandler = new Handler() {
         @Override
         public void handleMessage(Message msg)
         {
         	try
         	{
-        		if (msg.what == MSG_ROTATE)
-        		{
-        			doRotateBlock();
-        		}
-        		if (msg.what == MSG_MOVE_LEFT)
-        		{
-        			doMoveLeft();
-            	
-        		}
-        		if (msg.what == MSG_MOVE_RIGHT)
-        		{
-        			doMoveRight();
-        		}
-        		if (msg.what == MSG_MOVE_DOWN)
-        		{
-        			doMoveDown();
-        		}
+        		action=msg.what;
+        		
         		if (msg.what == MSG_ROTATE_PLAYFIELD)
         		{
-        			zx=msg.arg1;
-        			zy=msg.arg2;
+        			doRotatePlayfield(msg.arg1,msg.arg2);
+        				//zx=msg.arg1;
+        				//zy=msg.arg2;
+        			
         		}
         	}
         	catch(Exception e)

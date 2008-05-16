@@ -33,7 +33,7 @@ public class GameOverlay extends View {
 
 		
 	}
-	@Override protected void onDraw(Canvas canvas)
+	@Override protected synchronized void onDraw(Canvas canvas)
 	{
 		goalpha=goalpha+direction;
 		if(goalpha>255)

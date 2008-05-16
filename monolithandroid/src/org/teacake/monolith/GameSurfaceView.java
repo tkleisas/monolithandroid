@@ -37,7 +37,30 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 			return null;
 		}
 	}
-	
+	public void initGame()
+	{
+		glThread.setGameType(this.gameType);
+		glThread.setViewType(viewType);
+        if(this.viewType==GLThread.VIEW_INTRO)
+        {
+        	overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+        }
+        else
+        {
+        	switch(this.gameType)
+        	{
+        	case Monolith.GAME_CLASSIC:
+        		overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_GAME_CLASSIC);
+        		break;
+        	case Monolith.GAME_MONOLITH:
+        		overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_GAME_MONOLITH);
+        		break;
+        	}
+        	
+        }
+		
+		glThread.reinit();
+	}
 	public void surfaceCreated(SurfaceHolder holder)
 	{
 		// The Surface has been created so start our drawing thread
@@ -59,10 +82,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	{
 		this.viewType = viewType;
 		
+		
 	}
 	public void setGameType(int gameType)
 	{
 		this.gameType = gameType;
+		
 	}
 	
 	

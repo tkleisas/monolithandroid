@@ -26,10 +26,11 @@ public class Monolith extends Activity
         //view.doInit();
         //view.running=true;
         overlay = new GameOverlay(this);
+        overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         optionsView = new OptionsView(getApplication());
         android.content.AssetManager mgr = getApplication().getAssets();
         gsf = new GameSurfaceView(this,overlay);
-        gsf.setViewType(GLThread.VIEW_GAME);
+        gsf.setViewType(GLThread.VIEW_INTRO);
         gsf.setGameType(Monolith.GAME_MONOLITH);
         
         //overlay.setVisibility(View.VISIBLE);
@@ -76,13 +77,10 @@ public class Monolith extends Activity
             public void run() {
                 //mLunarView.doStart();
 
-
-            	view = new GLView( getApplication(),GAME_MONOLITH );
-                view.setViewType(GLView.VIEW_GAME);
-                view.doInit();
-                view.running=true;
-                optionsView = new OptionsView(getApplication());
-                setContentView(view);
+            	gsf.setGameType(Monolith.GAME_MONOLITH);
+            	gsf.setViewType(GLThread.VIEW_GAME);
+            	gsf.initGame();
+            	
             	
             	
             }
@@ -93,12 +91,10 @@ public class Monolith extends Activity
                 //mLunarView.doStart();
 
 
-            	view = new GLView( getApplication(),GAME_CLASSIC );
-                view.setViewType(GLView.VIEW_GAME);
-                view.doInit();
-                view.running=true;
-                optionsView = new OptionsView(getApplication());
-                setContentView(view);
+            	gsf.setGameType(Monolith.GAME_CLASSIC);
+            	gsf.setViewType(GLThread.VIEW_GAME);
+            	gsf.initGame();
+                
             	
             	
             }
