@@ -14,11 +14,14 @@ public class GLThread extends Thread
 
 	private final org.teacake.monolith.GameSurfaceView view;
 	private boolean done;
-	public GLThread(org.teacake.monolith.GameSurfaceView view, GameOverlay overlay)
+	public GLThread(org.teacake.monolith.GameSurfaceView view, GameOverlay overlay, android.content.Context context)
 	{
 		done=false;
 		this.view = view;
 		this.overlay = overlay;
+		this.context = context;
+		soundSystem = new SoundSystem(context);
+		soundSystem.start();
         mCube = new Cube[8];
         mCube[0] = new Cube(0xff00,0,0,0x10000);
         mCube[1] = new Cube(0,0xff00,0,0x10000);
@@ -35,7 +38,8 @@ public class GLThread extends Thread
         
         this.explodingCubes = new java.util.LinkedList<ExplodingCube>();
         randomgen = new java.util.Random(SystemClock.uptimeMillis());
-	
+        
+        
 	}
 	public void setViewType(int viewtype)
 	{
@@ -156,7 +160,33 @@ public class GLThread extends Thread
         	game = new MonolithGameData();
         }
         
-       
+        if(this.viewType==VIEW_INTRO)
+        {
+        	try
+        	{
+        		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_START_MUSIC);
+        		message.sendToTarget();
+        		
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
+        }
+        else
+        {
+        	try
+        	{
+        		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_STOP_MUSIC);
+        		message.sendToTarget();
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
+        	
+        }
+        
         
         game.initGame(1);
         game.setScore(0);
@@ -207,6 +237,11 @@ public class GLThread extends Thread
     	game.moveBlockDown();
     
     	game.gameLoop();
+    	if(game.isBlockPlaced())
+    	{
+    		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
+    		message.sendToTarget();    		
+    	}
     	game.flagCompletedLines();
     	this.createExplosions(game);
     }
@@ -240,7 +275,8 @@ public class GLThread extends Thread
     	{
     		return;
     	}
-
+		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_ROTATE_BLOCK);
+		message.sendToTarget();
     	game.rotateCurrentBlockClockwise();
     }
     protected void drawNextPiece(GL10 gl)
@@ -413,6 +449,8 @@ public class GLThread extends Thread
     				);
     				this.explodingCubes.add(c);
     			}
+        		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_EXPLOSION);
+        		message.sendToTarget();
     		}
     	}
     }
@@ -790,6 +828,11 @@ public class GLThread extends Thread
 	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 	            	{
 	            		game.gameLoop();
+	            		if(game.isBlockPlaced())
+	            		{
+	                		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
+	                		message.sendToTarget();   	            			
+	            		}
 	            		game.flagCompletedLines();
 	            		this.createExplosions(game);
 	            		lastcalltime = now;
@@ -867,6 +910,8 @@ public class GLThread extends Thread
     private int steps;
     private GameOverlay overlay;
     public int action;
+    private SoundSystem soundSystem;
+    private android.content.Context context;
     public final Handler messageHandler = new Handler() {
         @Override
         public void handleMessage(Message msg)

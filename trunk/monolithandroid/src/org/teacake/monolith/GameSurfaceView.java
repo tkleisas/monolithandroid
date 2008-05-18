@@ -10,13 +10,16 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	
 	public GameSurfaceView(Context context) {
 		super(context);
+		this.context = context;
 		getHolder().addCallback(this);
 	}
 	public GameSurfaceView(Context context,GameOverlay overlay)
 	{
 		super(context);
+		this.context = context;
 		getHolder().addCallback(this);
 		this.overlay = overlay;
+		
 	}
 
 	public void surfaceChanged(SurfaceHolder holder, int format,
@@ -37,6 +40,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 			return null;
 		}
 	}
+	
 	public void initGame()
 	{
 		glThread.setGameType(this.gameType);
@@ -64,7 +68,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	public void surfaceCreated(SurfaceHolder holder)
 	{
 		// The Surface has been created so start our drawing thread
-		glThread =new org.teacake.monolith.GLThread(this,this.overlay);
+		glThread =new org.teacake.monolith.GLThread(this,this.overlay,context);
 		glThread.setViewType(viewType);
 		glThread.setGameType(gameType);
 		glThread.start();
@@ -94,4 +98,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	private int viewType;
 	private int gameType;
 	private GameOverlay overlay;
+	private android.content.Context context;
+	
 }
