@@ -40,4 +40,5 @@ public interface Game
 	public int[] getClearedLines();
 	public int getCurrentStep();
 	public void setStep(int step);
+	public boolean isBlockPlaced();
 }

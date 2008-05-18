@@ -489,7 +489,11 @@ package org.teacake.monolith;
 			this.step = step;
 		}
 		
-		
+		private boolean blockPlaced;
+		public boolean isBlockPlaced()
+		{
+			return this.blockPlaced;
+		}
 		public int gridMaxHeight;
 		public int gridMaxWidth;
 		public static void main(String[] args) {

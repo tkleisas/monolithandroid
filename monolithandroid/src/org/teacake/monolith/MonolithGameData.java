@@ -24,6 +24,7 @@ public class MonolithGameData implements Game
 		this.randomgen = new java.util.Random();
 		this.energy = 0;
 		this.step = 0;
+		this.blockPlaced = false;
 		for(int y=0;y<gridMaxHeight;y++)
 		{
 			for(int x=0;x<gridMaxWidth;x++)
@@ -333,6 +334,7 @@ public class MonolithGameData implements Game
 	}
 	public void gameLoop()
 	{
+		blockPlaced=false;
 		step++;
 		if(this.status==STATUS_EVOLVING)
 		{
@@ -362,7 +364,7 @@ public class MonolithGameData implements Game
 				}
 				this.currentBlock=this.nextBlock;
 				Block bl = new Block();
-				
+				blockPlaced=true;
 				this.nextBlock= bl;
 	
 			}
@@ -740,6 +742,11 @@ public class MonolithGameData implements Game
 	}
 	private int boundaryCondition;
 	private java.util.Random randomgen;
+	private boolean blockPlaced;
+	public boolean isBlockPlaced()
+	{
+		return blockPlaced;
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

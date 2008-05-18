@@ -674,7 +674,11 @@ public class PuzzleGameData implements Game
 	public int energy;
 	private int boundaryCondition;
 	private java.util.Random randomgen;
-	
+	private boolean blockPlaced;
+	public boolean isBlockPlaced()
+	{
+		return this.blockPlaced;
+	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
