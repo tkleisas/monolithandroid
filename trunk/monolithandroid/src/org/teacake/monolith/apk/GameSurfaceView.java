@@ -1,4 +1,4 @@
-package org.teacake.monolith;
+package org.teacake.monolith.apk;
 
 import android.content.Context;
 
@@ -27,7 +27,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	// TODO: handle window size changes
 	}
 	
-	private org.teacake.monolith.GLThread glThread;
+	private org.teacake.monolith.apk.GLThread glThread;
 	@Override
 	public android.os.Handler getHandler()
 	{
@@ -68,7 +68,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	public void surfaceCreated(SurfaceHolder holder)
 	{
 		// The Surface has been created so start our drawing thread
-		glThread =new org.teacake.monolith.GLThread(this,this.overlay,context);
+		glThread =new org.teacake.monolith.apk.GLThread(this,this.overlay,context);
 		glThread.setViewType(viewType);
 		glThread.setGameType(gameType);
 		glThread.start();
