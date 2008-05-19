@@ -1,14 +1,14 @@
-package org.teacake.monolith;
+package org.teacake.monolith.apk;
 
-public class PuzzleGameData implements Game
+public class MonolithGameData implements Game
 {
 	public static int BOUNDARY_CONDITION_ZEROES=0;
 	public static int BOUNDARY_CONDITION_WRAPAROUND=1;
 
-	public PuzzleGameData()
+	public MonolithGameData()
 	{
 		this.boundaryCondition = BOUNDARY_CONDITION_ZEROES;
-		Block.enableMonolithBlocks=false;
+		Block.enableMonolithBlocks=true;
 		this.score =0;
 		this.lines =0;
 		this.level =1;
@@ -23,6 +23,8 @@ public class PuzzleGameData implements Game
 		this.oldgrid = new int[gridMaxWidth][gridMaxHeight];
 		this.randomgen = new java.util.Random();
 		this.energy = 0;
+		this.step = 0;
+		this.blockPlaced = false;
 		for(int y=0;y<gridMaxHeight;y++)
 		{
 			for(int x=0;x<gridMaxWidth;x++)
@@ -269,30 +271,103 @@ public class PuzzleGameData implements Game
 		return true;
 		
 	}
-
-	public void gameLoop()
+	public void evolve()
 	{
-		if(this.moveBlockDown())
+		
+		if(energy>0 && !isGridEmpty())
 		{
-			this.clearCompleteLines();
-			if(this.newLevel!=this.level)
+			for(int y=0;y<gridMaxHeight;y++)
 			{
-				level=newLevel;
+				for(int x=0;x<gridMaxWidth;x++)
+				{
+					oldgrid[x][y]=grid[x][y];
+					int count=getNeighbourCount(x,y);
+					if(grid[x][y]!=-1)
+					{
+						if(count<2)
+						{
+							newgrid[x][y]=-1;
+						}
+						if(count==3)
+						{
+							newgrid[x][y]=grid[x][y];
+							score = score+3;
+						}
+						if(count>3)
+						{
+							newgrid[x][y]=-1;
+						}
+					}
+					else
+					{
+						if(count==3)
+						{
+							newgrid[x][y]=randomgen.nextInt(7);
+							this.score = this.score+3;
+						}
+						else
+						{
+							newgrid[x][y]=grid[x][y];
+						}
+					}
+					
+
+				}
+			}
+			energy--;
+			for(int y=0;y<gridMaxHeight;y++)
+			{
+				for(int x=0;x<gridMaxWidth;x++)
+				{
+					grid[x][y]=newgrid[x][y];
+				}
 			}
 		}
 		else
 		{
-			for (int i=0;i<4;i++)
+			if (this.energy<0)
 			{
-				if (this.grid[this.nextBlock.subblocks[0].xpos+this.nextBlock.xPos][this.currentBlock.subblocks[0].ypos+this.nextBlock.yPos]!=-1)
+				energy=0;
+			}
+			this.status=STATUS_PLAYING;
+		}
+	}
+	public void gameLoop()
+	{
+		blockPlaced=false;
+		step++;
+		if(this.status==STATUS_EVOLVING)
+		{
+			evolve();
+		}
+		else
+		{
+			if(this.moveBlockDown())
+			{
+				this.clearCompleteLines();
+				if(this.newLevel!=this.level)
 				{
-					this.setStatus(STATUS_GAME_OVER);
-					return;
+					level=newLevel;
 				}
 			}
-			this.currentBlock=this.nextBlock;
-			Block bl = new Block();
-			this.nextBlock= bl;
+			else
+			{
+				
+				for (int i=0;i<4;i++)
+				{
+					if (this.grid[this.nextBlock.subblocks[0].xpos+this.nextBlock.xPos][this.currentBlock.subblocks[0].ypos+this.nextBlock.yPos]!=-1)
+					{
+						this.setStatus(STATUS_GAME_OVER);
+						
+						return;
+					}
+				}
+				this.currentBlock=this.nextBlock;
+				Block bl = new Block();
+				blockPlaced=true;
+				this.nextBlock= bl;
+	
+			}
 		}
 	}
 	public void moveBlockLeft()
@@ -376,8 +451,7 @@ public class PuzzleGameData implements Game
 	private int[][] oldgrid;
 	private int[][] grid;
 	private int[][] newgrid;
-	private int[][] puzzlegrid;
-	private int[] pieces;
+	
 	private int[] clearedLines;
 	private int status;
 	public int score;
@@ -652,14 +726,11 @@ public class PuzzleGameData implements Game
 	{
 		return this.clearedLines;
 	}
-	public int getBlockIndex()
-	{
-		return this.blockIndex;
-	}
-	
-	int blockIndex;
 	int newLevel;
 	int startingLevel;
+	public int gridMaxHeight;
+	public int gridMaxWidth;
+	public int energy;
 	private int step;
 	public int getCurrentStep()
 	{
@@ -669,18 +740,17 @@ public class PuzzleGameData implements Game
 	{
 		this.step = step;
 	}
-	public int gridMaxHeight;
-	public int gridMaxWidth;
-	public int energy;
 	private int boundaryCondition;
 	private java.util.Random randomgen;
 	private boolean blockPlaced;
 	public boolean isBlockPlaced()
 	{
-		return this.blockPlaced;
+		return blockPlaced;
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 	}	
+	
+
 }

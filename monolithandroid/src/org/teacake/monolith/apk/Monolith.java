@@ -1,4 +1,4 @@
-package org.teacake.monolith;
+package org.teacake.monolith.apk;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -1,27 +1,39 @@
-package org.teacake.monolith;
-import android.content.Resources;
+package org.teacake.monolith.apk;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.OpenGLContext;
 import android.graphics.Paint;
+//import android.os.Bundle;
+import android.content.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
 import android.util.Log;
 
-import javax.microedition.khronos.opengles.GL10;
-public class GLThread extends Thread
-{
 
-	private final org.teacake.monolith.GameSurfaceView view;
-	private boolean done;
-	public GLThread(org.teacake.monolith.GameSurfaceView view, GameOverlay overlay, android.content.Context context)
-	{
-		done=false;
-		this.view = view;
-		this.overlay = overlay;
-		this.context = context;
-		soundSystem = new SoundSystem(context);
-		soundSystem.start();
+import javax.microedition.khronos.opengles.GL10;
+public class GLView extends View
+{
+	public static final int VIEW_INTRO=0;
+	public static final int VIEW_GAME=1;
+    /**
+     * Standard override to get key events.
+     */
+    /**
+     * The View constructor is a good place to allocate our OpenGL context
+     */
+    public GLView(Context context,int gametype)
+    {
+        super(context);
+
+        /* 
+         * Create an OpenGL|ES context. This must be done only once, an
+         * OpenGL context is a somewhat heavy object.
+         */
+        mGLContext = new OpenGLContext(OpenGLContext.DEPTH_BUFFER );
+        //mCube = new Cube(0x10000,0,0,0x10000);
         mCube = new Cube[8];
         mCube[0] = new Cube(0xff00,0,0,0x10000);
         mCube[1] = new Cube(0,0xff00,0,0x10000);
@@ -32,71 +44,85 @@ public class GLThread extends Thread
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
         mCube[7] = new Cube(0xffff,0x0ffff,0xffff,0x00ff);
         	
-        mMoon = new Square(0xffff,0x0ffff,0xffff,0xffff);
+        res = context.getResources();
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
         running=false;
-        
+        this.gametype = gametype;
+        this.setViewType(VIEW_INTRO);
         this.explodingCubes = new java.util.LinkedList<ExplodingCube>();
         randomgen = new java.util.Random(SystemClock.uptimeMillis());
+        this.background = android.graphics.BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
+        this.backgroundInitialized = false;
         
         
-	}
-	public void setViewType(int viewtype)
-	{
-		this.viewType = viewtype;
-	}
-	public void setGameType(int gametype)
-	{
-		this.gametype = gametype;
-	}
-	
-	
+        
+    }
 
-	public void requestExitAndWait()
-	{
-		// Tell the thread to quit
-		done = true;
-		try
-		{
-			join();
-		}
-		catch (InterruptedException ex)
-		{
-		// Ignore
-		}
-	}
-	
-	
-
-	
-	
-	@Override
-	public void run()
-	{
-		//Initialize OpenGL...
-		OpenGLContext glc = new OpenGLContext(
-		OpenGLContext.DEPTH_BUFFER);
-		// Bind context to current thread and surface
-		
-		glc.makeCurrent(view.getHolder());
-		
-		GL10 gl = (GL10) (glc.getGL());
-		init(gl);
-		while (!done)
-		{
-		// Draw a single frame here...
-			drawFrame(gl);
-			
-			glc.post();
-			
-		}
-		
-		// Free OpenGL resources
-			glc.destroy();
-	}
-	
-	public void reinit()
-	{
+    public void setupDemoGrid()
+    {
+    	java.util.Random randomgen = new java.util.Random();
+    	int result;
+    	for (int y=0;y<20;y++)
+    	{
+    		for (int x=0;x<10;x++)
+    		{
+    			result = randomgen.nextInt(21);
+    			if(result<7)
+    			{
+    			
+    				this.demogame.setGridValue(x, y, result % 6);
+    			}
+    			else
+    			{
+    				this.demogame.setGridValue(x, y, -1);
+    			}
+    		}
+    	}
+    }
+    public void performCleanup()
+    {
+    	
+    	try
+    	{
+    		this.mediaPlayer.stop();
+    	}
+    	catch(Exception e)
+    	{
+    		
+    	}
+    	this.running = false;
+    }
+    public void doInit()
+    {
+    	if(viewType==VIEW_INTRO)
+    	{
+    		try
+    		{
+        	//soundEngine = javax.sound.sampled.AndroidPlayBackEngine.getInstance();
+        	
+    			mediaPlayer = android.media.MediaPlayer.create(this.getContext(), R.raw.intro);
+        	
+    			mediaPlayer.prepare();
+    			mediaPlayer.setLooping(1);
+    			mediaPlayer.start();
+    		}
+    		catch(Exception e)
+    		{
+    			Log.e("music","error"+e.getMessage());
+    		} 
+    	}
+    	if(viewType==VIEW_GAME)
+    	{
+    		try
+    		{
+    			
+    		}
+    		catch(Exception e)
+    		{
+    			mediaPlayer.stop();
+    		}
+    	}
+    	
     	xval = 0;
     	yval =0;
         zx=0.0f;
@@ -104,7 +130,7 @@ public class GLThread extends Thread
         xoff = -10.0f;
         //-10.0f+x*2.0f, 21.0f-y*2.0f, zoff
     	yoff = 21.0f;
-    	zoff = -63.0f;
+    	zoff = -53.0f;
 
         mAnimate = false;
         if(gametype==Monolith.GAME_CLASSIC)
@@ -117,76 +143,6 @@ public class GLThread extends Thread
         }
         
        
-        
-        game.initGame(1);
-        game.setScore(0);
-        game.setLines(0);
-        game.setTimerEnabled(true);
-        game.setStatus(SimpleGameData.STATUS_PLAYING);
-        demogame = new MonolithGameData();
-        demogame.initGame(1);
-        demogame.setScore(0);
-        demogame.setLines(0);
-        demogame.setEnergy(100);
-        //demogame.setTimer(5000);
-        
-        demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
-        this.setupDemoGrid();
-        this.lastcalltime = SystemClock.uptimeMillis();
-        rangle=0;	
-        this.running = true;
-	}
-	
-	private void init(GL10 gl)
-	{
-
-    	
-    	xval = 0;
-    	yval =0;
-        zx=0.0f;
-        zy=0.0f;
-        xoff = -10.0f;
-        //-10.0f+x*2.0f, 21.0f-y*2.0f, zoff
-    	yoff = 21.0f;
-    	zoff = -63.0f;
-
-        mAnimate = false;
-        if(gametype==Monolith.GAME_CLASSIC)
-        {
-        	game = new SimpleGameData();
-        }
-        if(gametype==Monolith.GAME_MONOLITH)
-        {
-        	game = new MonolithGameData();
-        }
-        
-        if(this.viewType==VIEW_INTRO)
-        {
-        	try
-        	{
-        		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_START_MUSIC);
-        		message.sendToTarget();
-        		
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        }
-        else
-        {
-        	try
-        	{
-        		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_STOP_MUSIC);
-        		message.sendToTarget();
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        	
-        }
-        
         
         game.initGame(1);
         game.setScore(0);
@@ -218,17 +174,30 @@ public class GLThread extends Thread
         gameOverPaint.setARGB(128, 20, 20, 20);
         gameOverPaint.setTextSize(30);
     	
-    	this.running = true;
-    	//gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-    	//gl.glEnable(GL10.GL_TEXTURE_2D);
-    	Square.loadTexture(gl, view.getContext(), R.drawable.moon3);
-    	//gl.glDisable(GL10.GL_TEXTURE_2D);
     	
-        //this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
-        //this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
+
     	
-    }		
-    public synchronized void doMoveDown()
+        this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
+        this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
+    	
+    }
+    public int getTextWidth(String str,Paint paint)
+    {
+    	float widths[] =new float[str.length()];
+    	paint.getTextWidths(str,widths); 
+    	int totalwidth=0;
+    	for(int i=0;i<widths.length;i++)
+    	{
+    		totalwidth+=widths[i];
+    	}
+    	return totalwidth;
+    }
+    public void drawString(Canvas canvas,String str,int x,int y)
+    {
+    	canvas.drawText(str, x+1, y+1, paint2);
+    	canvas.drawText(str, x, y, paint);
+    }
+    public void doMoveDown()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
     	{
@@ -237,15 +206,10 @@ public class GLThread extends Thread
     	game.moveBlockDown();
     
     	game.gameLoop();
-    	if(game.isBlockPlaced())
-    	{
-    		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
-    		message.sendToTarget();    		
-    	}
     	game.flagCompletedLines();
     	this.createExplosions(game);
     }
-    public synchronized void doMoveLeft()
+    public void doMoveLeft()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
     	{
@@ -254,7 +218,7 @@ public class GLThread extends Thread
 
     	game.moveBlockLeft();
     }
-    public synchronized void doMoveRight()
+    public void doMoveRight()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
     	{
@@ -264,19 +228,13 @@ public class GLThread extends Thread
     	game.moveBlockRight();
     
     }
-    public synchronized void doRotatePlayfield(int zx,int zy)
-    {
-    	this.zx = zx;
-    	this.zy = zy;
-    }
-    public synchronized void doRotateBlock()
+    public void doRotateBlock()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
     	{
     		return;
     	}
-		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_ROTATE_BLOCK);
-		message.sendToTarget();
+
     	game.rotateCurrentBlockClockwise();
     }
     protected void drawNextPiece(GL10 gl)
@@ -441,16 +399,14 @@ public class GLThread extends Thread
     						yoff-y*2.0f,
     						zoff,
     						(x-5.0f)/10.0f,
-    						randomgen.nextFloat()+0.2f,
-    						randomgen.nextFloat()+0.2f,
+    						randomgen.nextFloat()*2.0f+0.2f,
+    						randomgen.nextFloat()*2.0f+0.2f,
     						game.getGridValue(x, y),
     						0
     						
     				);
     				this.explodingCubes.add(c);
     			}
-        		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_EXPLOSION);
-        		message.sendToTarget();
     		}
     	}
     }
@@ -492,60 +448,31 @@ public class GLThread extends Thread
 		
 		
     }
-    public void setupDemoGrid()
-    {
-    	java.util.Random randomgen = new java.util.Random();
-    	int result;
-    	for (int y=0;y<20;y++)
-    	{
-    		for (int x=0;x<10;x++)
-    		{
-    			result = randomgen.nextInt(21);
-    			if(result<7)
-    			{
-    			
-    				this.demogame.setGridValue(x, y, result % 6);
-    			}
-    			else
-    			{
-    				this.demogame.setGridValue(x, y, -1);
-    			}
-    		}
-    	}
-    }    
-    protected void drawIntroScreen(GL10 gl,Canvas canvas, int w, int h)
-    {
-    	long now = SystemClock.uptimeMillis();
-    	if(demogame.getStatus()!=SimpleGameData.STATUS_EVOLVING)
-    	{
-    		demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
-    	}
-    	if(demogame.getCurrentStep()>50)
-    	{
-    		setupDemoGrid();
-    		demogame.setEnergy(100);
-    		demogame.setStep(0);
-    	}
-    	int result = 0;
-    	if(now-lastcalltime>demogame.getTimer())
-    	{
-    		result=10;
-    	}
-    	else
-    	{
-    		result=(int)((now-lastcalltime)%demogame.getTimer());
-    		result = (result*10)/demogame.getTimer();
-    	}
-    	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
-    	//canvas.drawText("energy="+demogame.getEnergy()+" result="+org.teacake.util.FixedPointFloat.floatToFixedPoint(0.25f), 10, 10, paint);
-    	this.drawBlocks(gl,demogame,result,10);
-
-    	//lastdrawtime = System.currentTimeMillis();
-    	//this.drawBlocks(gl, demogame);
-    	
-    	
+    /*
+     * Start the animation only once we're attached to a window
+     * @see android.view.View#onAttachedToWindow()
+     */
+    @Override
+    protected void onAttachedToWindow() {
+        mAnimate = true;
+        Message msg = mHandler.obtainMessage(INVALIDATE);
+        mNextTime = SystemClock.uptimeMillis();
+        mHandler.sendMessageAtTime(msg, mNextTime);
+        super.onAttachedToWindow();
     }
-    protected void drawIntroScreen(GL10 gl,int w, int h)
+
+    /*
+     * Make sure to stop the animation when we're no longer on screen,
+     * failing to do so will cause most of the view hierarchy to be
+     * leaked until the current process dies.
+     * @see android.view.View#onDetachedFromWindow()
+     */
+    @Override
+    protected void onDetachedFromWindow() {
+        mAnimate = false;
+        super.onDetachedFromWindow();
+    }
+    protected void drawIntroScreen(GL10 gl,Canvas canvas, int w, int h)
     {
     	long now = SystemClock.uptimeMillis();
     	if(demogame.getStatus()!=SimpleGameData.STATUS_EVOLVING)
@@ -562,8 +489,6 @@ public class GLThread extends Thread
     	result = (result*10)/demogame.getTimer();
     	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
     	//canvas.drawText("energy="+demogame.getEnergy()+" result="+org.teacake.util.FixedPointFloat.floatToFixedPoint(0.25f), 10, 10, paint);
-		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
-		mMoon.draw(gl,28.0f,28.0f,1.0f);
     	this.drawBlocks(gl,demogame,result,10);
     	
     	//lastdrawtime = System.currentTimeMillis();
@@ -571,39 +496,21 @@ public class GLThread extends Thread
     	
     	
     }
-    private void drawFrame(GL10 gl)
-	{
-		
-	    
-		if (running)
-		{
-			
-			long current = SystemClock.uptimeMillis();
-             
-			if (mNextTime < current && action==MSG_DO_NOTHING)
-			{
-             	
-                 mNextTime = current + 20;
-                 return;
-            }
-			else
-			{
-				overlay.postInvalidate();
-	         	rangle=rangle+2.0f;
-	         	if(rangle>360.0f)
-	         	{
-	         		rangle=0.0f;
-	         	}			
-				
-			}
-             
-            
+    /**
+     * Draw the view content
+     * 
+     * @see android.view.View#onDraw(android.graphics.Canvas)
+     */
+    @Override
+
+    protected void onDraw(Canvas canvas) {
+        if (running) {
         /*
          * First, we need to get to the appropriate GL interface.
          * This is simply done by casting the GL context to either
          * GL10 or GL11.
          */
-         	//gl = (GL10)(mGLContext.getGL());
+        GL10 gl = (GL10)(mGLContext.getGL());
 
         /*
          * Before we can issue GL commands, we need to make sure all
@@ -612,10 +519,10 @@ public class GLThread extends Thread
          * calls should be issued.
          */
         //mGLContext.waitNative(canvas, this);
-        //mGLContext.waitNative();
-        //mGLContext.makeCurrent(view.getHolder());
-            int w = view.getWidth();
-            int h = view.getHeight();
+        mGLContext.waitNative();
+        mGLContext.makeCurrent(this);
+            int w = getWidth();
+            int h = getHeight();
 
             /*
              * Set the viewport. This doesn't have to be done each time
@@ -633,7 +540,7 @@ public class GLThread extends Thread
              */
 
             float ratio = (float)w / h;
-            if(w<h)
+            if(w>h)
             {
             	ratio = (float)w/h;
             }
@@ -643,7 +550,7 @@ public class GLThread extends Thread
             }
             gl.glMatrixMode(GL10.GL_PROJECTION);
             gl.glLoadIdentity();
-            gl.glFrustumf(-ratio, ratio, -ratio, ratio, 2, 60);
+            gl.glFrustumf(-ratio, ratio, -1, 1, 2, 52);
 
             /*
              * dithering is enabled by default in OpenGL, unfortunately
@@ -659,14 +566,13 @@ public class GLThread extends Thread
              * correctly first. The scissor is always specified in window
              * coordinates:
              */
-            gl.glClearColor(0,0,0,0);
+            gl.glClearColor(1,1,1,1);
             
             
             gl.glEnable(GL10.GL_SCISSOR_TEST);
             gl.glScissor(0, 0, w, h);
             gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
             gl.glEnable(GL10.GL_CULL_FACE);
-            //gl.glCullFace(GL10.GL_CW);
             gl.glShadeModel(GL10.GL_SMOOTH);
             //gl.glDepthFunc(GL10.GL_GREATER);
             //gl.glDepthRangef(1, 100);
@@ -698,10 +604,10 @@ public class GLThread extends Thread
             gl.glColor4f(0.7f, 0.7f, 0.7f, 1.0f);
             gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
             gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-            //int bg_width = background.width();
-            //int bg_height = background.height();
-            //int bg_new_width = 0;
-            //int bg_new_height = 0;
+            int bg_width = background.width();
+            int bg_height = background.height();
+            int bg_new_width = 0;
+            int bg_new_height = 0;
 
             if(!this.backgroundInitialized)
             {
@@ -717,11 +623,11 @@ public class GLThread extends Thread
                 //}
             	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(int)(bg_width-bg_new_width)/2,(int)(bg_height-bg_new_height)/2,(int)(bg_width-(bg_width-bg_new_width)/2)-1,(int)(bg_height-(bg_height-bg_new_height)/2-1),new android.graphics.Matrix(),false);
             	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.drawableBackground,(this.drawableBackground.width()-w-1)/2,(this.drawableBackground.height()-h-1)/2,w,h);
-            	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(bg_width-w)/2-1, (bg_height-h)/2-1,w+1,h+1,new android.graphics.Matrix(),false);
+            	this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(bg_width-w)/2-1, (bg_height-h)/2-1,w+1,h+1,new android.graphics.Matrix(),false);
             	this.backgroundInitialized = true;
             }
-            //android.graphics.Rect rect = new android.graphics.Rect(0,0,drawableBackground.width()-1,drawableBackground.height()-1);
-            //canvas.drawBitmap(drawableBackground, rect, rect, bgpaint);
+            android.graphics.Rect rect = new android.graphics.Rect(0,0,drawableBackground.width()-1,drawableBackground.height()-1);
+            canvas.drawBitmap(drawableBackground, rect, rect, bgpaint);
             //canvas.drawText("width ="+drawableBackground.width()+" height="+this.drawableBackground.height()+" new_w="+bg_new_width+" new_h="+bg_new_height,10,300,  paint);
             //canvas.drawText(message, 10, 10, paint);
             if (this.viewType==VIEW_INTRO)
@@ -733,52 +639,23 @@ public class GLThread extends Thread
 	            		lastcalltime = now;
 	            		this.demogame.gameLoop();
 	            }
-	            this.drawIntroScreen(gl,w,h);
-            	//this.drawIntroScreen(gl, canvas, w, h);
+            	this.drawIntroScreen(gl, canvas, w, h);
             	String logo="MonolithAndroid";
-
-            	//int textxpos = this.getTextWidth(logo,this.gameOverPaint);
-            	//canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+            	int textxpos = this.getTextWidth(logo,this.gameOverPaint);
+            	canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
             	
             }
             if (this.viewType==VIEW_GAME)
             {
-            	if (action == MSG_ROTATE)
-        		{
-        			action=MSG_DO_NOTHING;
-        			doRotateBlock();
-        		}
-        		if (action == MSG_MOVE_LEFT)
-        		{
-        			action=MSG_DO_NOTHING;
-        			doMoveLeft();
             	
-        		}
-        		if (action == MSG_MOVE_RIGHT)
-        		{
-        			action=MSG_DO_NOTHING;
-        			doMoveRight();
-        		}
-        		if (action == MSG_MOVE_DOWN)
-        		{
-        			action=MSG_DO_NOTHING;
-        			doMoveDown();
-        		}            	
                 drawPlayfield(gl);
                 drawFallingBlock(gl);
                 if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
                 {
-                	int result=10;
                 	long now = SystemClock.uptimeMillis();;
-                	if(now-lastcalltime>game.getTimer())
-                	{
-                		result=10;
-                	}
-                	else
-                	{
-                		result = (int)((now-lastcalltime)%game.getTimer());
-                		result = (result*10)/game.getTimer();
-                	}
+
+                	int result = (int)((now-lastcalltime)%game.getTimer());
+                	result = (result*10)/game.getTimer();
             	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
 
             		this.drawBlocks(gl,game,result,10);
@@ -788,46 +665,32 @@ public class GLThread extends Thread
                  	drawBlocks(gl);
                 }
                 drawNextPiece(gl);
-            	gl.glLoadIdentity();
-            	
-            	
-            	//gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-        		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
-        		mMoon.draw(gl,28.0f,28.0f,1.0f);
-        		//gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-        		
-        		gl.glPopMatrix();
-                //this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
-                //this.drawString(canvas,""+game.getScore(), 10, 34);
-                //this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
-                //this.drawString(canvas,""+game.getLevel(), 10, 74);
-                //this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
-                //this.drawString(canvas,""+game.getLines(),10,114);
-        		this.overlay.setLevel(""+game.getLevel());
-        		this.overlay.setScore(""+game.getScore());
-        		this.overlay.setLines(""+game.getLines());
+                gl.glPopMatrix();
+                this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
+                this.drawString(canvas,""+game.getScore(), 10, 34);
+                this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
+                this.drawString(canvas,""+game.getLevel(), 10, 74);
+                this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
+                this.drawString(canvas,""+game.getLines(),10,114);
+
 	            if(this.gametype==Monolith.GAME_MONOLITH)
 	            {
-	            	
-	            	this.overlay.setEnergy(""+game.getEnergy());
-	            	//this.drawString(canvas,res.getString(R.string.s_energy),10,134);
-	            	//this.drawString(canvas,""+game.getEnergy(),10,154);
+	            	this.drawString(canvas,res.getString(R.string.s_energy),10,134);
+	            	this.drawString(canvas,""+game.getEnergy(),10,154);
 
 	            }
 	            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
-	            switch (game.getStatus())
+	            if(game.getStatus()==SimpleGameData.STATUS_GAME_OVER)
 	            {
-	            case SimpleGameData.STATUS_GAME_OVER:
-	            	this.overlay.setMessage("Game Over");
-	            	break;
-	            case SimpleGameData.STATUS_EVOLVING:
-	            	this.overlay.setMessage("Evolving...");
-	            	break;
-	            	default:
-	            		this.overlay.setMessage("");	
-	            		break;
+	
+	            	canvas.drawText(res.getString(R.string.s_game_over), (getWidth()-this.gameOverXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+	            	
+	            	
 	            }
-
+	            if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+	            {
+	            	canvas.drawText(res.getString(R.string.s_evolving), (getWidth()-this.evolvingXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+	            }
 	            
 	            Cube c = this.mCube[0];
 	            c.setPosition(0.0f, 0.0f, -30.0f);
@@ -843,11 +706,6 @@ public class GLThread extends Thread
 	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 	            	{
 	            		game.gameLoop();
-	            		if(game.isBlockPlaced())
-	            		{
-	                		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
-	                		message.sendToTarget();   	            			
-	            		}
 	            		game.flagCompletedLines();
 	            		this.createExplosions(game);
 	            		lastcalltime = now;
@@ -862,7 +720,7 @@ public class GLThread extends Thread
          * make sure they complete before we can issue more native
          * drawing commands. This is done by calling waitGL().
          */
-        //mGLContext.waitGL();
+        mGLContext.waitGL();
         }
     }
 
@@ -871,30 +729,81 @@ public class GLThread extends Thread
 
     private static final int INVALIDATE = 1;
 
-
+    private final Handler mHandler = new Handler() {
+        @Override
+                public void handleMessage(Message msg) {
+            if (mAnimate && msg.what == INVALIDATE) {
+                invalidate();
+                msg = obtainMessage(INVALIDATE);
+                long current = SystemClock.uptimeMillis();
+                
+                if (mNextTime < current) {
+                	
+                    mNextTime = current + 20;
+                }
+                
+                sendMessageAtTime(msg, mNextTime);
+                mNextTime += 20;
+            	rangle=rangle+1.0f;
+            	if(rangle>360.0f)
+            	{
+            		rangle=0.0f;
+            	}
+            }
+        }
+    };
     
-	public static final int VIEW_INTRO=0;
-	public static final int VIEW_GAME=1;
-	public static final int MSG_DO_NOTHING=-1;
-	public static final int MSG_ROTATE=0;
-	public static final int MSG_MOVE_LEFT=1;
-	public static final int MSG_MOVE_RIGHT=2;
-	public static final int MSG_MOVE_DOWN=3;
-	public static final int MSG_ROTATE_PLAYFIELD=4;
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+    	int action = event.getAction();
+    	boolean handled = false;
+    	if(action==MotionEvent.ACTION_DOWN)
+    	{
+    		xval=(int)event.getX();
+    		yval=(int)event.getY();
+    		handled = true;
+    	}
+    	
+    	if(action==MotionEvent.ACTION_UP)
+    	{
+    		int xnow = (int)event.getX();
+    		int ynow = (int)event.getY();
+    		if(xnow<20 && ynow<20)
+    		{
+    			zx =0 ;
+    			zy =0 ;
+    		}
+    		handled=true;
+    	}
+    	if(action==MotionEvent.ACTION_MOVE)
+    	{
+            zx = zx+((int)event.getX()-xval);
+            zy = zy+((int)event.getY()-yval);
+      	  	xval=(int)event.getX();
+      	  	yval=(int)event.getY();
+      	  	handled = true;
+    	}
+
+        return handled;
+    } 
+    public void setViewType(int viewtype)
+    {
+    	this.viewType = viewtype;
+    }
     public Game	game;
     public Game demogame;
     private OpenGLContext   mGLContext;
     private Cube[]          mCube;
     private Cube 			mPlayfieldCube;
-    private Square			mMoon;
     private float           mAngle;
     private long            mNextTime;
     private boolean         mAnimate;
     private float			rangle;
     private int xval;
     private int yval;
-    public float zx=0.0f;
-    public float zy=0.0f;
+    private float zx=0.0f;
+    private float zy=0.0f;
     private float xoff;
     private float yoff;
     private float zoff;
@@ -923,32 +832,6 @@ public class GLThread extends Thread
     private android.graphics.Bitmap drawableBackground;
     private boolean backgroundInitialized;
     private int steps;
-    private GameOverlay overlay;
-    public int action;
-    private SoundSystem soundSystem;
-    private android.content.Context context;
-    public final Handler messageHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg)
-        {
-        	try
-        	{
-        		action=msg.what;
-        		
-        		if (msg.what == MSG_ROTATE_PLAYFIELD)
-        		{
-        			doRotatePlayfield(msg.arg1,msg.arg2);
-        				//zx=msg.arg1;
-        				//zy=msg.arg2;
-        			
-        		}
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        }
-    };
-	
-	
 }
+
+
