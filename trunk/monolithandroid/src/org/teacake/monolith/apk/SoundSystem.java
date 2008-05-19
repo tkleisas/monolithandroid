@@ -15,16 +15,18 @@ public class SoundSystem extends Thread
 		try
 		{
 			musicPlayer = android.media.MediaPlayer.create(context, R.raw.intro);
-			soundPlayerRotateBlock = android.media.MediaPlayer.create(context, R.raw.rotate);
-			soundPlayerExplosion = android.media.MediaPlayer.create(context, R.raw.explosion2);
+			soundPlayerRotateBlock = android.media.MediaPlayer.create(context, R.raw.pluck2);
+			soundPlayerExplosion = android.media.MediaPlayer.create(context, R.raw.explosion);
 			soundPlayerPlaceBlock = android.media.MediaPlayer.create(context, R.raw.place);
-			musicPlayer.prepare();
+			musicPlayer.prepareAsync();
 			musicPlayer.setLooping(1);
 			musicPlayer.seekTo(0);
-			soundPlayerRotateBlock.prepare();
+			soundPlayerRotateBlock.prepareAsync();
 			soundPlayerRotateBlock.seekTo(0);
-			soundPlayerExplosion.prepare();
+			soundPlayerExplosion.prepareAsync();
 			soundPlayerExplosion.seekTo(0);
+			soundPlayerPlaceBlock.prepareAsync();
+			soundPlayerPlaceBlock.seekTo(0);
 		}
 		catch(Exception e)
 		{

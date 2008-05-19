@@ -373,6 +373,32 @@ public class PuzzleGameData implements Game
 		this.grid[this.currentBlock.subblocks[3].xpos+this.currentBlock.xPos][this.currentBlock.subblocks[3].ypos+this.currentBlock.yPos]=this.currentBlock.color;
 		return false;
 	}
+	public boolean canMoveBlockDown()
+	{
+		for(int i=0;i<4;i++)
+		{
+			if (this.currentBlock.subblocks[i].ypos+this.currentBlock.yPos>gridMaxHeight+2)
+			{
+				return false;
+
+			}
+		}
+		if(this.currentBlock.height+this.currentBlock.yPos<gridMaxHeight)
+		{
+			if(
+				(grid[currentBlock.subblocks[0].xpos+currentBlock.xPos][this.currentBlock.subblocks[0].ypos+this.currentBlock.yPos+1]==-1) &&
+				(grid[currentBlock.subblocks[1].xpos+currentBlock.xPos][this.currentBlock.subblocks[1].ypos+this.currentBlock.yPos+1]==-1) &&
+				(grid[currentBlock.subblocks[2].xpos+currentBlock.xPos][this.currentBlock.subblocks[2].ypos+this.currentBlock.yPos+1]==-1) &&
+				(grid[currentBlock.subblocks[3].xpos+currentBlock.xPos][this.currentBlock.subblocks[3].ypos+this.currentBlock.yPos+1]==-1) 
+			)
+			{
+				return true;
+			}
+			
+		}
+		return false;
+		
+	}	
 	private int[][] oldgrid;
 	private int[][] grid;
 	private int[][] newgrid;

@@ -368,22 +368,42 @@ public class GLThread extends Thread
     } 
     protected void drawBlocks(GL10 gl)
     {
+    	int[] clearedlines = game.getClearedLines();
+    	
     	for(int y=0;y<20;y++)
     	{
-    		for(int x=0;x<10;x++)
+    		boolean skipline=false;
+    		if(clearedlines[y]==1)
     		{
-    			if(game.getGridValue(x, y)!=-1)
-    			{
-    				Cube c = this.mCube[game.getGridValue(x, y)];
-    				gl.glLoadIdentity();
-    				c.setPosition(xoff+x*2.0f, yoff-y*2.0f, zoff);
-    				c.draw(gl);
-    			}
+    			skipline=true;
+    		}
+    		if(!skipline)
+    		{
+	    		for(int x=0;x<10;x++)
+	    		{
+	    			if(game.getGridValue(x, y)!=-1)
+	    			{
+	    				Cube c = this.mCube[game.getGridValue(x, y)];
+	    				gl.glLoadIdentity();
+	    				c.setPosition(xoff+x*2.0f, yoff-y*2.0f, zoff);
+	    				c.draw(gl);
+	    			}
+	    		}
     		}
     	}
     }
     protected void drawFallingBlock(GL10 gl)
     {
+    	int result = 0;
+    	if(now-lastcalltime>demogame.getTimer() || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+    	{
+    		result=0;
+    	}
+    	else
+    	{
+    		result=(int)((now-lastcalltime)%demogame.getTimer());
+    		result = (result*10)/demogame.getTimer();
+    	}
     	float ystart=21.0f;
     	if(game.getCurrentBlock().color>=0 && game.getCurrentBlock().color<this.mCube.length)
     	{
@@ -392,7 +412,14 @@ public class GLThread extends Thread
     		for(int i=0;i<4;i++)
     		{
     			gl.glLoadIdentity();
-    			c.setPosition(-10.0f+(game.getCurrentBlock().xPos+game.getCurrentBlock().subblocks[i].xpos)*2.0f,-(game.getCurrentBlock().yPos+game.getCurrentBlock().subblocks[i].ypos)*2.0f+ystart,zoff);
+    			if(result!=0 && game.canMoveBlockDown())
+    			{
+    				c.setPosition(-10.0f+(game.getCurrentBlock().xPos+game.getCurrentBlock().subblocks[i].xpos)*2.0f,-(game.getCurrentBlock().yPos+game.getCurrentBlock().subblocks[i].ypos)*2.0f+ystart-(((float)result/10.0f)*2.0f),zoff);
+    			}
+    			else
+    			{
+    				c.setPosition(-10.0f+(game.getCurrentBlock().xPos+game.getCurrentBlock().subblocks[i].xpos)*2.0f,-(game.getCurrentBlock().yPos+game.getCurrentBlock().subblocks[i].ypos)*2.0f+ystart,zoff);
+    			}
     			c.draw(gl);
     		}
     	}
@@ -766,27 +793,7 @@ public class GLThread extends Thread
         		}            	
                 drawPlayfield(gl);
                 drawFallingBlock(gl);
-                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-                {
-                	int result=10;
-                	long now = SystemClock.uptimeMillis();;
-                	if(now-lastcalltime>game.getTimer())
-                	{
-                		result=10;
-                	}
-                	else
-                	{
-                		result = (int)((now-lastcalltime)%game.getTimer());
-                		result = (result*10)/game.getTimer();
-                	}
-            	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
 
-            		this.drawBlocks(gl,game,result,10);
-                }
-                else
-                {
-                 	drawBlocks(gl);
-                }
                 drawNextPiece(gl);
             	gl.glLoadIdentity();
             	
@@ -853,6 +860,27 @@ public class GLThread extends Thread
 	            		lastcalltime = now;
 	            	}
 	            }
+                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+                {
+                	int result=10;
+                	long now = SystemClock.uptimeMillis();;
+                	if(now-lastcalltime>game.getTimer())
+                	{
+                		result=10;
+                	}
+                	else
+                	{
+                		result = (int)((now-lastcalltime)%game.getTimer());
+                		result = (result*10)/game.getTimer();
+                	}
+            	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
+
+            		this.drawBlocks(gl,game,result,10);
+                }
+                else
+                {
+                 	drawBlocks(gl);
+                }	            
 	            //gl.glPopMatrix();
 	            //game.gameLoop();
             }
