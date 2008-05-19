@@ -25,6 +25,7 @@ public class MonolithGameData implements Game
 		this.energy = 0;
 		this.step = 0;
 		this.blockPlaced = false;
+		
 		for(int y=0;y<gridMaxHeight;y++)
 		{
 			for(int x=0;x<gridMaxWidth;x++)
@@ -409,6 +410,32 @@ public class MonolithGameData implements Game
 					this.currentBlock.xPos++;
 				}
 			}			
+	}
+	public boolean canMoveBlockDown()
+	{
+		for(int i=0;i<4;i++)
+		{
+			if (this.currentBlock.subblocks[i].ypos+this.currentBlock.yPos>gridMaxHeight+2)
+			{
+				return false;
+
+			}
+		}
+		if(this.currentBlock.height+this.currentBlock.yPos<gridMaxHeight)
+		{
+			if(
+				(grid[currentBlock.subblocks[0].xpos+currentBlock.xPos][this.currentBlock.subblocks[0].ypos+this.currentBlock.yPos+1]==-1) &&
+				(grid[currentBlock.subblocks[1].xpos+currentBlock.xPos][this.currentBlock.subblocks[1].ypos+this.currentBlock.yPos+1]==-1) &&
+				(grid[currentBlock.subblocks[2].xpos+currentBlock.xPos][this.currentBlock.subblocks[2].ypos+this.currentBlock.yPos+1]==-1) &&
+				(grid[currentBlock.subblocks[3].xpos+currentBlock.xPos][this.currentBlock.subblocks[3].ypos+this.currentBlock.yPos+1]==-1) 
+			)
+			{
+				return true;
+			}
+			
+		}
+		return false;
+		
 	}
 	public boolean moveBlockDown()
 	{

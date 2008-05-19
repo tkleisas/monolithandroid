@@ -19,6 +19,7 @@ public interface Game
 	public void moveBlockLeft();
 	public void moveBlockRight();
 	public boolean moveBlockDown();
+	public boolean canMoveBlockDown();
 	public void clearCompleteLines();
 	public void flagCompletedLines();
 	public int getClearedLineCount();
