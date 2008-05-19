@@ -526,8 +526,16 @@ public class GLThread extends Thread
     		demogame.setEnergy(100);
     		demogame.setStep(0);
     	}
-    	int result = (int)((now-lastcalltime)%demogame.getTimer());
-    	result = (result*10)/demogame.getTimer();
+    	int result = 0;
+    	if(now-lastcalltime>demogame.getTimer())
+    	{
+    		result=10;
+    	}
+    	else
+    	{
+    		result=(int)((now-lastcalltime)%demogame.getTimer());
+    		result = (result*10)/demogame.getTimer();
+    	}
     	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
     	//canvas.drawText("energy="+demogame.getEnergy()+" result="+org.teacake.util.FixedPointFloat.floatToFixedPoint(0.25f), 10, 10, paint);
     	this.drawBlocks(gl,demogame,result,10);
@@ -760,10 +768,17 @@ public class GLThread extends Thread
                 drawFallingBlock(gl);
                 if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
                 {
+                	int result=10;
                 	long now = SystemClock.uptimeMillis();;
-
-                	int result = (int)((now-lastcalltime)%game.getTimer());
-                	result = (result*10)/game.getTimer();
+                	if(now-lastcalltime>game.getTimer())
+                	{
+                		result=10;
+                	}
+                	else
+                	{
+                		result = (int)((now-lastcalltime)%game.getTimer());
+                		result = (result*10)/game.getTimer();
+                	}
             	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
 
             		this.drawBlocks(gl,game,result,10);
