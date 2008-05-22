@@ -467,9 +467,9 @@ public class GLThread extends Thread
     						xoff+x*2.0f,
     						yoff-y*2.0f,
     						zoff,
-    						(x-5.0f)/10.0f,
-    						randomgen.nextFloat()+0.2f,
-    						randomgen.nextFloat()+0.2f,
+    						(randomgen.nextFloat()-0.5f)/2.0f,
+    						randomgen.nextFloat()/40.0f+0.02f,
+    						randomgen.nextFloat()/40.0f+0.02f,
     						game.getGridValue(x, y),
     						0
     						
@@ -942,8 +942,8 @@ public class GLThread extends Thread
     private android.media.MediaPlayer mediaPlayer;
     public String message;
     private java.util.LinkedList<ExplodingCube> explodingCubes;
-    public static final float Z_ACCELERATION=1.0f;
-    public static final int MAX_EXPLOSION_FRAME=20;
+    public static final float Z_ACCELERATION=0.05f;
+    public static final int MAX_EXPLOSION_FRAME=40;
     private javax.sound.sampled.AndroidPlayBackEngine soundEngine;
     private long lastdrawtime;
     private java.util.Random randomgen;
