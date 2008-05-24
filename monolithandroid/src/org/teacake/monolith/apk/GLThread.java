@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.graphics.glutils.*;
 import android.util.Log;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -33,6 +34,7 @@ public class GLThread extends Thread
         mCube[7] = new Cube(0xffff,0x0ffff,0xffff,0x00ff);
         	
         mMoon = new Square(0xffff,0x0ffff,0xffff,0xffff);
+        mEarth = new Square(0xffff,0x0ffff,0xffff,0xffff);
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
         running=false;
         
@@ -81,6 +83,14 @@ public class GLThread extends Thread
 		glc.makeCurrent(view.getHolder());
 		
 		GL10 gl = (GL10) (glc.getGL());
+		this.textures = new GLTextures(gl,this.context);
+		this.textures.add(R.drawable.moon);
+		this.textures.add(R.drawable.earth);
+		this.textures.loadTextures();
+		mMoon.setTextureId(R.drawable.moon);
+		mMoon.setTextures(this.textures);
+		mEarth.setTextureId(R.drawable.earth);
+		mEarth.setTextures(textures);
 		init(gl);
 		while (!done)
 		{
@@ -104,7 +114,7 @@ public class GLThread extends Thread
         xoff = -10.0f;
         //-10.0f+x*2.0f, 21.0f-y*2.0f, zoff
     	yoff = 21.0f;
-    	zoff = -63.0f;
+    	zoff = -50.0f;
 
         mAnimate = false;
         if(gametype==Monolith.GAME_CLASSIC)
@@ -221,7 +231,7 @@ public class GLThread extends Thread
     	this.running = true;
     	//gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
     	//gl.glEnable(GL10.GL_TEXTURE_2D);
-    	Square.loadTexture(gl, view.getContext(), R.drawable.moon3);
+    	
     	//gl.glDisable(GL10.GL_TEXTURE_2D);
     	
         //this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
@@ -301,7 +311,10 @@ public class GLThread extends Thread
     		}
     	}
     }
-    
+    protected void drawStarfield(GL10 gl)
+    {
+    	
+    }
     protected void drawExplodingCube(GL10 gl, ExplodingCube c)
     {
     	Cube dc = this.mCube[c.blocktype];
@@ -444,10 +457,42 @@ public class GLThread extends Thread
     			else
     			{
     				drawExplodingCube(gl, c);
-    				c.x = c.x + c.ux*c.frame;
-    				c.y = c.y + c.uy*c.frame;
-    				c.z = c.z + c.uz*c.frame;
-    				c.uz = c.uz+c.frame*Z_ACCELERATION;
+    				switch(c.explosionType)
+    				{
+    				case 1:
+        				c.x = c.x + c.ux*c.frame;
+        				c.y = c.y + c.uy*c.frame;
+        				c.z = c.z + c.uz*c.frame;
+        				c.uz = c.uz+c.frame*Z_ACCELERATION;
+
+    					break;
+    				case 2:
+        				c.x = c.x +  (float)java.lang.StrictMath.sin((double)c.frame*1000.0d/(double)MAX_EXPLOSION_FRAME)*c.ux*c.frame;
+        				c.y = c.y + c.uy*c.frame;
+        				c.z = c.z + (float)java.lang.StrictMath.sin((double)c.frame/(double)MAX_EXPLOSION_FRAME)*c.uz*c.frame;
+        				c.uz = c.uz+c.frame*Z_ACCELERATION;
+    					
+    					break;
+    				case 3:
+        				c.x = c.x +  (float)java.lang.StrictMath.sin((double)c.frame/(double)MAX_EXPLOSION_FRAME)*c.ux*c.frame;
+        				c.y = c.y + c.uy*c.frame;
+        				c.z = c.z + c.uz*c.frame;
+        				c.uz = c.uz+c.frame*Z_ACCELERATION;
+    					break;
+    				case 4:
+        				c.x = c.x +  (float)java.lang.StrictMath.sin((double)c.frame/(double)MAX_EXPLOSION_FRAME)*c.ux*c.frame;
+        				c.y = c.y + c.uy*c.frame;
+        				c.z = c.z + c.uz*c.frame;
+        				c.uz = c.uz+c.frame*Z_ACCELERATION;    					
+    					break;
+    					default:
+   	    				c.x = c.x + c.ux*c.frame;
+        				c.y = c.y + c.uy*c.frame;
+        				c.z = c.z + c.uz*c.frame;
+        				c.uz = c.uz+c.frame*Z_ACCELERATION;
+
+    						break;
+    				}
     				c.frame++;
     			}
     		}
@@ -456,6 +501,7 @@ public class GLThread extends Thread
     public void createExplosions(Game game)
     {
     	int[] clearedLines = game.getClearedLines();
+    	int linecount=game.getClearedLineCount();
     	for (int y=0;y<clearedLines.length;y++)
     	{
     		if (clearedLines[y]==1)
@@ -474,6 +520,26 @@ public class GLThread extends Thread
     						0
     						
     				);
+    				switch(linecount)
+    				{
+    				case 1:
+    					c.explosionType=0;
+    					break;
+    				case 2:
+    					c.explosionType=1;
+    					break;
+    				case 3:
+    					c.explosionType=2;
+    					break;
+    					
+    				case 4:
+    					c.explosionType=3;
+    					break;
+    				default:
+    					c.explosionType=0;
+    					break;
+    				}
+    				c.explosionType=0;
     				this.explodingCubes.add(c);
     			}
         		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_EXPLOSION);
@@ -650,7 +716,7 @@ public class GLThread extends Thread
              * is resized.
              */
 
-
+            
             gl.glViewport(0, 0, w, h);
 
             /*
@@ -670,8 +736,8 @@ public class GLThread extends Thread
             }
             gl.glMatrixMode(GL10.GL_PROJECTION);
             gl.glLoadIdentity();
-            gl.glFrustumf(-ratio, ratio, -ratio, ratio, 2, 60);
-
+            //gl.glFrustumf(-ratio, ratio, -ratio, ratio, 2, 60);
+            android.opengl.GLU.gluPerspective(gl, 60, ratio, 1, 100);
             /*
              * dithering is enabled by default in OpenGL, unfortunately
              * it has a significant impact on performance in software
@@ -791,19 +857,26 @@ public class GLThread extends Thread
         			action=MSG_DO_NOTHING;
         			doMoveDown();
         		}            	
-                drawPlayfield(gl);
-                drawFallingBlock(gl);
-
-                drawNextPiece(gl);
             	gl.glLoadIdentity();
             	
             	
-            	//gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+            	//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
         		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
-        		mMoon.draw(gl,28.0f,28.0f,1.0f);
+        		
+        		mMoon.draw(gl,40.0f,40.0f,1.0f);
+        		gl.glLoadIdentity();
+        		//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+        		mEarth.setPosition(xoff+13,yoff-2, zoff+60);
+        		gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        		mEarth.draw(gl,10.0f,10.0f,1.0f);
+        		drawPlayfield(gl);
+                drawFallingBlock(gl);
+
+                drawNextPiece(gl);
+
         		//gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
         		
-        		gl.glPopMatrix();
+        		//gl.glPopMatrix();
                 //this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
                 //this.drawString(canvas,""+game.getScore(), 10, 34);
                 //this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
@@ -881,7 +954,7 @@ public class GLThread extends Thread
                 {
                  	drawBlocks(gl);
                 }	            
-	            //gl.glPopMatrix();
+	            gl.glPopMatrix();
 	            //game.gameLoop();
             }
 
@@ -915,6 +988,7 @@ public class GLThread extends Thread
     private Cube[]          mCube;
     private Cube 			mPlayfieldCube;
     private Square			mMoon;
+    private Square			mEarth;
     private float           mAngle;
     private long            mNextTime;
     private boolean         mAnimate;
@@ -978,5 +1052,5 @@ public class GLThread extends Thread
         }
     };
 	
-	
+	private GLTextures textures;
 }
