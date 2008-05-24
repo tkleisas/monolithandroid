@@ -189,51 +189,7 @@ package org.teacake.monolith.apk;
 	    	
 	    }    
 	    
-	    static void loadTexture(GL10 gl, Context context, int resource)
-	    {
-	    	Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), resource);
-	    	ByteBuffer bb = extract(bmp);
-	    	load(gl, bb, bmp.width(), bmp.height());
-	    			
-	    }
-	    private static ByteBuffer extract(Bitmap bmp)
-	    {
-	    	ByteBuffer bb = ByteBuffer.allocateDirect(bmp.height() * bmp.width() * 4);
-	    	bb.order(ByteOrder.BIG_ENDIAN);
-	    	IntBuffer ib = bb.asIntBuffer();
-	    	// Convert ARGB -> RGBA
-	    	for (int y = bmp.height() - 1; y > -1; y--)
-	    	{
-	    		
-	    		for (int x = 0; x < bmp.width(); x++)
-	    		{
-	    			int pix = bmp.getPixel(x, bmp.getHeight() - y - 1);
-	    			int alpha = ((pix >> 24) & 0xFF);
-	    			int red = ((pix >> 16) & 0xFF);
-	    			int green = ((pix >> 8) & 0xFF);
-	    			int blue = ((pix) & 0xFF);
-	    			
-	    			// Make up alpha for interesting effect
-	    			
-	    			//ib.put(red << 24 | green << 16 | blue << 8 | ((red + blue + green) / 3));
-	    			ib.put(red << 24 | green << 16 | blue << 8 | alpha);
-	    		}
-	    	}
-	    	bb.position(0);
-	    	return bb;
-	    }
-	    private static void load(GL10 gl, ByteBuffer bb, int width, int height)
-	    {
-	    	// Get a new texture name
-	    	int[] tmp_tex = new int[1];
-	    	gl.glGenTextures(1, tmp_tex, 0);
-	    	int tex = tmp_tex[0];
-	    	// Load it up
-	    	gl.glBindTexture(GL10.GL_TEXTURE_2D, tex);
-	    	gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA,width, height, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
-	    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
-	    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-	    }	    	
+	    	
 	    		
 	    public void setPosition(float x, float y, float z)
 	    {
@@ -266,6 +222,10 @@ package org.teacake.monolith.apk;
 	        gl.glFrontFace(GL10.GL_CCW);
 	    	gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	    	gl.glEnable(GL10.GL_TEXTURE_2D);
+	    	this.textures.setTexture(textureid);
+	    	gl.glDisable(GL10.GL_DEPTH_TEST);
+	    	gl.glEnable(GL10.GL_BLEND);
+	    	gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
 	        gl.glVertexPointer(3, GL10.GL_FIXED, 0, mVertexBuffer);
 	        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	        gl.glColorPointer(4, GL10.GL_FIXED, 0, mColorBuffer);
@@ -277,7 +237,9 @@ package org.teacake.monolith.apk;
 	        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
 	       
 	        gl.glDisable(GL10.GL_TEXTURE_2D);
-	        gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY); 
+	        gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+	        gl.glDisable(GL10.GL_BLEND);
+	        gl.glEnable(GL10.GL_DEPTH_TEST);
 	        //gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	        //gl.glEnable(GL10.GL_TEXTURE_2D);
 	        
@@ -286,6 +248,14 @@ package org.teacake.monolith.apk;
 	        //gl.glDisable(GL10.GL_TEXTURE_2D);
 	        //gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	    }
+	    public void setTextures(GLTextures textures)
+	    {
+	    	this.textures = textures;
+	    }
+	    public void setTextureId(int id)
+	    {
+	    	this.textureid = id;
+	    }
 	    private IntBuffer   mVertexBuffer;
 	    private IntBuffer   mColorBuffer;
 	    private ByteBuffer  mIndexBuffer;
@@ -293,6 +263,8 @@ package org.teacake.monolith.apk;
 	    private float xpos;
 	    private float ypos;
 	    private float zpos;
+	    private GLTextures textures;
+	    private int textureid;
 	
 
 }
