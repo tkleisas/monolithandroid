@@ -6,8 +6,8 @@ import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.graphics.glutils.*;
-import android.util.Log;
+//import android.graphics.glutils.*;
+//import android.util.Log;
 
 import javax.microedition.khronos.opengles.GL10;
 public class GLThread extends Thread
@@ -32,7 +32,7 @@ public class GLThread extends Thread
         mCube[5] = new Cube(0,0xff00,0xff00,0x10000);
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
         mCube[7] = new Cube(0xffff,0x0ffff,0xffff,0x00ff);
-        	
+        mStarfield = new Starfield(200,90.0f);	
         mMoon = new Square(0xffff,0x0ffff,0xffff,0xffff);
         mEarth = new Square(0xffff,0x0ffff,0xffff,0xffff);
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
@@ -468,21 +468,21 @@ public class GLThread extends Thread
     					break;
     				case 2:
         				c.x = c.x +  (float)java.lang.StrictMath.sin((double)c.frame*1000.0d/(double)MAX_EXPLOSION_FRAME)*c.ux*c.frame;
-        				c.y = c.y + c.uy*c.frame;
+        				c.y = c.y + c.uy*c.frame*Z_ACCELERATION;
         				c.z = c.z + (float)java.lang.StrictMath.sin((double)c.frame/(double)MAX_EXPLOSION_FRAME)*c.uz*c.frame;
         				c.uz = c.uz+c.frame*Z_ACCELERATION;
     					
     					break;
     				case 3:
         				c.x = c.x +  (float)java.lang.StrictMath.sin((double)c.frame/(double)MAX_EXPLOSION_FRAME)*c.ux*c.frame;
-        				c.y = c.y + c.uy*c.frame;
+        				c.y = c.y + c.uy*c.frame*Z_ACCELERATION;
         				c.z = c.z + c.uz*c.frame;
         				c.uz = c.uz+c.frame*Z_ACCELERATION;
     					break;
     				case 4:
         				c.x = c.x +  (float)java.lang.StrictMath.sin((double)c.frame/(double)MAX_EXPLOSION_FRAME)*c.ux*c.frame;
         				c.y = c.y + c.uy*c.frame;
-        				c.z = c.z + c.uz*c.frame;
+        				c.z = c.z + c.uz*c.frame*Z_ACCELERATION;
         				c.uz = c.uz+c.frame*Z_ACCELERATION;    					
     					break;
     					default:
@@ -513,9 +513,9 @@ public class GLThread extends Thread
     						xoff+x*2.0f,
     						yoff-y*2.0f,
     						zoff,
-    						(randomgen.nextFloat()-0.5f)/2.0f,
-    						randomgen.nextFloat()/40.0f+0.02f,
-    						randomgen.nextFloat()/40.0f+0.02f,
+    						(randomgen.nextFloat()-0.5f)/4.0f,
+    						randomgen.nextFloat()/80.0f+0.02f,
+    						randomgen.nextFloat()/80.0f+0.02f,
     						game.getGridValue(x, y),
     						0
     						
@@ -857,7 +857,9 @@ public class GLThread extends Thread
         			action=MSG_DO_NOTHING;
         			doMoveDown();
         		}            	
-            	gl.glLoadIdentity();
+
+        		
+        		gl.glLoadIdentity();
             	
             	
             	//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
@@ -869,6 +871,8 @@ public class GLThread extends Thread
         		mEarth.setPosition(xoff+13,yoff-2, zoff+60);
         		gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
         		mEarth.draw(gl,10.0f,10.0f,1.0f);
+            	gl.glLoadIdentity();
+            	mStarfield.draw(gl,0,rangle);        		
         		drawPlayfield(gl);
                 drawFallingBlock(gl);
 
@@ -985,6 +989,7 @@ public class GLThread extends Thread
     public Game	game;
     public Game demogame;
     private OpenGLContext   mGLContext;
+    private Starfield		mStarfield;
     private Cube[]          mCube;
     private Cube 			mPlayfieldCube;
     private Square			mMoon;
@@ -993,6 +998,7 @@ public class GLThread extends Thread
     private long            mNextTime;
     private boolean         mAnimate;
     private float			rangle;
+    
     private int xval;
     private int yval;
     public float zx=0.0f;
@@ -1016,8 +1022,8 @@ public class GLThread extends Thread
     private android.media.MediaPlayer mediaPlayer;
     public String message;
     private java.util.LinkedList<ExplodingCube> explodingCubes;
-    public static final float Z_ACCELERATION=0.05f;
-    public static final int MAX_EXPLOSION_FRAME=40;
+    public static final float Z_ACCELERATION=0.3f;
+    public static final int MAX_EXPLOSION_FRAME=100;
     private javax.sound.sampled.AndroidPlayBackEngine soundEngine;
     private long lastdrawtime;
     private java.util.Random randomgen;
