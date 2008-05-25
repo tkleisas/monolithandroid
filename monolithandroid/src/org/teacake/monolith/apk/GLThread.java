@@ -443,11 +443,13 @@ public class GLThread extends Thread
     	
     	java.util.ListIterator<ExplodingCube > iter=this.explodingCubes.listIterator();
     	ExplodingCube c = null;
+    	long now = System.currentTimeMillis();
     	if(iter!=null)
     	{
     		
     		while(iter.hasNext())
     		{
+    			
     			c=iter.next();
     			if(c.frame>GLView.MAX_EXPLOSION_FRAME)
     			{
@@ -456,40 +458,41 @@ public class GLThread extends Thread
     			}
     			else
     			{
+    				float elapsedTime = (now- c.startTime)/1000.0f;
     				drawExplodingCube(gl, c);
     				switch(c.explosionType)
     				{
     				case 1:
-        				c.x = c.x + c.ux*c.frame;
-        				c.y = c.y + c.uy*c.frame;
-        				c.z = c.z + c.uz*c.frame;
-        				c.uz = c.uz+c.frame*Z_ACCELERATION;
+        				c.x = c.x + c.ux*elapsedTime;
+        				c.y = c.y + c.uy*elapsedTime;
+        				c.z = c.z + c.uz*elapsedTime;
+        				c.uy = c.uy+elapsedTime*Y_ACCELERATION;
 
     					break;
     				case 2:
-        				c.x = c.x +  (float)java.lang.StrictMath.sin((double)c.frame*1000.0d/(double)MAX_EXPLOSION_FRAME)*c.ux*c.frame;
-        				c.y = c.y + c.uy*c.frame*Z_ACCELERATION;
-        				c.z = c.z + (float)java.lang.StrictMath.sin((double)c.frame/(double)MAX_EXPLOSION_FRAME)*c.uz*c.frame;
-        				c.uz = c.uz+c.frame*Z_ACCELERATION;
+        				c.x = c.x + c.ux*elapsedTime;
+        				c.y = c.y + c.uy*elapsedTime;
+        				c.z = c.z + c.uz*elapsedTime;
+        				c.uy = c.uy+elapsedTime*Y_ACCELERATION;
     					
     					break;
     				case 3:
-        				c.x = c.x +  (float)java.lang.StrictMath.sin((double)c.frame/(double)MAX_EXPLOSION_FRAME)*c.ux*c.frame;
-        				c.y = c.y + c.uy*c.frame*Z_ACCELERATION;
-        				c.z = c.z + c.uz*c.frame;
-        				c.uz = c.uz+c.frame*Z_ACCELERATION;
+        				c.x = c.x + c.ux*elapsedTime;
+        				c.y = c.y + c.uy*elapsedTime;
+        				c.z = c.z + c.uz*elapsedTime;
+        				c.uy = c.uy+elapsedTime*Y_ACCELERATION;
     					break;
     				case 4:
-        				c.x = c.x +  (float)java.lang.StrictMath.sin((double)c.frame/(double)MAX_EXPLOSION_FRAME)*c.ux*c.frame;
-        				c.y = c.y + c.uy*c.frame;
-        				c.z = c.z + c.uz*c.frame*Z_ACCELERATION;
-        				c.uz = c.uz+c.frame*Z_ACCELERATION;    					
+        				c.x = c.x + c.ux*elapsedTime;
+        				c.y = c.y + c.uy*elapsedTime;
+        				c.z = c.z + c.uz*elapsedTime;
+        				c.uy = c.uy+elapsedTime*Y_ACCELERATION;
     					break;
     					default:
-   	    				c.x = c.x + c.ux*c.frame;
-        				c.y = c.y + c.uy*c.frame;
-        				c.z = c.z + c.uz*c.frame;
-        				c.uz = c.uz+c.frame*Z_ACCELERATION;
+        				c.x = c.x + c.ux*elapsedTime;
+        				c.y = c.y + c.uy*elapsedTime;
+        				c.z = c.z + c.uz*elapsedTime;
+        				c.uy = c.uy+elapsedTime*Y_ACCELERATION;
 
     						break;
     				}
@@ -514,8 +517,8 @@ public class GLThread extends Thread
     						yoff-y*2.0f,
     						zoff,
     						(randomgen.nextFloat()-0.5f)/4.0f,
-    						randomgen.nextFloat()/80.0f+0.02f,
-    						randomgen.nextFloat()/80.0f+0.02f,
+    						(randomgen.nextFloat()-0.5f)*2,
+    						(randomgen.nextFloat()-0.5f)/4.0f,
     						game.getGridValue(x, y),
     						0
     						
@@ -1022,6 +1025,7 @@ public class GLThread extends Thread
     private android.media.MediaPlayer mediaPlayer;
     public String message;
     private java.util.LinkedList<ExplodingCube> explodingCubes;
+    public static final float Y_ACCELERATION=-0.3f;
     public static final float Z_ACCELERATION=0.3f;
     public static final int MAX_EXPLOSION_FRAME=100;
     private javax.sound.sampled.AndroidPlayBackEngine soundEngine;

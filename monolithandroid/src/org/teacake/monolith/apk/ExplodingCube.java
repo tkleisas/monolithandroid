@@ -25,6 +25,7 @@ public class ExplodingCube
 		this.uay = 0.0f;
 		this.uaz = 0.0f;
 		this.explosionType = EXPLOSION_TYPE_NORMAL;
+		this.startTime = System.currentTimeMillis();
 	}
 	public ExplodingCube(float x,float y,float z,float ux,float uy, float uz, float anglex,float angley, float anglez, float uax, float uay, float uaz, int blocktype,int frame)
 	{
@@ -58,6 +59,7 @@ public class ExplodingCube
 	public int blocktype;
 	public int frame;
 	public int explosionType;
+	public long startTime;
 		
 }
 
