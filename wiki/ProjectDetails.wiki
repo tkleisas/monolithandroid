@@ -1,12 +1,12 @@
 #summary MonolithAndroid project details
 
 = Development Environment =
-The code is currently developed using Eclipse with the ADT plugin. The current Android SDK used is m3-rc37a. The development machine is a Fujitsu Siemens Amilo M 1437 -p @2.13 GHz with 1Gig of RAM, running Windows XP Home Edition.
+The code is currently developed using Eclipse with the ADT plugin. The current Android SDK used is m3-rc37a. The development machine is a Self - built Intel Q6600 @2.4GHz with 8Gig of RAM, running Windows XP Home Edition.
 
 = Problems =
 
-  # Emulator speed. The emulator speed (Especially when using OpenGL/ES) is very slow. So development of responsive applications like games becomes very difficult.
-  # Sound problems. Sound emulation is not mature. Sound presents a lot of pauses and hiccups, and it takes some time to start and stop audio playback. This problem is probably related to the emulator speed problems.
+  # Emulator speed. The emulator speed (Especially when using OpenGL/ES) is slow. 
+  # Sound problems. Sound emulation is not mature. Sound presents a lot of pauses and hiccups especially under windows Vista, and it takes some time to start and stop audio playback.
   # SDK documentation is incomplete. Some areas of the API are not covered with examples and useful function reference. For example javax.sound.sampled package is not documented in detail. I hope that this will change when the first actual devices emerge.
 
 = Planned Features =
@@ -18,4 +18,4 @@ The game is being developed using Open Source Tools. Graphics and bitmaps are cr
 
 = Media =
 
-The game uses an image of the Tycho moon crater from Wikipedia found [http://en.wikipedia.org/wiki/Image:Tycho_Crater.jpg here]
+The game uses images from Wikipedia. The soundtrack is a song I recorded back in 2003. It is a drum track with a few guitar tracks layered on top of each other. The guitars are played by me. 
