@@ -1,7 +1,7 @@
 #summary MonolithAndroid project details
 
 = Development Environment =
-The code is currently developed using Eclipse with the ADT plugin. The current Android SDK used is m3-rc37a. The development machine is a Self - built Intel Q6600 @2.4GHz with 8Gig of RAM, running Windows XP Home Edition.
+The code is currently developed using Eclipse with the ADT plugin. The current Android SDK used is m5-rc15. The development machine is an Intel Q6600 @2.4GHz with 8Gig of RAM that I put together lately, running Windows Vista Ultimate Edition.
 
 = Problems =
 
