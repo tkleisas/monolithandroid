@@ -1,11 +1,15 @@
 package org.teacake.monolith.apk;
-import android.content.Resources;
+
+import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.OpenGLContext;
+import android.content.Context;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import javax.microedition.khronos.egl.*;
+import javax.microedition.khronos.opengles.*;
 //import android.graphics.glutils.*;
 //import android.util.Log;
 
@@ -43,6 +47,15 @@ public class GLThread extends Thread
         
         
 	}
+	
+    public void onWindowResize(int w, int h) {
+        synchronized(this) {
+            mWidth = w;
+            mHeight = h;
+            mSizeChanged = true;
+        }
+    }
+
 	public void setViewType(int viewtype)
 	{
 		this.viewType = viewtype;
@@ -76,33 +89,99 @@ public class GLThread extends Thread
 	public void run()
 	{
 		//Initialize OpenGL...
-		OpenGLContext glc = new OpenGLContext(
-		OpenGLContext.DEPTH_BUFFER);
-		// Bind context to current thread and surface
-		
-		glc.makeCurrent(view.getHolder());
-		
-		GL10 gl = (GL10) (glc.getGL());
-		this.textures = new GLTextures(gl,this.context);
-		this.textures.add(R.drawable.moon);
-		this.textures.add(R.drawable.earth);
-		this.textures.loadTextures();
-		mMoon.setTextureId(R.drawable.moon);
-		mMoon.setTextures(this.textures);
-		mEarth.setTextureId(R.drawable.earth);
-		mEarth.setTextures(textures);
-		init(gl);
+		/*
+         * Get an EGL instance
+         */
+        EGL10 egl = (EGL10)EGLContext.getEGL();
+
+        /*
+         * Get to the default display.
+         */
+        EGLDisplay dpy = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
+
+        /*
+         * We can now initialize EGL for that display
+         */
+        int[] version = new int[2];
+        egl.eglInitialize(dpy, version);
+
+        /*
+         * Specify a configuration for our opengl session
+         * and grab the first configuration that matches is
+         */
+        int[] configSpec = {
+                EGL10.EGL_RED_SIZE,      5,
+                EGL10.EGL_GREEN_SIZE,    6,
+                EGL10.EGL_BLUE_SIZE,     5,
+                EGL10.EGL_DEPTH_SIZE,   16,
+                EGL10.EGL_NONE
+        };
+        EGLConfig[] configs = new EGLConfig[1];
+        int[] num_config = new int[1];
+        egl.eglChooseConfig(dpy, configSpec, configs, 1, num_config);
+        EGLConfig config = configs[0];
+
+		EGLContext glc = egl.eglCreateContext(dpy, config,
+                EGL10.EGL_NO_CONTEXT, null);
+		EGLSurface surface = null;
+		GL10 gl =null;
+
 		while (!done)
 		{
+	        int w, h;
+	        boolean changed;
+	        synchronized(this) {
+	            changed = mSizeChanged;
+	            w = mWidth;
+	            h = mHeight;
+	            mSizeChanged = false;
+	        }
+
+	        if (changed)
+	        {
+	        	if(surface!=null)
+	        	{
+                    egl.eglMakeCurrent(dpy, EGL10.EGL_NO_SURFACE,
+                            EGL10.EGL_NO_SURFACE, EGL10.EGL_NO_CONTEXT);
+                    egl.eglDestroySurface(dpy, surface);
+
+	        	}
+				surface = egl.eglCreateWindowSurface(dpy, config, view.getHolder(),
+		                null);
+		
+				// Bind context to current thread and surface
+				
+				//glc.makeCurrent(view.getHolder());
+				egl.eglMakeCurrent(dpy, surface, surface, glc);
+		
+				gl = (GL10) (glc.getGL());
+				this.textures = new GLTextures(gl,this.context);
+				this.textures.add(R.drawable.moon);
+				this.textures.add(R.drawable.earth);
+				this.textures.loadTextures();
+				mMoon.setTextureId(R.drawable.moon);
+				mMoon.setTextures(this.textures);
+				mEarth.setTextureId(R.drawable.earth);
+				mEarth.setTextures(textures);
+				init(gl);
+	        }			
 		// Draw a single frame here...
 			drawFrame(gl);
-			
-			glc.post();
+			egl.eglSwapBuffers(dpy, surface);
+			if (egl.eglGetError() == EGL11.EGL_CONTEXT_LOST) {
+                // we lost the gpu, quit immediately
+                Context c = this.context;
+                if (c instanceof Activity) {
+                    ((Activity)c).finish();
+                }
+            }
+
+			//glc.post();
 			
 		}
 		
 		// Free OpenGL resources
-			glc.destroy();
+			//glc.destroy();
 	}
 	
 	public void reinit()
@@ -145,6 +224,7 @@ public class GLThread extends Thread
         this.lastcalltime = SystemClock.uptimeMillis();
         rangle=0;	
         this.running = true;
+        this.mSizeChanged = true;
 	}
 	
 	private void init(GL10 gl)
@@ -451,7 +531,7 @@ public class GLThread extends Thread
     		{
     			
     			c=iter.next();
-    			if(c.frame>GLView.MAX_EXPLOSION_FRAME)
+    			if(c.frame>MAX_EXPLOSION_FRAME)
     			{
     				
     				iter.remove();
@@ -673,7 +753,7 @@ public class GLThread extends Thread
 	    
 		if (running)
 		{
-			
+			/*
 			long current = SystemClock.uptimeMillis();
              
 			if (mNextTime < current && action==MSG_DO_NOTHING)
@@ -692,7 +772,16 @@ public class GLThread extends Thread
 	         	}			
 				
 			}
-             
+			overlay.postInvalidate();
+			*/
+			long current = SystemClock.uptimeMillis();
+
+			rangle=rangle+2.0f;
+         	if(rangle>360.0f)
+         	{
+         		rangle=0.0f;
+         	}			
+         	overlay.postInvalidate(); 
             
         /*
          * First, we need to get to the appropriate GL interface.
@@ -991,7 +1080,7 @@ public class GLThread extends Thread
 	public static final int MSG_ROTATE_PLAYFIELD=4;
     public Game	game;
     public Game demogame;
-    private OpenGLContext   mGLContext;
+    private EGLContext      mGLContext;
     private Starfield		mStarfield;
     private Cube[]          mCube;
     private Cube 			mPlayfieldCube;
@@ -1028,7 +1117,9 @@ public class GLThread extends Thread
     public static final float Y_ACCELERATION=-0.3f;
     public static final float Z_ACCELERATION=0.3f;
     public static final int MAX_EXPLOSION_FRAME=100;
-    private javax.sound.sampled.AndroidPlayBackEngine soundEngine;
+    public int mWidth ;
+    public int mHeight ;
+    public boolean mSizeChanged = true;
     private long lastdrawtime;
     private java.util.Random randomgen;
     private android.graphics.Bitmap background;

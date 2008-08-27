@@ -2,6 +2,7 @@ package org.teacake.monolith.apk;
 import javax.microedition.khronos.opengles.*;
 
 import android.content.Context;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import java.lang.Integer;
@@ -53,14 +54,14 @@ public class GLTextures {
 	}
     private static ByteBuffer extract(Bitmap bmp)
     {
-    	ByteBuffer bb = ByteBuffer.allocateDirect(bmp.height() * bmp.width() * 4);
+    	ByteBuffer bb = ByteBuffer.allocateDirect(bmp.getHeight() * bmp.getWidth() * 4);
     	bb.order(ByteOrder.BIG_ENDIAN);
     	IntBuffer ib = bb.asIntBuffer();
     	// Convert ARGB -> RGBA
-    	for (int y = bmp.height() - 1; y > -1; y--)
+    	for (int y = bmp.getHeight() - 1; y > -1; y--)
     	{
     		
-    		for (int x = 0; x < bmp.width(); x++)
+    		for (int x = 0; x < bmp.getWidth(); x++)
     		{
     			int pix = bmp.getPixel(x, bmp.getHeight() - y - 1);
     			int alpha = ((pix >> 24) & 0xFF);
