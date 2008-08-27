@@ -3,7 +3,8 @@ package org.teacake.monolith.apk;
 import android.view.View;
 import android.content.Context;
 import android.graphics.*;
-import android.content.Resources;
+
+import android.content.res.Resources;;
 public class GameOverlay extends View {
 	public GameOverlay(Context context)
 	{

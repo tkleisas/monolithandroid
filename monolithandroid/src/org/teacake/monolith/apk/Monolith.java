@@ -6,11 +6,14 @@ import android.view.*;
 
 public class Monolith extends Activity
 {
-    
+	private static final int MONOLITH_ID = Menu.FIRST;
+    private static final int CLASSIC_ID = Menu.FIRST + 1;
+    private static final int EXIT_ID = Menu.FIRST + 2;
+
     
 	public static final int GAME_CLASSIC = 0;
 	public static final int GAME_MONOLITH = 1;
-    GLView view;
+    //GLView view;
     GameSurfaceView gsf;
     GameOverlay overlay;
     OptionsView optionsView;
@@ -28,7 +31,7 @@ public class Monolith extends Activity
         overlay = new GameOverlay(this);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         optionsView = new OptionsView(getApplication());
-        android.content.AssetManager mgr = getApplication().getAssets();
+        android.content.res.AssetManager mgr = getApplication().getAssets();
         gsf = new GameSurfaceView(this,overlay);
         gsf.setViewType(GLThread.VIEW_INTRO);
         gsf.setGameType(Monolith.GAME_MONOLITH);
@@ -67,63 +70,53 @@ public class Monolith extends Activity
         
          
     }
-    
+    public void playMonolithGame()
+    {
+
+		gsf.setGameType(Monolith.GAME_MONOLITH);
+		gsf.setViewType(GLThread.VIEW_GAME);
+		gsf.initGame();
+    	
+    }
+    public void playClassicGame()
+    {
+    	gsf.setGameType(Monolith.GAME_CLASSIC);
+    	gsf.setViewType(GLThread.VIEW_GAME);
+    	gsf.initGame();   	
+    }
+    public void exitApplication()
+    {
+    		
+			finish();
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case MONOLITH_ID:
+            playMonolithGame();
+            return true;
+        case CLASSIC_ID:
+        	playClassicGame();
+        	return true;
+        case EXIT_ID:
+        	exitApplication();
+        	return true;
+        	
+        }
+       
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
         
-        menu.add(0, 0, R.string.m_new_monolith, new Runnable() {
-            public void run() {
-                //mLunarView.doStart();
-
-            	gsf.setGameType(Monolith.GAME_MONOLITH);
-            	gsf.setViewType(GLThread.VIEW_GAME);
-            	gsf.initGame();
-            	
-            	
-            	
-            }
-        });
+        menu.add(0, MONOLITH_ID,0 ,R.string.m_new_monolith);
+        menu.add(0, CLASSIC_ID,0,R.string.m_new_classic);
+        menu.add(0, EXIT_ID,0,R.string.s_exit_game );
         
-        menu.add(1, 0, R.string.m_new_classic, new Runnable() {
-            public void run() {
-                //mLunarView.doStart();
-
-
-            	gsf.setGameType(Monolith.GAME_CLASSIC);
-            	gsf.setViewType(GLThread.VIEW_GAME);
-            	gsf.initGame();
+        
                 
-            	
-            	
-            }
-        });       
-        
-		menu.add(2, 0, "test", new Runnable()
-		{
-			public void run() {
-				setContentView(gsf);
-				
-			}
-			
-		});
-		menu.add(3, 0, R.string.s_exit_game, new Runnable()
-		{
-			public void run() {
-				
-				
-				finish();
-			}
-			
-		});
-		
-		
-		
-		
-
-        
-        
         /*
         menu.add(0, 0, R.string.menu_stop, new Runnable() {
             public void run() {
