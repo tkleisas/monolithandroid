@@ -818,6 +818,7 @@ public class GLThread extends Thread
              */
 
             float ratio = (float)w / h;
+            /*
             if(w<h)
             {
             	ratio = (float)w/h;
@@ -826,6 +827,7 @@ public class GLThread extends Thread
             {
             	ratio = (float)(h/w);
             }
+            */
             gl.glMatrixMode(GL10.GL_PROJECTION);
             gl.glLoadIdentity();
             //gl.glFrustumf(-ratio, ratio, -ratio, ratio, 2, 60);
