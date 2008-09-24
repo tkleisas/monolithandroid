@@ -86,7 +86,7 @@ public class Monolith extends Activity
     }
     public void exitApplication()
     {
-    		
+    		gsf.stopMusic();
 			finish();
     }
     @Override

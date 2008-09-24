@@ -78,6 +78,50 @@ public class SoundSystem extends Thread
 		
 		
 	}
+	private void exitSoundSystem()
+	{
+		try
+		{
+			if(this.musicPlayer!=null)
+			{
+				this.musicPlayer.stop();
+			}
+		}
+		catch(Exception e)
+		{
+		}
+		try
+		{
+			if(this.soundPlayerExplosion!=null)
+			{
+				this.soundPlayerExplosion.stop();
+			}
+		}
+		catch(Exception e)
+		{
+		}	
+		try
+		{
+			if(this.soundPlayerPlaceBlock!=null)
+			{
+				this.soundPlayerPlaceBlock.stop();
+			}
+		}
+		catch(Exception e)
+		{
+		}		
+		try
+		{
+			if(this.soundPlayerRotateBlock!=null)
+			{
+				this.soundPlayerRotateBlock.stop();
+			}
+		}
+		catch(Exception e)
+		{
+		}			
+	}
+	
 	private void playRotateBlock()
 	{
 		int duration=0;
@@ -184,6 +228,10 @@ public class SoundSystem extends Thread
 				case SOUND_PLAY_PLACE_BLOCK:
 				playPlaceBlock();	
 				break;
+				case SOUND_EXIT:
+					exitSoundSystem();
+					done = true;
+				break;
 				
 			}
 			action=SOUND_DO_NOTHING;
@@ -217,12 +265,14 @@ public class SoundSystem extends Thread
     private android.content.Context context;
     public long lastEventTime; 
     public int action;
+    public static final int SOUND_EXIT=-2;
     public static final int SOUND_DO_NOTHING=-1;
     public static final int SOUND_START_MUSIC=0;
     public static final int SOUND_STOP_MUSIC=1;
     public static final int SOUND_PLAY_ROTATE_BLOCK=2;
     public static final int SOUND_PLAY_EXPLOSION=3;
     public static final int SOUND_PLAY_PLACE_BLOCK=4;
+    
     private android.media.MediaPlayer musicPlayer;
     private android.media.MediaPlayer soundPlayerRotateBlock;
     private android.media.MediaPlayer soundPlayerExplosion;
