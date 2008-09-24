@@ -369,6 +369,11 @@ public class GLThread extends Thread
 		message.sendToTarget();
     	game.rotateCurrentBlockClockwise();
     }
+    public synchronized void stopMusic()
+    {
+		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_EXIT);
+		message.sendToTarget();  
+    }
     protected void drawNextPiece(GL10 gl)
     {
     	

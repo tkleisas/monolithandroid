@@ -74,7 +74,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 		glThread.start();
 		
 	}
-	@Override
+	public void stopMusic()
+	{
+		glThread.stopMusic();
+	}
 	public void surfaceDestroyed(SurfaceHolder holder)
 	{
 		// Stop our drawing thread. The Surface will be destroyed
