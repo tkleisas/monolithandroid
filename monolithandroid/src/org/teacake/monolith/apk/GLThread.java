@@ -163,7 +163,8 @@ public class GLThread extends Thread
 				mMoon.setTextures(this.textures);
 				mEarth.setTextureId(R.drawable.earth);
 				mEarth.setTextures(textures);
-				init(gl);
+				//init(gl);
+				reinit();
 	        }			
 		// Draw a single frame here...
 			drawFrame(gl);
