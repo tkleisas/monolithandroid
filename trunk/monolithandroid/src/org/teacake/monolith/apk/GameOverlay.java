@@ -11,6 +11,8 @@ public class GameOverlay extends View {
 		super(context);
 		this.overlayType = OVERLAY_TYPE_GAME_MONOLITH;
 		res = context.getResources();
+		curtainPaint = new Paint();
+		curtainPaint.setARGB(255, 0, 0, 0);
 		gameOverPaint = new Paint();
         gameOverPaint.setARGB(190, 190, 190, 0);
         gameOverPaint.setTextSize(40);
@@ -28,7 +30,7 @@ public class GameOverlay extends View {
         message="monolith android";
         goalpha=0;
         direction=8;
-        
+        this.curtain = 0;
 
     	
 
@@ -50,7 +52,7 @@ public class GameOverlay extends View {
 		this.gameOverPaint.setAlpha(goalpha);
         this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
         this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
-	
+        drawCurtain(canvas);
 		switch (overlayType)
 		{
 		case OVERLAY_TYPE_INTRO:
@@ -90,7 +92,23 @@ public class GameOverlay extends View {
     {
     	canvas.drawText(str, x+1, y+1, statusTextPaint2);
     	canvas.drawText(str, x, y, statusTextPaint1);
-    }	
+    }
+    public void drawCurtain(Canvas canvas)
+    {
+    	int width = canvas.getWidth();
+    	int height = canvas.getHeight();
+        int curtainHeight = (curtain*height)/100;
+        if(curtain==0)
+        {
+        	curtainHeight = 0;
+        }
+        else
+        {
+        	canvas.drawRect(0, 0, width, curtainHeight, curtainPaint);
+        }
+    	
+    }
+    
 	private void drawClassicGameOverlay(Canvas canvas)
 	{
         this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
@@ -163,6 +181,11 @@ public class GameOverlay extends View {
 	{
 		this.overlayType = overlayType;
 	}
+	public void setCurtain(int theCurtain)
+	{
+		this.curtain = theCurtain;
+	}
+	private Paint curtainPaint;
 	private Paint gameOverPaint;
 	private Paint statusTextPaint1;
 	private Paint statusTextPaint2;
@@ -171,6 +194,7 @@ public class GameOverlay extends View {
 	private Resources res;
 	private int goalpha;
 	private int direction;
+	private int curtain;
 	public static final int OVERLAY_TYPE_INTRO = 0;
 	public static final int OVERLAY_TYPE_GAME_CLASSIC=1;
 	public static final int OVERLAY_TYPE_GAME_MONOLITH=2;

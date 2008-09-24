@@ -44,7 +44,7 @@ public class GLThread extends Thread
         
         this.explodingCubes = new java.util.LinkedList<ExplodingCube>();
         randomgen = new java.util.Random(SystemClock.uptimeMillis());
-        
+        this.overlay.setCurtain(100);
         
 	}
 	
@@ -186,6 +186,7 @@ public class GLThread extends Thread
 	
 	public void reinit()
 	{
+		this.overlay.setCurtain(100);
     	xval = 0;
     	yval =0;
         zx=0.0f;
@@ -224,13 +225,13 @@ public class GLThread extends Thread
         this.lastcalltime = SystemClock.uptimeMillis();
         rangle=0;	
         this.running = true;
-        this.mSizeChanged = true;
+        this.mSizeChanged = false;
 	}
 	
 	private void init(GL10 gl)
 	{
 
-    	
+    	this.overlay.setCurtain(100);
     	xval = 0;
     	yval =0;
         zx=0.0f;
@@ -779,6 +780,7 @@ public class GLThread extends Thread
 			}
 			overlay.postInvalidate();
 			*/
+			this.overlay.setCurtain(0);
 			long current = SystemClock.uptimeMillis();
 
 			rangle=rangle+2.0f;
@@ -1124,8 +1126,8 @@ public class GLThread extends Thread
     public static final float Y_ACCELERATION=-0.3f;
     public static final float Z_ACCELERATION=0.3f;
     public static final int MAX_EXPLOSION_FRAME=100;
-    public int mWidth ;
-    public int mHeight ;
+    public int mWidth;
+    public int mHeight;
     public boolean mSizeChanged = true;
     private long lastdrawtime;
     private java.util.Random randomgen;

@@ -17,8 +17,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	{
 		super(context);
 		this.context = context;
-		getHolder().addCallback(this);
 		this.overlay = overlay;
+		this.overlay.setCurtain(100);
+		getHolder().addCallback(this);
+
 		
 	}
 
