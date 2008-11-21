@@ -71,31 +71,31 @@ public class MonolithGameData implements Game
 		switch(theStartingLevel)
 		{
 		case 1:
-			this.timer = 1000;
-			break;
-		case 2:
-			this.timer = 900;
-			break;
-		case 3:
-			this.timer = 800;
-			break;
-		case 4:
-			this.timer = 700;
-			break;
-		case 5:
-			this.timer = 600;
-			break;
-		case 6:
 			this.timer = 500;
 			break;
-		case 7:
+		case 2:
+			this.timer = 450;
+			break;
+		case 3:
 			this.timer = 400;
 			break;
-		case 8:
+		case 4:
+			this.timer = 350;
+			break;
+		case 5:
 			this.timer = 300;
 			break;
-		case 9:
+		case 6:
+			this.timer = 250;
+			break;
+		case 7:
 			this.timer = 200;
+			break;
+		case 8:
+			this.timer = 166;
+			break;
+		case 9:
+			this.timer = 133;
 			break;
 		case 10:
 			this.timer = 100;

@@ -28,10 +28,11 @@ public class Starfield
 			vertices[i*3]=org.teacake.util.FixedPointFloat.floatToFixedPoint(xpos);
 			vertices[i*3+1]=org.teacake.util.FixedPointFloat.floatToFixedPoint(ypos);
 			vertices[i*3+2]=org.teacake.util.FixedPointFloat.floatToFixedPoint(zpos);
-			colors[i*3]=random.nextInt();
-			colors[i*3+1]=random.nextInt();
-			colors[i*3+2]=random.nextInt();
-			colors[i*3+3]=random.nextInt();
+			int color =random.nextInt();
+			colors[i*3]=color;
+			colors[i*3+1]=color;
+			colors[i*3+2]=color;
+			colors[i*3+3]=color;
 		}
 	    ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length*4);
 	    vbb.order(ByteOrder.nativeOrder());

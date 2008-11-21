@@ -223,8 +223,8 @@ package org.teacake.monolith.apk;
 	    	gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	    	gl.glEnable(GL10.GL_TEXTURE_2D);
 	    	this.textures.setTexture(textureid);
-	    	gl.glDisable(GL10.GL_DEPTH_TEST);
-	    	gl.glEnable(GL10.GL_BLEND);
+	    	//gl.glDisable(GL10.GL_DEPTH_TEST);
+	    	//gl.glEnable(GL10.GL_BLEND);
 	    	gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
 	        gl.glVertexPointer(3, GL10.GL_FIXED, 0, mVertexBuffer);
 	        gl.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -238,8 +238,8 @@ package org.teacake.monolith.apk;
 	       
 	        gl.glDisable(GL10.GL_TEXTURE_2D);
 	        gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-	        gl.glDisable(GL10.GL_BLEND);
-	        gl.glEnable(GL10.GL_DEPTH_TEST);
+	        //gl.glDisable(GL10.GL_BLEND);
+	        //gl.glEnable(GL10.GL_DEPTH_TEST);
 	        //gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
 	        //gl.glEnable(GL10.GL_TEXTURE_2D);
 	        
