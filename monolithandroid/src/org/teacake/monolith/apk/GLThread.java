@@ -36,7 +36,7 @@ public class GLThread extends Thread
         mCube[5] = new Cube(0,0xff00,0xff00,0x10000);
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
         mCube[7] = new Cube(0xffff,0x0ffff,0xffff,0x00ff);
-        mStarfield = new Starfield(200,90.0f);	
+        mStarfield = new Starfield(10000,90.0f);	
         mMoon = new Square(0xffff,0x0ffff,0xffff,0xffff);
         mEarth = new Square(0xffff,0x0ffff,0xffff,0xffff);
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
@@ -839,7 +839,8 @@ public class GLThread extends Thread
             gl.glMatrixMode(GL10.GL_PROJECTION);
             gl.glLoadIdentity();
             //gl.glFrustumf(-ratio, ratio, -ratio, ratio, 2, 60);
-            android.opengl.GLU.gluPerspective(gl, 60, ratio, 1, 100);
+            
+            android.opengl.GLU.gluPerspective(gl, 60, ratio, 1, 130);
             /*
              * dithering is enabled by default in OpenGL, unfortunately
              * it has a significant impact on performance in software

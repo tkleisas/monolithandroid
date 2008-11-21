@@ -14,7 +14,7 @@ public class SoundSystem extends Thread
 		this.context = context;
 		try
 		{
-			musicPlayer = android.media.MediaPlayer.create(context, R.raw.intro);
+			musicPlayer = android.media.MediaPlayer.create(context, R.raw.monolith);
 			soundPlayerRotateBlock = android.media.MediaPlayer.create(context, R.raw.pluck);
 			soundPlayerExplosion = android.media.MediaPlayer.create(context, R.raw.explosion);
 			soundPlayerPlaceBlock = android.media.MediaPlayer.create(context, R.raw.place);
