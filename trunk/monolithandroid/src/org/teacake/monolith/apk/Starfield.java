@@ -11,6 +11,7 @@ import java.lang.Math;
 public class Starfield
 {
 	
+	
 	public Starfield(int numstars,float radius)
 	{
 		this.numstars = numstars;
@@ -28,7 +29,9 @@ public class Starfield
 			vertices[i*3]=org.teacake.util.FixedPointFloat.floatToFixedPoint(xpos);
 			vertices[i*3+1]=org.teacake.util.FixedPointFloat.floatToFixedPoint(ypos);
 			vertices[i*3+2]=org.teacake.util.FixedPointFloat.floatToFixedPoint(zpos);
-			int color =random.nextInt();
+			int color = random.nextInt();
+			color=(color & 0xff);
+			color = 0x00000000 | (color<<16) | (color<<8) | color;
 			colors[i*3]=color;
 			colors[i*3+1]=color;
 			colors[i*3+2]=color;

@@ -495,14 +495,14 @@ public class GLThread extends Thread
     protected void drawFallingBlock(GL10 gl)
     {
     	int result = 0;
-    	if(now-lastcalltime>demogame.getTimer() || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+    	if(now-lastcalltime>game.getTimer() || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
     	{
     		result=0;
     	}
     	else
     	{
-    		result=(int)((now-lastcalltime)%demogame.getTimer());
-    		result = (result*10)/demogame.getTimer();
+    		result=(int)((now-lastcalltime)%game.getTimer());
+    		result = (result*10)/game.getTimer();
     	}
     	float ystart=21.0f;
     	if(game.getCurrentBlock().color>=0 && game.getCurrentBlock().color<this.mCube.length)
