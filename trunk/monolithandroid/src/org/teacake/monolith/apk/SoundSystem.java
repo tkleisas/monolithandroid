@@ -192,7 +192,7 @@ public class SoundSystem extends Thread
 			currentPosition=soundPlayerPlaceBlock.getCurrentPosition();
 			//if(currentPosition==duration-1)
 			{
-				soundPlayerPlaceBlock.seekTo(0);
+				
 				soundPlayerPlaceBlock.start();
 			}
 

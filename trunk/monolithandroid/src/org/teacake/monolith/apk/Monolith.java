@@ -317,6 +317,7 @@ public class Monolith extends Activity
 
         return handled;
     } 
+
     private int xval;
     private int yval;
     private int zx;

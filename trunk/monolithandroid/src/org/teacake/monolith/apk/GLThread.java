@@ -25,8 +25,13 @@ public class GLThread extends Thread
 		this.view = view;
 		this.overlay = overlay;
 		this.context = context;
-		soundSystem = new SoundSystem(context);
-		soundSystem.start();
+		soundManager = new SoundManager(context);
+		soundManager.addSound(R.raw.monolith, true);
+		soundManager.addSound(R.raw.explosion2, false);
+		soundManager.addSound(R.raw.place, false);
+		soundManager.addSound(R.raw.rotate,false);
+		soundManager.startSound();
+		soundManager.playSound(R.raw.monolith);
         mCube = new Cube[8];
         mCube[0] = new Cube(0xff00,0,0,0x10000);
         mCube[1] = new Cube(0,0xff00,0,0x10000);
@@ -252,32 +257,7 @@ public class GLThread extends Thread
         	game = new MonolithGameData();
         }
         
-        if(this.viewType==VIEW_INTRO)
-        {
-        	try
-        	{
-        		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_START_MUSIC);
-        		message.sendToTarget();
-        		
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        }
-        else
-        {
-        	try
-        	{
-        		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_STOP_MUSIC);
-        		message.sendToTarget();
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        	
-        }
+
         
         
         game.initGame(1);
@@ -331,8 +311,9 @@ public class GLThread extends Thread
     	game.gameLoop();
     	if(game.isBlockPlaced())
     	{
-    		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
-    		message.sendToTarget();    		
+    		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
+    		SoundManager.playSound(R.raw.place);
+    		//message.sendToTarget();    		
     	}
     	game.flagCompletedLines();
     	this.createExplosions(game);
@@ -367,14 +348,16 @@ public class GLThread extends Thread
     	{
     		return;
     	}
-		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_ROTATE_BLOCK);
-		message.sendToTarget();
+		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_ROTATE_BLOCK);
+		SoundManager.playSound(R.raw.rotate);
+    	//message.sendToTarget();
     	game.rotateCurrentBlockClockwise();
     }
     public synchronized void stopMusic()
     {
-		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_EXIT);
-		message.sendToTarget();  
+		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_EXIT);
+		//soundManager.stopSound();
+    	//message.sendToTarget();  
     }
     protected void drawNextPiece(GL10 gl)
     {
@@ -632,8 +615,9 @@ public class GLThread extends Thread
     				c.explosionType=0;
     				this.explodingCubes.add(c);
     			}
-        		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_EXPLOSION);
-        		message.sendToTarget();
+        		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_EXPLOSION);
+        		//message.sendToTarget();
+    			SoundManager.playSound(R.raw.explosion2);
     		}
     	}
     }
@@ -783,12 +767,13 @@ public class GLThread extends Thread
 			*/
 			this.overlay.setCurtain(0);
 			long current = SystemClock.uptimeMillis();
-
-			rangle=rangle+2.0f;
+			
+			rangle=rangle+((current-lastdrawtime)/1000.0f)*2.0f;
          	if(rangle>360.0f)
          	{
          		rangle=0.0f;
          	}			
+         	lastdrawtime=current;
          	overlay.postInvalidate(); 
             
         /*
@@ -1032,8 +1017,9 @@ public class GLThread extends Thread
 	            		game.gameLoop();
 	            		if(game.isBlockPlaced())
 	            		{
-	                		android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
-	                		message.sendToTarget();   	            			
+	                		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
+	                		//message.sendToTarget();
+	            			SoundManager.playSound(R.raw.place);
 	            		}
 	            		game.flagCompletedLines();
 	            		this.createExplosions(game);
@@ -1139,7 +1125,8 @@ public class GLThread extends Thread
     private int steps;
     private GameOverlay overlay;
     public int action;
-    private SoundSystem soundSystem;
+    //private SoundSystem soundSystem;
+    private SoundManager soundManager;
     private android.content.Context context;
     public final Handler messageHandler = new Handler() {
         @Override
