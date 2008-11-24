@@ -30,8 +30,8 @@ public class Starfield
 			vertices[i*3+1]=org.teacake.util.FixedPointFloat.floatToFixedPoint(ypos);
 			vertices[i*3+2]=org.teacake.util.FixedPointFloat.floatToFixedPoint(zpos);
 			int color = random.nextInt();
-			color=(color & 0xff);
-			color = 0x00000000 | (color<<16) | (color<<8) | color;
+			//color=(color & 0xff);
+			//color = //0x00000000 | (color<<16) | (color<<8) | color;
 			colors[i*3]=color;
 			colors[i*3+1]=color;
 			colors[i*3+2]=color;
