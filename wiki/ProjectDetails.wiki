@@ -1,7 +1,7 @@
 #summary MonolithAndroid project details
 
 = Development Environment =
-The code is currently developed using Eclipse with the ADT plugin. The current Android SDK used is m5-rc15. The development machine is an Intel Q6600 @2.4GHz with 8Gig of RAM that I put together lately, running Windows Vista Ultimate Edition.
+The code is currently developed using Eclipse with the ADT plugin. The current Android SDK used is 1.0. The development machine is an AMD Phenom 9750 @2.4GHz with 8Gig of RAM that I put together lately and a Macbook @2.4GHz 4Gig of Ram, running Windows Vista Ultimate Edition and MacOSX respectively.
 
 = Problems =
 
@@ -14,8 +14,8 @@ To be available
 
 = Other Tools =
 
-The game is being developed using Open Source Tools. Graphics and bitmaps are created using the GIMP paint program. Music is created using Audacity and OpenMPT tracker. Demo videos are created using CamStudio.
+The game is being developed using Open Source Tools. Graphics and bitmaps are created using the GIMP paint program. Music is created using Audacity, Apple Garageband and OpenMPT tracker. Demo videos are created using CamStudio.
 
 = Media =
 
-The game uses images from Wikipedia. The soundtrack is a song I recorded back in 2003. It is a drum track with a few guitar tracks layered on top of each other. The guitars are played by me. 
+The game uses images from Wikipedia. The soundtrack is a song I recorded back in 2003. It is a drum track with a few guitar tracks layered on top of each other. The guitars are played by me. An additional song (monolith) that I created using Garageband may be also used.
