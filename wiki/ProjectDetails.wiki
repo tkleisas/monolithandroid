@@ -5,9 +5,9 @@ The code is currently developed using Eclipse with the ADT plugin. The current A
 
 = Problems =
 
-  # Emulator speed. The emulator speed (Especially when using OpenGL/ES) is slow. 
-  # Sound problems. Sound emulation is not mature. Sound presents a lot of pauses and hiccups especially under windows Vista, and it takes some time to start and stop audio playback.
-  # SDK documentation is incomplete. Some areas of the API are not covered with examples and useful function reference. For example javax.sound.sampled package is not documented in detail. I hope that this will change when the first actual devices emerge.
+# Emulator speed. The emulator speed (Especially when using OpenGL/ES) is slow. 
+# Sound problems. Sound emulation is not mature. Sound presents a lot of pauses and hiccups especially under windows Vista, and it takes some time to start and stop audio playback.
+# SDK documentation is incomplete. Some areas of the API are not covered with examples and useful function reference. For example javax.sound.sampled package is not documented in detail. I hope that this will change when the first actual devices emerge.
 
 = Planned Features =
 To be available
