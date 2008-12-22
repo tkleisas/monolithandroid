@@ -79,6 +79,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	public void stopMusic()
 	{
 		glThread.stopMusic();
+		//glThread.requestExitAndWait();
+		//glThread = null;
 	}
 	public void surfaceDestroyed(SurfaceHolder holder)
 	{

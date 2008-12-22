@@ -356,7 +356,7 @@ public class GLThread extends Thread
     public synchronized void stopMusic()
     {
 		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_EXIT);
-		//soundManager.stopSound();
+		soundManager.stopSound();
     	//message.sendToTarget();  
     }
     protected void drawNextPiece(GL10 gl)
@@ -478,14 +478,15 @@ public class GLThread extends Thread
     protected void drawFallingBlock(GL10 gl)
     {
     	int result = 0;
-    	if(now-lastcalltime>game.getTimer() || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+    	float offset = 0.0f;
+    	if(/*now-lastcalltime>game.getTimer() ||*/ game.getStatus()==SimpleGameData.STATUS_EVOLVING)
     	{
     		result=0;
     	}
     	else
     	{
     		result=(int)((now-lastcalltime)%game.getTimer());
-    		result = (result*10)/game.getTimer();
+    		offset = (float)((now-lastcalltime)%game.getTimer())/(float)game.getTimer();
     	}
     	float ystart=21.0f;
     	if(game.getCurrentBlock().color>=0 && game.getCurrentBlock().color<this.mCube.length)
@@ -497,7 +498,7 @@ public class GLThread extends Thread
     			gl.glLoadIdentity();
     			if(result!=0 && game.canMoveBlockDown())
     			{
-    				c.setPosition(-10.0f+(game.getCurrentBlock().xPos+game.getCurrentBlock().subblocks[i].xpos)*2.0f,-(game.getCurrentBlock().yPos+game.getCurrentBlock().subblocks[i].ypos)*2.0f+ystart-(((float)result/10.0f)*2.0f),zoff);
+    				c.setPosition(-10.0f+(game.getCurrentBlock().xPos+game.getCurrentBlock().subblocks[i].xpos)*2.0f,-(game.getCurrentBlock().yPos+game.getCurrentBlock().subblocks[i].ypos)*2.0f+ystart-offset*2.0f,zoff);
     			}
     			else
     			{
