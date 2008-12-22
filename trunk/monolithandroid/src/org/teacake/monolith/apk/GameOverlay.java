@@ -15,7 +15,7 @@ public class GameOverlay extends View {
 		curtainPaint.setARGB(255, 0, 0, 0);
 		gameOverPaint = new Paint();
         gameOverPaint.setARGB(190, 190, 190, 0);
-        gameOverPaint.setTextSize(40);
+        gameOverPaint.setTextSize(36);
         statusTextPaint1 = new Paint();
         statusTextPaint2 = new Paint();
         statusTextPaint1.setARGB(200, 255, 0, 0);
@@ -31,6 +31,7 @@ public class GameOverlay extends View {
         goalpha=0;
         direction=8;
         this.curtain = 0;
+        this.lastDrawTime = System.currentTimeMillis();
 
     	
 
@@ -38,6 +39,9 @@ public class GameOverlay extends View {
 	}
 	@Override protected synchronized void onDraw(Canvas canvas)
 	{
+		
+		int timeindex = this.currentTextColor%5000;
+		
 		goalpha=goalpha+direction;
 		if(goalpha>255)
 		{
@@ -48,6 +52,18 @@ public class GameOverlay extends View {
 		{
 			direction=8;
 			goalpha=goalpha+direction;
+		}
+		if(overlayType==OVERLAY_TYPE_INTRO)
+		{
+			if(timeindex<2500)
+			{
+				goalpha = (timeindex*255)/2500;
+			}
+			else
+			{
+				goalpha = 255-((timeindex-2500)*255)/2500;
+			}
+			
 		}
 		this.gameOverPaint.setAlpha(goalpha);
         this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
@@ -83,7 +99,29 @@ public class GameOverlay extends View {
     }	
 	private void drawIntroOverlay(Canvas canvas)
 	{
+		Long now = System.currentTimeMillis();
+		
 		String logo="MonolithAndroid";
+		
+		int index = (int)((now-this.lastDrawTime)%25000);
+		
+		this.currentTextColor = index;
+		if (index>=0 && index<10000)
+		{
+			logo = "MonolithAndroid";
+		}
+		if(index>=10000 && index<15000)
+		{
+			logo = "by Tasos Kleisas";
+		}
+		if(index>=15000 && index<20000)
+		{
+			logo = "www.mprizols.org";
+		}
+		if(index>20000 && index<25000)
+		{
+			logo = "press MENU to play";
+		}
     	int textxpos = this.getTextWidth(logo,this.gameOverPaint);
     	canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
 
@@ -195,6 +233,8 @@ public class GameOverlay extends View {
 	private int goalpha;
 	private int direction;
 	private int curtain;
+	private long lastDrawTime;
+	private int currentTextColor;
 	public static final int OVERLAY_TYPE_INTRO = 0;
 	public static final int OVERLAY_TYPE_GAME_CLASSIC=1;
 	public static final int OVERLAY_TYPE_GAME_MONOLITH=2;

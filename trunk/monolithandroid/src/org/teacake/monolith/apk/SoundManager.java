@@ -79,7 +79,25 @@ public class SoundManager extends Thread
 	}
 	public void stopSound()
 	{
+		if(players==null)
+			return;
+		if(players.keySet()==null)
+			return;
+		if(players.keySet().iterator()==null)
+		{
+			return;
+		}
+		java.util.Iterator <Integer> iterator = players.keySet().iterator();
+		
+		while(iterator.hasNext())
+		{
+			MediaPlayer mp = players.get(iterator.next());
+			mp.stop();
+			
+		}
+		
 		isRunning=false;
+		
 	}
 	public void stopSound(int resid)
 	{
