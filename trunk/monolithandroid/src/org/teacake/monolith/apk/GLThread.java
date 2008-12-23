@@ -41,7 +41,7 @@ public class GLThread extends Thread
         mCube[5] = new Cube(0,0xff00,0xff00,0x10000);
         mCube[6] = new Cube(0xf000,0xf0000,0,0x10000);
         mCube[7] = new Cube(0xffff,0x0ffff,0xffff,0x00ff);
-        mStarfield = new Starfield(10000,90.0f);	
+        mStarfield = new Starfield(100,90.0f);	
         mMoon = new Square(0xffff,0x0ffff,0xffff,0xffff);
         mEarth = new Square(0xffff,0x0ffff,0xffff,0xffff);
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
@@ -161,10 +161,10 @@ public class GLThread extends Thread
 		
 				gl = (GL10) (glc.getGL());
 				this.textures = new GLTextures(gl,this.context);
-				this.textures.add(R.drawable.moon);
+				this.textures.add(R.drawable.moon2);
 				this.textures.add(R.drawable.earth);
 				this.textures.loadTextures();
-				mMoon.setTextureId(R.drawable.moon);
+				mMoon.setTextureId(R.drawable.moon2);
 				mMoon.setTextures(this.textures);
 				mEarth.setTextureId(R.drawable.earth);
 				mEarth.setTextures(textures);
@@ -358,6 +358,7 @@ public class GLThread extends Thread
 		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_EXIT);
 		soundManager.stopSound();
     	//message.sendToTarget();  
+    	this.soundManager.stopSound();
     }
     protected void drawNextPiece(GL10 gl)
     {

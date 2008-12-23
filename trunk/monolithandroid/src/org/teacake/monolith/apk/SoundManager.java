@@ -1,8 +1,6 @@
 package org.teacake.monolith.apk;
 import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
+
 public class SoundManager extends Thread
 {
 	SoundManager(android.content.Context context)
@@ -18,9 +16,10 @@ public class SoundManager extends Thread
 		{
 			MediaPlayer mediaPlayer = MediaPlayer.create(context, resid);
 			
+			
+			mediaPlayer.setLooping(isLooping);			
 			players.put(new Integer(resid), mediaPlayer);
-			mediaPlayer.prepareAsync();
-			mediaPlayer.setLooping(isLooping);
+
 			
 		}
 		catch(Exception e)
@@ -62,7 +61,7 @@ public class SoundManager extends Thread
 
 			try
 			{
-				java.lang.Thread.currentThread().sleep(100);
+				java.lang.Thread.currentThread().sleep(200);
 			}
 			catch(Exception e)
 			{
