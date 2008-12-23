@@ -123,7 +123,7 @@ public class GameOverlay extends View {
 			logo = "press MENU to play";
 		}
     	int textxpos = this.getTextWidth(logo,this.gameOverPaint);
-    	canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+    	canvas.drawText(logo, (canvas.getWidth()-textxpos)/2, (canvas.getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
 
 	}
     public void drawString(Canvas canvas,String str,int x,int y)
@@ -133,17 +133,22 @@ public class GameOverlay extends View {
     }
     public void drawCurtain(Canvas canvas)
     {
+    	long now = System.currentTimeMillis();
     	int width = canvas.getWidth();
     	int height = canvas.getHeight();
-        int curtainHeight = (curtain*height)/100;
-        if(curtain==0)
-        {
-        	curtainHeight = 0;
-        }
-        else
-        {
-        	canvas.drawRect(0, 0, width, curtainHeight, curtainPaint);
-        }
+    	float aperture = 1.0f;
+    	if(now-this.lastDrawTime<10000)
+    	{
+    		canvas.drawRect(0,0, width,height, curtainPaint);
+    		
+    	}
+    	else if(now-this.lastDrawTime>=10000 && now-this.lastDrawTime<20000)
+    	{
+    		aperture = ((float)(now-this.lastDrawTime-10000))/10000.0f;
+    		canvas.drawRect(0,0,width,(height/2)-(height/2)*aperture,curtainPaint);
+    		canvas.drawRect(0,(height/2)+(height/2)*aperture,width,height, curtainPaint);
+    		//canvas.drawRect(0,height/2,width,(height/2)*aperture,curtainPaint);
+    	}
     	
     }
     
