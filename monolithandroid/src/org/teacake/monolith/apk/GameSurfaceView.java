@@ -56,6 +56,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         	switch(this.gameType)
         	{
         	case Monolith.GAME_CLASSIC:
+        		
         		overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_GAME_CLASSIC);
         		break;
         	case Monolith.GAME_MONOLITH:
