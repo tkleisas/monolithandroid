@@ -77,6 +77,7 @@ public class Monolith extends Activity
 		gsf.setGameType(Monolith.GAME_MONOLITH);
 		gsf.setViewType(GLThread.VIEW_GAME);
 		gsf.initGame();
+
     	
     }
     public void playClassicGame()
