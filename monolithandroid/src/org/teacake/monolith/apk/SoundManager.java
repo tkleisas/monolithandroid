@@ -61,7 +61,7 @@ public class SoundManager extends Thread
 
 			try
 			{
-				java.lang.Thread.currentThread().sleep(200);
+				java.lang.Thread.currentThread().sleep(50);
 			}
 			catch(Exception e)
 			{
