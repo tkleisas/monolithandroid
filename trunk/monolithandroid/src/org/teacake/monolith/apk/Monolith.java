@@ -119,47 +119,7 @@ public class Monolith extends Activity
         
         
                 
-        /*
-        menu.add(0, 0, R.string.menu_stop, new Runnable() {
-            public void run() {
-                mLunarView.setMode(LunarView.LOSE, LunarLander.this.
-                        getText(R.string.message_stopped));
-            }
-        });
-
-
-        menu.add(0, 0, R.string.menu_pause, new Runnable() {
-            public void run() {
-                mLunarView.doPause();
-            }
-        });
-
-        menu.add(0, 0, R.string.menu_resume, new Runnable() {
-            public void run() {
-                mLunarView.doResume();
-            }
-        });
-
-        menu.addSeparator(0, 0);
-
-        menu.add(0, 0, R.string.menu_easy, new Runnable() {
-            public void run() {
-                mLunarView.setDifficulty(LunarView.EASY);
-            }
-        });
-
-        menu.add(0, 0, R.string.menu_medium, new Runnable() {
-            public void run() {
-                mLunarView.setDifficulty(LunarView.MEDIUM);
-            }
-        });
-
-        menu.add(0, 0, R.string.menu_hard, new Runnable() {
-            public void run() {
-                mLunarView.setDifficulty(LunarView.HARD);
-            }
-        });
-		*/
+   
         return true;
     }   
     

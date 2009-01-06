@@ -130,7 +130,7 @@ public class GLThread extends Thread
                 EGL10.EGL_NO_CONTEXT, null);
 		EGLSurface surface = null;
 		GL10 gl =null;
-
+		
 		while (!done)
 		{
 	        int w, h;
@@ -153,12 +153,13 @@ public class GLThread extends Thread
 	        	}
 				surface = egl.eglCreateWindowSurface(dpy, config, view.getHolder(),
 		                null);
-		
+			
 				// Bind context to current thread and surface
 				
 				//glc.makeCurrent(view.getHolder());
+				
 				egl.eglMakeCurrent(dpy, surface, surface, glc);
-		
+				
 				gl = (GL10) (glc.getGL());
 				this.textures = new GLTextures(gl,this.context);
 				this.textures.add(R.drawable.moon2);
