@@ -9,6 +9,9 @@ import java.lang.Integer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import android.opengl.GLU;
+import android.opengl.GLUtils;
+
 public class GLTextures {
 	public GLTextures(GL10 gl,Context context)
 	{
@@ -25,7 +28,8 @@ public class GLTextures {
 		for(int i=0;i<textureFiles.length;i++)
 		{
 	    	Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), textureFiles[i]);
-	    	ByteBuffer bb = extract(bmp);
+	    	
+	    	//ByteBuffer bb = extract(bmp);
 	    	// Get a new texture name
 	    	// Load it up
 	    	this.textureMap.put(new Integer(textureFiles[i]),new Integer(i));
@@ -33,10 +37,11 @@ public class GLTextures {
 	    	int width = bmp.getWidth();
 	    	int height = bmp.getHeight();
 	    	gl.glBindTexture(GL10.GL_TEXTURE_2D, tex);
-	    	gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA,width, height, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
+	    	//gl.glTexImage2D(GL10.GL_TEXTURE_2D, 0, GL10.GL_RGBA,width, height, 0, GL10.GL_RGBA, GL10.GL_UNSIGNED_BYTE, bb);
 	    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
 	    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-	    	
+	    	GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bmp, 0);
+	    	bmp.recycle();
 		}
 	}
 	public void setTexture(int id)
@@ -70,9 +75,12 @@ public class GLTextures {
     			int blue = ((pix) & 0xFF);
     			
     			// Make up alpha for interesting effect
-    			
+    			//if(alpha>0)
+    			//{
+    				alpha=0;
+    			//}
     			//ib.put(red << 24 | green << 16 | blue << 8 | ((red + blue + green) / 3));
-    			ib.put(red << 24 | green << 16 | blue << 8 | alpha);
+    			ib.put( red << 24 | green << 16 | blue << 8 | alpha   );
     		}
     	}
     	bb.position(0);
