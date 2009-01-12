@@ -129,6 +129,17 @@ public class GameOverlay extends View {
 		}
 		if(index>=25000 && index<35000)
 		{
+			
+			int highScoresHeight = 12*18;
+			int basey=(canvas.getHeight()-highScoresHeight)/2;
+			int highScoresWidth = this.getTextWidth(res.getString(R.string.s_highscores), hsPaint);
+			int xoffset = (canvas.getWidth()-248)/2;
+			canvas.drawText(res.getString(R.string.s_highscores), (canvas.getWidth()-highScoresWidth)/2, basey,hsPaint);
+			canvas.drawText(res.getString(R.string.s_playername), xoffset+32, basey+18, hsPaint);
+			canvas.drawText(res.getString(R.string.s_score), xoffset+96, basey+18, hsPaint);
+			canvas.drawText(res.getString(R.string.s_level), xoffset+208, basey+18, hsPaint);
+			
+			
 			for(int i=0;i<hsTable.getHighScoreCount();i++)
 			{
 				String number = ""+(i+1)+".";
@@ -147,10 +158,10 @@ public class GameOverlay extends View {
 					name = " "+name;
 				}
 				String level = "" + hsTable.getHighScore(i).getLevel();
-				canvas.drawText(number, 32, 32+i*18, hsPaint);
-				canvas.drawText(name, 64, 32+i*18, hsPaint);
-				canvas.drawText(score, 128, 32+i*18, hsPaint);
-				canvas.drawText(level,200,32+i*18,hsPaint);
+				canvas.drawText(number, xoffset, basey+2*18+i*18, hsPaint);
+				canvas.drawText(name, xoffset+32, basey+2*18+i*18, hsPaint);
+				canvas.drawText(score, xoffset+96, basey+2*18+i*18, hsPaint);
+				canvas.drawText(level,xoffset+208,basey+2*18+i*18,hsPaint);
 				
 			}
 			
@@ -263,6 +274,10 @@ public class GameOverlay extends View {
 	public void setCurtain(int theCurtain)
 	{
 		this.curtain = theCurtain;
+	}
+	public HighScoreTable getHighScoreTable()
+	{
+		return this.hsTable;
 	}
 	private Paint curtainPaint;
 	private Paint gameOverPaint;
