@@ -21,5 +21,7 @@
     <string name="m_new_monolith">New Monolith Game</string>
     <string name="m_new_classic">New Classic Game</string>
     <string name="s_exit_game">Exit Game</string>
-    
+    <string name="s_highscores">High Scores</string>
+    <string name="s_playername">Player</string>
+
 </resources>
