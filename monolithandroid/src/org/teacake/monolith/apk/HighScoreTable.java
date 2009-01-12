@@ -40,6 +40,19 @@ public class HighScoreTable {
 		}
 		return false;
 	}
+	public boolean isHighScore(int score)
+	{
+		for(int i=0;i<highScores.size();i++)
+		{
+			if(highScores.get(i).getScore()<score)
+			{
+				
+				return true;
+			}
+		}
+		return false;
+		
+	}
 	public void saveHighScores()
 	{
 		for(int i=0;i<highScoreTableSize;i++)
