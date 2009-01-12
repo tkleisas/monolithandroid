@@ -37,31 +37,42 @@ public class SoundManager extends Thread
 			{
 				while(soundEvents.size()>0)
 				{
-				
-					
 					Integer resid = soundEvents.remove();
-					
 					if(resid!=null)
 					{
-						MediaPlayer mediaPlayer=players.get(resid);
-						if(!mediaPlayer.isPlaying())
+						currentPlayer = resid.intValue();
+					
+					
+						Thread t = new Thread()
 						{
-							mediaPlayer.seekTo(0);
-							mediaPlayer.start();
-						}
+							public void run()
+							{
+								try
+								{
+									int player = currentPlayer;
+									MediaPlayer mediaPlayer=players.get(player);
+									mediaPlayer.seekTo(0);
+									mediaPlayer.start();
+								}
+								catch(Exception e2)
+								{
+									
+								}
+								
+							}
+						};
+						t.start();
 						
 					}
-					
 				}
 			}
 			catch(Exception e)
 			{
-				
 			}
 
 			try
 			{
-				java.lang.Thread.currentThread().sleep(50);
+				java.lang.Thread.currentThread().sleep(100);
 			}
 			catch(Exception e)
 			{
@@ -92,6 +103,7 @@ public class SoundManager extends Thread
 		{
 			MediaPlayer mp = players.get(iterator.next());
 			mp.stop();
+			//mp.release();
 			
 		}
 		
@@ -110,6 +122,7 @@ public class SoundManager extends Thread
 			
 		}
 	}
+	public int currentPlayer;
 	private boolean isRunning;
 	private java.util.HashMap<Integer, MediaPlayer> players;
 	private android.content.Context context;
