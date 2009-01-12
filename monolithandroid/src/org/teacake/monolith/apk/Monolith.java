@@ -17,18 +17,19 @@ public class Monolith extends Activity
     GameSurfaceView gsf;
     GameOverlay overlay;
     OptionsView optionsView;
-    
+    HighScoreTable hsTable;
  
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        hsTable = new HighScoreTable(this,10);
         
         //view = new GLView( getApplication(),GAME_MONOLITH );
         //view.setViewType(GLView.VIEW_INTRO);
         //view.doInit();
         //view.running=true;
-        overlay = new GameOverlay(this);
+        overlay = new GameOverlay(this,hsTable);
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         optionsView = new OptionsView(getApplication());

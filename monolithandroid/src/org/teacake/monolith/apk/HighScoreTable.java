@@ -18,8 +18,9 @@ public class HighScoreTable {
 	
 			int score = prefs.getInt("score"+i, 0);
 			String name = prefs.getString("name"+i, "teacake");
-			String level = prefs.getString("level"+i, "0");
+			String level = prefs.getString("level"+i, "1");
 			HighScore hs = new HighScore(score,name,level);
+			this.highScores.add(hs);
 		}
 	}
 	public boolean isHighScore(int score, String name, String level)

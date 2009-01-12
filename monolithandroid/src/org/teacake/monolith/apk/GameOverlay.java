@@ -6,9 +6,10 @@ import android.graphics.*;
 
 import android.content.res.Resources;;
 public class GameOverlay extends View {
-	public GameOverlay(Context context)
+	public GameOverlay(Context context, HighScoreTable table)
 	{
 		super(context);
+		this.hsTable = table;
 		this.overlayType = OVERLAY_TYPE_GAME_MONOLITH;
 		res = context.getResources();
 		curtainPaint = new Paint();
@@ -21,7 +22,10 @@ public class GameOverlay extends View {
         statusTextPaint1.setARGB(200, 255, 0, 0);
         statusTextPaint1.setTextSize(14);
         statusTextPaint2.setTextSize(14);
-        statusTextPaint2.setARGB(255, 128, 128, 128);   	
+        statusTextPaint2.setARGB(255, 128, 128, 128); 
+        hsPaint = new Paint();
+        hsPaint.setTextSize(16);
+        hsPaint.setARGB(190, 190, 190, 0);
         score="0";
         level="1";
         hiscore="0";
@@ -32,7 +36,7 @@ public class GameOverlay extends View {
         direction=8;
         this.curtain = 0;
         this.lastDrawTime = System.currentTimeMillis();
-
+        
     	
 
 		
@@ -66,6 +70,7 @@ public class GameOverlay extends View {
 			
 		}
 		this.gameOverPaint.setAlpha(goalpha);
+		this.hsPaint.setAlpha(goalpha);
         this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
         this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
         drawCurtain(canvas);
@@ -103,7 +108,7 @@ public class GameOverlay extends View {
 		
 		String logo="MonolithAndroid";
 		
-		int index = (int)((now-this.lastDrawTime)%25000);
+		int index = (int)((now-this.lastDrawTime)%35000);
 		
 		this.currentTextColor = index;
 		if (index>=0 && index<10000)
@@ -118,13 +123,43 @@ public class GameOverlay extends View {
 		{
 			logo = "www.mprizols.org";
 		}
-		if(index>20000 && index<25000)
+		if(index>=20000 && index<25000)
 		{
 			logo = "press MENU to play";
 		}
-    	int textxpos = this.getTextWidth(logo,this.gameOverPaint);
-    	canvas.drawText(logo, (canvas.getWidth()-textxpos)/2, (canvas.getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
-
+		if(index>=25000 && index<35000)
+		{
+			for(int i=0;i<hsTable.getHighScoreCount();i++)
+			{
+				String number = ""+(i+1)+".";
+				while(number.length()<3)
+				{
+					number = " "+number;
+				}
+				String score = "" +hsTable.getHighScore(i).getScore();
+				while(score.length()<8)
+				{
+					score = "0"+score;
+				}
+				String name = "" +hsTable.getHighScore(i).getName();
+				while(name.length()<3)
+				{
+					name = " "+name;
+				}
+				String level = "" + hsTable.getHighScore(i).getLevel();
+				canvas.drawText(number, 32, 32+i*18, hsPaint);
+				canvas.drawText(name, 64, 32+i*18, hsPaint);
+				canvas.drawText(score, 128, 32+i*18, hsPaint);
+				canvas.drawText(level,200,32+i*18,hsPaint);
+				
+			}
+			
+		}
+		else
+		{
+			int textxpos = this.getTextWidth(logo,this.gameOverPaint);
+			canvas.drawText(logo, (canvas.getWidth()-textxpos)/2, (canvas.getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+		}
 	}
     public void drawString(Canvas canvas,String str,int x,int y)
     {
@@ -185,6 +220,7 @@ public class GameOverlay extends View {
         	canvas.drawText(res.getString(R.string.s_evolving), (getWidth()-this.evolvingXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
         }
 	}
+	
 	private void drawPuzzleGameOverlay(Canvas canvas)
 	{
 		
@@ -232,6 +268,7 @@ public class GameOverlay extends View {
 	private Paint gameOverPaint;
 	private Paint statusTextPaint1;
 	private Paint statusTextPaint2;
+	private Paint hsPaint;
 	private int gameOverXPos;
 	private int evolvingXPos;
 	private Resources res;
@@ -240,6 +277,7 @@ public class GameOverlay extends View {
 	private int curtain;
 	private long lastDrawTime;
 	private int currentTextColor;
+	private HighScoreTable hsTable;
 	public static final int OVERLAY_TYPE_INTRO = 0;
 	public static final int OVERLAY_TYPE_GAME_CLASSIC=1;
 	public static final int OVERLAY_TYPE_GAME_MONOLITH=2;
