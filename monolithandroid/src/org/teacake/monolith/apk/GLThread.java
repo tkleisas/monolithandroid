@@ -10,7 +10,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import javax.microedition.khronos.egl.*;
 import javax.microedition.khronos.opengles.*;
-import android.view.View;
 //import android.graphics.glutils.*;
 //import android.util.Log;
 
@@ -18,9 +17,9 @@ import javax.microedition.khronos.opengles.GL10;
 public class GLThread extends Thread
 {
 
-	private final org.teacake.monolith.apk.GameSurfaceView view;
+	private  final org.teacake.monolith.apk.GameSurfaceView view;
 	private boolean done;
-	public GLThread(org.teacake.monolith.apk.GameSurfaceView view,View highscoreNameEntry, GameOverlay overlay, android.content.Context context)
+	public GLThread(org.teacake.monolith.apk.GameSurfaceView view, GameOverlay overlay, android.content.Context context)
 	{
 		done=false;
 		this.view = view;
@@ -926,6 +925,7 @@ public class GLThread extends Thread
             	//canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
             	
             }
+            int savedaction = action;
             if (this.viewType==VIEW_GAME)
             {
             	if (action == MSG_ROTATE)
@@ -990,6 +990,7 @@ public class GLThread extends Thread
 	            	//this.drawString(canvas,""+game.getEnergy(),10,154);
 
 	            }
+	            
 	            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
 	            switch (game.getStatus())
 	            {
@@ -999,15 +1000,33 @@ public class GLThread extends Thread
 	            	{
 	            		if(this.overlay.getHighScoreTable().isHighScore(this.game.getScore()))
 	            		{
-	            			this.highscoreEntry = true;
-	            			this.highscoreNameEntry.`
-	            			this.highscoreNameEntry.setVisibility(View.VISIBLE);
-	            			android.widget.EditText nameEntry = (android.widget.EditText)this.highscoreNameEntry.findViewById(R.id.texteditname);
-	            			nameEntry.setText("");
-	            			this.highscoreNameEntry.findViewById(R.id.buttonacceptname).setOnClickListener(this.buttonAcceptNameClicked);
+	            			this.highscoreEntry=true;
+	            			this.overlay.setDrawType(GameOverlay.DRAW_NAME_ENTRY);
 	            		}
-	            			
-	            		
+	            	}
+	            	else
+	            	{
+            			if(savedaction==MSG_ROTATE)
+            			{
+            				this.overlay.selectPreviousChar();
+            			}
+            			if(savedaction==MSG_MOVE_DOWN)
+            			{
+            				this.overlay.selectNextChar();
+            			}
+            			if(savedaction==MSG_MOVE_LEFT)
+            			{
+            				this.overlay.moveBack();
+            			}
+            			if(savedaction==MSG_MOVE_RIGHT)
+            			{
+            				this.highscoreEntry = this.overlay.moveForward();
+            				if(!this.highscoreEntry)
+            				{
+            					this.viewType =VIEW_INTRO;
+            					this.overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+            				}
+            			}
 	            	}
 	            	break;
 	            case SimpleGameData.STATUS_EVOLVING:
@@ -1080,14 +1099,7 @@ public class GLThread extends Thread
 
 
     // ------------------------------------------------------------------------
-    private  View.OnClickListener buttonAcceptNameClicked = new View.OnClickListener() 
-    {
-    	public void onClick(View v)
-    	{
-    		overlay.getHighScoreTable().isHighScore(game.getScore(),((android.widget.EditText)highscoreNameEntry.findViewById(R.id.texteditname)).getText().toString(),""+game.getLevel());                 
-    		((android.widget.EditText)highscoreNameEntry).setVisibility(View.INVISIBLE);
-    	}     
-    }; 
+
 
     
     private static final int INVALIDATE = 1;
@@ -1151,7 +1163,7 @@ public class GLThread extends Thread
     private boolean backgroundInitialized;
     private int steps;
     private GameOverlay overlay;
-    public View highscoreNameEntry;
+    
     
     public int action;
     //private SoundSystem soundSystem;

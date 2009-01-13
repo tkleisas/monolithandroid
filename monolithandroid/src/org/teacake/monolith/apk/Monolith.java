@@ -31,15 +31,13 @@ public class Monolith extends Activity
         //view.doInit();
         //view.running=true;
         
-        highscoreNameEntry = View.inflate(this.getApplicationContext(), R.layout.highscore, null);
-        highscoreNameEntry.setVisibility(View.INVISIBLE);
         
         overlay = new GameOverlay(this,hsTable);
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         optionsView = new OptionsView(getApplication());
         android.content.res.AssetManager mgr = getApplication().getAssets();
-        gsf = new GameSurfaceView(this,overlay,highscoreNameEntry);
+        gsf = new GameSurfaceView(this,overlay);
         gsf.setViewType(GLThread.VIEW_INTRO);
         gsf.setGameType(Monolith.GAME_MONOLITH);
         
@@ -71,8 +69,6 @@ public class Monolith extends Activity
         setContentView(gsf);
         gsf.setVisibility(View.VISIBLE);        
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
-        this.addContentView(highscoreNameEntry,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
-        //highscoreNameEntry.setVisibility(View.INVISIBLE);
          
         
          
