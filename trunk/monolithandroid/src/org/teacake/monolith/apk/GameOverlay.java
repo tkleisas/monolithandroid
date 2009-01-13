@@ -224,8 +224,8 @@ public class GameOverlay extends View {
     private void drawCenteredOptionText(Canvas canvas, int y, String text, Paint thePaint)
     {
     	int theWidth = this.getTextWidth(text, thePaint);
-    	theWidth = theWidth+this.leftarrow.getWidth()+this.rightarrow.getWidth();
-    	int x = (canvas.getWidth()-theWidth)/2;
+    	int theFullWidth = theWidth+this.leftarrow.getWidth()+this.rightarrow.getWidth();
+    	int x = (canvas.getWidth()-theFullWidth)/2;
     	canvas.drawBitmap(leftarrow,null,new Rect(x,y,x+leftarrow.getWidth(),y+leftarrow.getHeight()),thePaint);
     	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
     	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
@@ -234,7 +234,7 @@ public class GameOverlay extends View {
     private void drawOptionsOverlay(Canvas canvas)
     {
     	drawOptionText(canvas,10,10,"this is a test", this.gameOverPaint);
-    	drawCenteredOptionText(canvas,200,"Game type is", this.gameOverPaint);
+    	drawCenteredOptionText(canvas,50,"Game type is", this.gameOverPaint);
     	drawOptionText(canvas,10,100,"Game type is", this.hsPaint);
     }
 	private void drawClassicGameOverlay(Canvas canvas)
