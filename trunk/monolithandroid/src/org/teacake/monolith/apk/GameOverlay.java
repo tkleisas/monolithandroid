@@ -16,8 +16,11 @@ public class GameOverlay extends View {
 		curtainPaint = new Paint();
 		curtainPaint.setARGB(255, 0, 0, 0);
 		gameOverPaint = new Paint();
-        gameOverPaint.setARGB(190, 190, 190, 0);
+        gameOverPaint.setARGB(250, 250, 220, 50);
         gameOverPaint.setTextSize(36);
+        gameOverPaint2 = new Paint();
+        gameOverPaint2.setARGB(255,255,30,30);
+        gameOverPaint2.setTextSize(36);
         statusTextPaint1 = new Paint();
         statusTextPaint2 = new Paint();
         statusTextPaint1.setARGB(200, 255, 0, 0);
@@ -26,7 +29,7 @@ public class GameOverlay extends View {
         statusTextPaint2.setARGB(255, 128, 128, 128); 
         hsPaint = new Paint();
         hsPaint.setTextSize(16);
-        hsPaint.setARGB(190, 190, 190, 0);
+        hsPaint.setARGB(250, 250, 220, 50);
         score="0";
         level="1";
         hiscore="0";
@@ -37,7 +40,7 @@ public class GameOverlay extends View {
         direction=8;
         this.curtain = 0;
         this.lastDrawTime = System.currentTimeMillis();
-        
+        this.nameEntryLength = 9;
     	
 
 		
@@ -144,8 +147,8 @@ public class GameOverlay extends View {
 			int xoffset = (canvas.getWidth()-248)/2;
 			canvas.drawText(res.getString(R.string.s_highscores), (canvas.getWidth()-highScoresWidth)/2, basey,hsPaint);
 			canvas.drawText(res.getString(R.string.s_playername), xoffset+32, basey+18, hsPaint);
-			canvas.drawText(res.getString(R.string.s_score), xoffset+96, basey+18, hsPaint);
-			canvas.drawText(res.getString(R.string.s_level), xoffset+208, basey+18, hsPaint);
+			canvas.drawText(res.getString(R.string.s_score), xoffset+150, basey+18, hsPaint);
+			canvas.drawText(res.getString(R.string.s_level), xoffset+230, basey+18, hsPaint);
 			
 			
 			for(int i=0;i<hsTable.getHighScoreCount();i++)
@@ -168,8 +171,8 @@ public class GameOverlay extends View {
 				String level = "" + hsTable.getHighScore(i).getLevel();
 				canvas.drawText(number, xoffset, basey+2*18+i*18, hsPaint);
 				canvas.drawText(name, xoffset+32, basey+2*18+i*18, hsPaint);
-				canvas.drawText(score, xoffset+96, basey+2*18+i*18, hsPaint);
-				canvas.drawText(level,xoffset+208,basey+2*18+i*18,hsPaint);
+				canvas.drawText(score, xoffset+150, basey+2*18+i*18, hsPaint);
+				canvas.drawText(level,xoffset+240,basey+2*18+i*18,hsPaint);
 				
 			}
 			
@@ -249,45 +252,67 @@ public class GameOverlay extends View {
 		for(int i=0;i<this.nameEntry.length();i++)
 		{
 			String charstr = this.nameEntry.substring(i,i+1);
-			
-			canvas.drawText(this.nameEntry.substring(i,i+1),(canvas.getWidth()-8*16)/2+i*xw,canvas.getHeight()/2+40,gameOverPaint);
+			if(i!=this.currentCharacterPosition)
+			{
+				canvas.drawText(this.nameEntry.substring(i,i+1),(canvas.getWidth()-8*16)/2+i*xw,canvas.getHeight()/2+40,gameOverPaint);
+			}
 		}
 		String charstr = characters.substring(this.currentCharacter,this.currentCharacter+1);
 		if (charstr.equals("<"))
 		{
-			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+12,gameOverPaint);
-			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint);				
-			canvas.drawText("L",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+68,gameOverPaint);
-
+			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+12,gameOverPaint2);
+			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint2);				
+			canvas.drawText("L",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+68,gameOverPaint2);
 		}
 		else
 		if(charstr.equals("@"))
 		{
-			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+12,gameOverPaint);
-			canvas.drawText("N",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint);				
-			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+68,gameOverPaint);
-			
+			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+12,gameOverPaint2);
+			canvas.drawText("N",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint2);				
+			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+68,gameOverPaint2);
 		}
 		else
 		{
-			canvas.drawText(charstr,(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint);
+			canvas.drawText(charstr,(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint2);
 		}
-		
-
-		
 	}
 	private String score;
 	public boolean moveForward()
 	{
-		if(this.currentCharacterPosition<8)
+		if(this.currentCharacterPosition<this.nameEntryLength)
 		{
 			String theChar = this.characters.substring(this.currentCharacter,this.currentCharacter+1);
 			if(theChar.equals("<") )
 			{
 				if(this.currentCharacterPosition>0)
 				{
-					nameEntry = nameEntry.substring(0,this.currentCharacterPosition-1);
+					if(this.currentCharacterPosition<nameEntry.length()-1)
+					{
+						String head = nameEntry.substring(0,this.currentCharacterPosition-1);
+						String tail = nameEntry.substring(this.currentCharacterPosition+1);
+						nameEntry = head+tail;
+					}
+					else
+					{
+						nameEntry = nameEntry.substring(0,this.currentCharacterPosition-1);
+					}
 					this.currentCharacterPosition--;
+					if(currentCharacterPosition>0 && currentCharacterPosition<nameEntry.length())
+					{
+						for(int i=0;i<characters.length();i++)
+						{
+							String cc = characters.substring(i,i+1);
+							
+							
+							String nec = nameEntry.substring(this.currentCharacterPosition,this.currentCharacterPosition+1);
+							if(cc.equals(nec));
+							{
+								this.currentCharacter = i;
+							
+								break;
+							}
+						}
+					}
 				}
 				return true;
 			}
@@ -304,11 +329,20 @@ public class GameOverlay extends View {
 		}
 		return true;
 	}
+
 	public void moveBack()
 	{
 		if(this.currentCharacterPosition>0)
 		{
 			this.currentCharacterPosition--;
+			for(int i=0;i<characters.length();i++)
+			{
+				if(characters.substring(i,i+1).equals(this.nameEntry.substring(this.currentCharacterPosition, this.currentCharacterPosition+1)));
+				{
+					this.currentCharacter = i;
+					break;
+				}
+			}
 		}
 	}
 	public void selectNextChar()
@@ -385,6 +419,7 @@ public class GameOverlay extends View {
 	}
 	private Paint curtainPaint;
 	private Paint gameOverPaint;
+	private Paint gameOverPaint2;
 	private Paint statusTextPaint1;
 	private Paint statusTextPaint2;
 	private Paint hsPaint;
@@ -398,6 +433,7 @@ public class GameOverlay extends View {
 	private int currentTextColor;
 	private HighScoreTable hsTable;
 	private String nameEntry;
+	private int nameEntryLength;
 	public static final int OVERLAY_TYPE_INTRO = 0;
 	public static final int OVERLAY_TYPE_GAME_CLASSIC=1;
 	public static final int OVERLAY_TYPE_GAME_MONOLITH=2;
@@ -406,4 +442,5 @@ public class GameOverlay extends View {
 	public static final int DRAW_NORMAL=0;
 	public static final int DRAW_NAME_ENTRY=1;
 	public static final int DRAW_GAME_OPTIONS=2;
+	
 }
