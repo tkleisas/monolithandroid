@@ -11,6 +11,7 @@ public class GameOverlay extends View {
 		super(context);
 		this.hsTable = table;
 		this.overlayType = OVERLAY_TYPE_GAME_MONOLITH;
+		this.drawType = this.DRAW_NORMAL;
 		res = context.getResources();
 		curtainPaint = new Paint();
 		curtainPaint.setARGB(255, 0, 0, 0);
@@ -74,7 +75,8 @@ public class GameOverlay extends View {
         this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
         this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
         drawCurtain(canvas);
-		switch (overlayType)
+		
+        switch (overlayType)
 		{
 		case OVERLAY_TYPE_INTRO:
 			drawIntroOverlay(canvas);
@@ -88,7 +90,12 @@ public class GameOverlay extends View {
 		case OVERLAY_TYPE_GAME_PUZZLE:
 			drawPuzzleGameOverlay(canvas);
 			break;
+		
 		}
+        if(this.drawType == this.DRAW_NAME_ENTRY)
+        {
+        	drawNameEntry(canvas);
+        }
 	}
 	
     public int getTextWidth(String str,Paint paint)
@@ -101,7 +108,8 @@ public class GameOverlay extends View {
     		totalwidth+=widths[i];
     	}
     	return totalwidth;
-    }	
+    }
+    
 	private void drawIntroOverlay(Canvas canvas)
 	{
 		Long now = System.currentTimeMillis();
@@ -231,12 +239,94 @@ public class GameOverlay extends View {
         	canvas.drawText(res.getString(R.string.s_evolving), (getWidth()-this.evolvingXPos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
         }
 	}
-	
 	private void drawPuzzleGameOverlay(Canvas canvas)
 	{
 		
 	}
+	private void drawNameEntry(Canvas canvas)
+	{
+		int xw=22;
+		for(int i=0;i<this.nameEntry.length();i++)
+		{
+			String charstr = this.nameEntry.substring(i,i+1);
+			
+			canvas.drawText(this.nameEntry.substring(i,i+1),(canvas.getWidth()-8*16)/2+i*xw,canvas.getHeight()/2+40,gameOverPaint);
+		}
+		String charstr = characters.substring(this.currentCharacter,this.currentCharacter+1);
+		if (charstr.equals("<"))
+		{
+			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+12,gameOverPaint);
+			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint);				
+			canvas.drawText("L",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+68,gameOverPaint);
+
+		}
+		else
+		if(charstr.equals("@"))
+		{
+			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+12,gameOverPaint);
+			canvas.drawText("N",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint);				
+			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+68,gameOverPaint);
+			
+		}
+		else
+		{
+			canvas.drawText(charstr,(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint);
+		}
+		
+
+		
+	}
 	private String score;
+	public boolean moveForward()
+	{
+		if(this.currentCharacterPosition<8)
+		{
+			String theChar = this.characters.substring(this.currentCharacter,this.currentCharacter+1);
+			if(theChar.equals("<") )
+			{
+				if(this.currentCharacterPosition>0)
+				{
+					nameEntry = nameEntry.substring(0,this.currentCharacterPosition-1);
+					this.currentCharacterPosition--;
+				}
+				return true;
+			}
+			if(theChar.equals("@"))
+			{
+				this.hsTable.isHighScore(Integer.parseInt(this.score,10), this.nameEntry, this.level);
+				this.hsTable.saveHighScores();
+				this.drawType = DRAW_NORMAL;
+				return false;
+			}
+			this.currentCharacterPosition++;
+			this.nameEntry = this.nameEntry+this.characters.substring(this.currentCharacter,this.currentCharacter+1);
+			return true;
+		}
+		return true;
+	}
+	public void moveBack()
+	{
+		if(this.currentCharacterPosition>0)
+		{
+			this.currentCharacterPosition--;
+		}
+	}
+	public void selectNextChar()
+	{
+		currentCharacter++;
+		if(this.currentCharacter>characters.length()-1)
+		{
+			currentCharacter=0;
+		}
+	}
+	public void selectPreviousChar()
+	{
+		currentCharacter--;
+		if(this.currentCharacter<0)
+		{
+			currentCharacter=characters.length()-1;
+		}
+	}
 	public void setScore(String score)
 	{
 		this.score = score;
@@ -271,6 +361,20 @@ public class GameOverlay extends View {
 	{
 		this.overlayType = overlayType;
 	}
+	private int drawType;
+	public void setDrawType(int drawType)
+	{
+		if(drawType == DRAW_NAME_ENTRY)
+		{
+			this.nameEntry = "";
+			this.currentCharacter = 0;
+			this.currentCharacterPosition=0;
+		}
+		this.drawType = drawType;
+	}
+	String characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ <@";
+	int currentCharacter=0;
+	int currentCharacterPosition=0;
 	public void setCurtain(int theCurtain)
 	{
 		this.curtain = theCurtain;
@@ -293,8 +397,13 @@ public class GameOverlay extends View {
 	private long lastDrawTime;
 	private int currentTextColor;
 	private HighScoreTable hsTable;
+	private String nameEntry;
 	public static final int OVERLAY_TYPE_INTRO = 0;
 	public static final int OVERLAY_TYPE_GAME_CLASSIC=1;
 	public static final int OVERLAY_TYPE_GAME_MONOLITH=2;
 	public static final int OVERLAY_TYPE_GAME_PUZZLE=3;
+	
+	public static final int DRAW_NORMAL=0;
+	public static final int DRAW_NAME_ENTRY=1;
+	public static final int DRAW_GAME_OPTIONS=2;
 }
