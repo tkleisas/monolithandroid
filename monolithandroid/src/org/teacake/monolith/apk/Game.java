@@ -29,6 +29,7 @@ public interface Game
 	public int getScore();
 	public void setLevel(int level);
 	public int getLevel();
+	public String getLevelName();
 	public void setLines(int lines);
 	public int getLines();
 	public void setTimerEnabled(boolean flag);
