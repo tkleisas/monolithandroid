@@ -712,6 +712,16 @@ public class MonolithGameData implements Game
 	{
 		return this.level;
 	}
+	public String getLevelName()
+	{
+		String str = ""+this.level;
+		while(str.length()<2)
+		{
+			str="0"+str;
+		}
+		str = "M"+str;
+		return str;
+	}
 	public void setLines(int lines)
 	{
 		this.lines = lines;

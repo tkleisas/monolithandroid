@@ -637,6 +637,16 @@ public class PuzzleGameData implements Game
 	{
 		return this.level;
 	}
+	public String getLevelName()
+	{
+		String str = ""+this.level;
+		while(str.length()<2)
+		{
+			str="0"+str;
+		}
+		str = "P"+str;
+		return str;
+	}	
 	public void setLines(int lines)
 	{
 		this.lines = lines;

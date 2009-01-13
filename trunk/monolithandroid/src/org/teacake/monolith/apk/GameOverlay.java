@@ -16,7 +16,7 @@ public class GameOverlay extends View {
 		curtainPaint = new Paint();
 		curtainPaint.setARGB(255, 0, 0, 0);
 		gameOverPaint = new Paint();
-        gameOverPaint.setARGB(250, 250, 220, 50);
+        gameOverPaint.setARGB(255, 255, 220, 60);
         gameOverPaint.setTextSize(36);
         gameOverPaint2 = new Paint();
         gameOverPaint2.setARGB(255,255,30,30);
@@ -29,7 +29,7 @@ public class GameOverlay extends View {
         statusTextPaint2.setARGB(255, 128, 128, 128); 
         hsPaint = new Paint();
         hsPaint.setTextSize(16);
-        hsPaint.setARGB(250, 250, 220, 50);
+        hsPaint.setARGB(255, 255, 220, 60);
         score="0";
         level="1";
         hiscore="0";
@@ -41,8 +41,8 @@ public class GameOverlay extends View {
         this.curtain = 0;
         this.lastDrawTime = System.currentTimeMillis();
         this.nameEntryLength = 9;
-    	
-
+        this.leftarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.leftarrow);
+        this.rightarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.rightarrow);
 		
 	}
 	@Override protected synchronized void onDraw(Canvas canvas)
@@ -93,6 +93,9 @@ public class GameOverlay extends View {
 		case OVERLAY_TYPE_GAME_PUZZLE:
 			drawPuzzleGameOverlay(canvas);
 			break;
+		case OVERLAY_TYPE_OPTIONS:
+			drawOptionsOverlay(canvas);
+			break;
 		
 		}
         if(this.drawType == this.DRAW_NAME_ENTRY)
@@ -105,12 +108,12 @@ public class GameOverlay extends View {
     {
     	float widths[] =new float[str.length()];
     	paint.getTextWidths(str,widths); 
-    	int totalwidth=0;
+    	float totalwidth=0;
     	for(int i=0;i<widths.length;i++)
     	{
     		totalwidth+=widths[i];
     	}
-    	return totalwidth;
+    	return (int)totalwidth;
     }
     
 	private void drawIntroOverlay(Canvas canvas)
@@ -182,6 +185,7 @@ public class GameOverlay extends View {
 			int textxpos = this.getTextWidth(logo,this.gameOverPaint);
 			canvas.drawText(logo, (canvas.getWidth()-textxpos)/2, (canvas.getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
 		}
+		this.drawOptionsOverlay(canvas);
 	}
     public void drawString(Canvas canvas,String str,int x,int y)
     {
@@ -209,6 +213,30 @@ public class GameOverlay extends View {
     	
     }
     
+    private void drawOptionText(Canvas canvas,int x, int y,String text, Paint thePaint)
+    {
+    	
+    	canvas.drawBitmap(leftarrow,null,new Rect(x,y,x+leftarrow.getWidth(),y+leftarrow.getHeight()),thePaint);
+    	int theWidth = this.getTextWidth(text, thePaint);
+    	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
+    	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
+    }
+    private void drawCenteredOptionText(Canvas canvas, int y, String text, Paint thePaint)
+    {
+    	int theWidth = this.getTextWidth(text, thePaint);
+    	theWidth = theWidth+this.leftarrow.getWidth()+this.rightarrow.getWidth();
+    	int x = (canvas.getWidth()-theWidth)/2;
+    	canvas.drawBitmap(leftarrow,null,new Rect(x,y,x+leftarrow.getWidth(),y+leftarrow.getHeight()),thePaint);
+    	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
+    	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
+    	
+    }
+    private void drawOptionsOverlay(Canvas canvas)
+    {
+    	drawOptionText(canvas,10,10,"this is a test", this.gameOverPaint);
+    	drawCenteredOptionText(canvas,200,"Game type is", this.gameOverPaint);
+    	drawOptionText(canvas,10,100,"Game type is", this.hsPaint);
+    }
 	private void drawClassicGameOverlay(Canvas canvas)
 	{
         this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
@@ -345,6 +373,7 @@ public class GameOverlay extends View {
 			}
 		}
 	}
+	
 	public void selectNextChar()
 	{
 		currentCharacter++;
@@ -353,6 +382,7 @@ public class GameOverlay extends View {
 			currentCharacter=0;
 		}
 	}
+	
 	public void selectPreviousChar()
 	{
 		currentCharacter--;
@@ -361,41 +391,56 @@ public class GameOverlay extends View {
 			currentCharacter=characters.length()-1;
 		}
 	}
+	
 	public void setScore(String score)
 	{
 		this.score = score;
 	}
+	
 	private String hiscore;
+	
 	public void setHiscore(String hiscore)
 	{
 		this.hiscore = hiscore;
 	}
+	
 	private String level;
+	
 	public void setLevel(String level)
 	{
 		this.level = level;
 	}
+	
 	private String energy;
+	
 	public void setEnergy(String energy)
 	{
 		this.energy = energy;
 	}
+	
 	private String lines;
+	
 	public void setLines(String lines)
 	{
 		this.lines = lines;
 	}
+	
 	private String message;
+	
 	public void setMessage(String message)
 	{
 		this.message = message;
 	}
+	
 	private int overlayType;
+	
 	public void setOverlayType(int overlayType)
 	{
 		this.overlayType = overlayType;
 	}
+	
 	private int drawType;
+	
 	public void setDrawType(int drawType)
 	{
 		if(drawType == DRAW_NAME_ENTRY)
@@ -406,13 +451,18 @@ public class GameOverlay extends View {
 		}
 		this.drawType = drawType;
 	}
+	
 	String characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ <@";
+	
 	int currentCharacter=0;
+	
 	int currentCharacterPosition=0;
+	
 	public void setCurtain(int theCurtain)
 	{
 		this.curtain = theCurtain;
 	}
+	
 	public HighScoreTable getHighScoreTable()
 	{
 		return this.hsTable;
@@ -423,6 +473,8 @@ public class GameOverlay extends View {
 	private Paint statusTextPaint1;
 	private Paint statusTextPaint2;
 	private Paint hsPaint;
+	private Bitmap leftarrow;
+	private Bitmap rightarrow;
 	private int gameOverXPos;
 	private int evolvingXPos;
 	private Resources res;
@@ -438,6 +490,7 @@ public class GameOverlay extends View {
 	public static final int OVERLAY_TYPE_GAME_CLASSIC=1;
 	public static final int OVERLAY_TYPE_GAME_MONOLITH=2;
 	public static final int OVERLAY_TYPE_GAME_PUZZLE=3;
+	public static final int OVERLAY_TYPE_OPTIONS=4;
 	
 	public static final int DRAW_NORMAL=0;
 	public static final int DRAW_NAME_ENTRY=1;

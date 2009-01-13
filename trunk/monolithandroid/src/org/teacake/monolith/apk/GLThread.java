@@ -979,7 +979,7 @@ public class GLThread extends Thread
                 //this.drawString(canvas,""+game.getLevel(), 10, 74);
                 //this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
                 //this.drawString(canvas,""+game.getLines(),10,114);
-        		this.overlay.setLevel(""+game.getLevel());
+        		this.overlay.setLevel(game.getLevelName());
         		this.overlay.setScore(""+game.getScore());
         		this.overlay.setLines(""+game.getLines());
 	            if(this.gametype==Monolith.GAME_MONOLITH)
