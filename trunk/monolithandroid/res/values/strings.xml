@@ -23,5 +23,19 @@
     <string name="s_exit_game">Exit Game</string>
     <string name="s_highscores">High Scores</string>
     <string name="s_playername">Player</string>
+    <string name="s_options">Options</string>
+    <string name="s_gametype">Game type</string>
+    <string name="s_monolithgame">Monolith</string>
+    <string name="s_classicgame">Classic</string>
+    <string name="s_difficulty">Difficulty</string>
+    <string name="s_difficulty_normal">Normal</string>
+    <string name="s_difficulty_expert">Expert</string>
+    <string name="s_starting_level">Starting level</string>
+    <string name="s_play">Play</string>
+    <string name="s_exit">Exit</string>
+    <string name="s_music">Music</string>
+    <string name="s_sound">Sound</string>
+    <string name="s_on">On</string>
+    <string name="s_off">Off</string>
 
 </resources>
