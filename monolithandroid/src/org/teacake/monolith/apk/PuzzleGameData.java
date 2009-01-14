@@ -647,6 +647,15 @@ public class PuzzleGameData implements Game
 		str = "P"+str;
 		return str;
 	}	
+	public int[] getLevels()
+	{
+		int[] retval={1,2,3,4,5,6,7,8,9,10};
+		return retval;
+	}
+	public int getGameType()
+	{
+		return Monolith.GAME_PUZZLE;
+	}
 	public void setLines(int lines)
 	{
 		this.lines = lines;
@@ -672,6 +681,8 @@ public class PuzzleGameData implements Game
 	{
 		return this.nextBlock;
 	}
+	
+	
 	public int getTimer()
 	{
 		return this.timer;

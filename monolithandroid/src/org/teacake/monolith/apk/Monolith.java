@@ -6,13 +6,17 @@ import android.view.*;
 
 public class Monolith extends Activity
 {
-	private static final int MONOLITH_ID = Menu.FIRST;
-    private static final int CLASSIC_ID = Menu.FIRST + 1;
-    private static final int EXIT_ID = Menu.FIRST + 2;
-
+	
+	//private static final int MONOLITH_ID = Menu.FIRST;
+    //private static final int CLASSIC_ID = Menu.FIRST + 1;
+    //private static final int EXIT_ID = Menu.FIRST + 2;
+	private static final int ID_PLAY_GAME = Menu.FIRST;
+	private static final int ID_OPTIONS = Menu.FIRST + 1;
+	private static final int ID_EXIT = Menu.FIRST+2;
     
 	public static final int GAME_CLASSIC = 0;
 	public static final int GAME_MONOLITH = 1;
+	public static final int GAME_PUZZLE = 2;
     //GLView view;
     GameSurfaceView gsf;
     GameOverlay overlay;
@@ -73,9 +77,25 @@ public class Monolith extends Activity
         
          
     }
+    public void playGame()
+    {
+    	
+		gsf.setGameType(overlay.getOptions().getGameType());
+		gsf.setViewType(GLThread.VIEW_GAME);
+		gsf.initGame();
+    	
+    }
+    public void showOptions()
+    {
+    	gsf.setGameType(Monolith.GAME_MONOLITH);
+    	gsf.setViewType(GLThread.VIEW_OPTIONS);
+    	
+    	gsf.initGame();
+    	gsf.getOverlay().setOverlayType(GameOverlay.OVERLAY_TYPE_OPTIONS);
+    }
     public void playMonolithGame()
     {
-
+    	
 		gsf.setGameType(Monolith.GAME_MONOLITH);
 		gsf.setViewType(GLThread.VIEW_GAME);
 		gsf.initGame();
@@ -88,6 +108,8 @@ public class Monolith extends Activity
     	gsf.setViewType(GLThread.VIEW_GAME);
     	gsf.initGame();   	
     }
+    
+
     public void exitApplication()
     {
     		gsf.stopMusic();
@@ -96,6 +118,7 @@ public class Monolith extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        /*
         case MONOLITH_ID:
             playMonolithGame();
             return true;
@@ -105,7 +128,17 @@ public class Monolith extends Activity
         case EXIT_ID:
         	exitApplication();
         	return true;
-        	
+        	*/
+        case ID_PLAY_GAME:
+            playGame();
+            return true;
+        case ID_OPTIONS:
+        	showOptions();
+        	return true;
+        case ID_EXIT:
+        	exitApplication();
+        	return true;
+        
         }
        
         return super.onOptionsItemSelected(item);
@@ -114,11 +147,14 @@ public class Monolith extends Activity
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        
+        /*
         menu.add(0, MONOLITH_ID,0 ,R.string.m_new_monolith);
         menu.add(0, CLASSIC_ID,0,R.string.m_new_classic);
         menu.add(0, EXIT_ID,0,R.string.s_exit_game );
-        
+        */
+        menu.add(0, ID_PLAY_GAME,0 ,R.string.s_play);
+        menu.add(0, ID_OPTIONS,0,R.string.s_options);
+        menu.add(0, ID_EXIT,0,R.string.s_exit);
         
                 
    

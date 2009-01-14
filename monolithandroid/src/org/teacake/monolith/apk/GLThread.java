@@ -925,6 +925,40 @@ public class GLThread extends Thread
             	//canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
             	
             }
+            if(this.viewType==VIEW_OPTIONS)
+            {
+	            now = SystemClock.uptimeMillis();
+	            if(now>lastcalltime+demogame.getTimer())
+	            {
+
+	            		lastcalltime = now;
+	            		this.demogame.gameLoop();
+	            }
+	            this.drawIntroScreen(gl,w,h);
+            	//this.drawIntroScreen(gl, canvas, w, h);
+            	if (action == MSG_ROTATE)
+        		{
+        			action=MSG_DO_NOTHING;
+        			overlay.getOptions().previousOption();
+        		}
+        		if (action == MSG_MOVE_LEFT)
+        		{
+        			action=MSG_DO_NOTHING;
+        			overlay.getOptions().setPreviousValue();
+            	
+        		}
+        		if (action == MSG_MOVE_RIGHT)
+        		{
+        			action=MSG_DO_NOTHING;
+        			overlay.getOptions().setNextValue();
+        		}
+        		if (action == MSG_MOVE_DOWN)
+        		{
+        			action=MSG_DO_NOTHING;
+        			overlay.getOptions().nextOption();
+        		}            	
+            	           	
+            }
             int savedaction = action;
             if (this.viewType==VIEW_GAME)
             {
@@ -1108,6 +1142,7 @@ public class GLThread extends Thread
     
 	public static final int VIEW_INTRO=0;
 	public static final int VIEW_GAME=1;
+	public static final int VIEW_OPTIONS=2;
 	public static final int MSG_DO_NOTHING=-1;
 	public static final int MSG_ROTATE=0;
 	public static final int MSG_MOVE_LEFT=1;

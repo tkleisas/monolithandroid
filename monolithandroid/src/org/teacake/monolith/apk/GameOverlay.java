@@ -8,7 +8,9 @@ import android.content.res.Resources;;
 public class GameOverlay extends View {
 	public GameOverlay(Context context, HighScoreTable table)
 	{
+		
 		super(context);
+		
 		this.hsTable = table;
 		this.overlayType = OVERLAY_TYPE_GAME_MONOLITH;
 		this.drawType = this.DRAW_NORMAL;
@@ -26,7 +28,13 @@ public class GameOverlay extends View {
         statusTextPaint1.setARGB(200, 255, 0, 0);
         statusTextPaint1.setTextSize(14);
         statusTextPaint2.setTextSize(14);
-        statusTextPaint2.setARGB(255, 128, 128, 128); 
+        statusTextPaint2.setARGB(255, 128, 128, 128);
+        optionsPaint = new Paint();
+        optionsPaint.setARGB(255, 255, 10, 10);
+        optionsPaint.setTextSize(22);
+        selectedOptionsPaint = new Paint();
+        selectedOptionsPaint.setARGB(255, 255, 240, 230);
+        selectedOptionsPaint.setTextSize(22);
         hsPaint = new Paint();
         hsPaint.setTextSize(16);
         hsPaint.setARGB(255, 255, 220, 60);
@@ -43,7 +51,7 @@ public class GameOverlay extends View {
         this.nameEntryLength = 9;
         this.leftarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.leftarrow);
         this.rightarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.rightarrow);
-		
+		this.options = new Options();
 	}
 	@Override protected synchronized void onDraw(Canvas canvas)
 	{
@@ -185,7 +193,7 @@ public class GameOverlay extends View {
 			int textxpos = this.getTextWidth(logo,this.gameOverPaint);
 			canvas.drawText(logo, (canvas.getWidth()-textxpos)/2, (canvas.getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
 		}
-		this.drawOptionsOverlay(canvas);
+		
 	}
     public void drawString(Canvas canvas,String str,int x,int y)
     {
@@ -221,6 +229,11 @@ public class GameOverlay extends View {
     	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
     	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
     }
+    private void drawCenteredText(Canvas canvas, int y, String text, Paint paint)
+    {
+    	int theWidth = this.getTextWidth(text, paint);
+    	canvas.drawText(text, (canvas.getWidth()-theWidth)/2, y, paint);
+    }
     private void drawCenteredOptionText(Canvas canvas, int y, String text, Paint thePaint)
     {
     	int theWidth = this.getTextWidth(text, thePaint);
@@ -231,11 +244,51 @@ public class GameOverlay extends View {
     	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
     	
     }
+    private void drawTextSelector(Canvas canvas, int y, String title, String value, Paint titlePaint,Paint valuePaint)
+    {
+    	int theWidth = this.getTextWidth(title, titlePaint);
+    	canvas.drawText(title, (canvas.getWidth()-theWidth)/2, y, titlePaint);
+    	drawCenteredOptionText(canvas,y+((int)titlePaint.getTextSize())/2+1,value,valuePaint);
+    }
     private void drawOptionsOverlay(Canvas canvas)
     {
-    	drawOptionText(canvas,10,10,"this is a test", this.gameOverPaint);
-    	drawCenteredOptionText(canvas,50,"Game type is", this.gameOverPaint);
-    	drawOptionText(canvas,10,100,"Game type is", this.hsPaint);
+    	Paint[] p ={this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint};
+    	p[options.getCurrentSelectedOption()]=this.selectedOptionsPaint;
+    	
+
+    	drawCenteredText(canvas, 40, res.getString(R.string.s_options),this.gameOverPaint2);
+    	String gametype="";
+    	switch(options.getGameType())
+    	{
+    	case Monolith.GAME_CLASSIC:
+    		gametype = res.getString(R.string.s_classicgame);
+    		break;
+    		
+    	case Monolith.GAME_MONOLITH:
+    		gametype = res.getString(R.string.s_monolithgame);
+    		break;
+    	
+    	}
+    	String gameDifficulty = ""; 
+    	drawTextSelector(canvas, 80, res.getString(R.string.s_gametype),gametype,this.optionsPaint,p[Options.OPTION_GAMETYPE]);
+    	
+    	switch(options.getDifficultyLevel())
+    	{
+    	case Options.DIFFICULTY_NORMAL:
+    		gameDifficulty = res.getString(R.string.s_difficulty_normal);
+    		break;
+    	case Options.DIFFICULTY_EXPERT:
+    		gameDifficulty = res.getString(R.string.s_difficulty_expert);
+    		break;
+    	}
+    	drawTextSelector(canvas, 160, res.getString(R.string.s_difficulty),gameDifficulty,this.optionsPaint,p[Options.OPTION_DIFFICULTY]);
+    	String currentLevel = ""+this.options.getStartingLevel();
+    	drawTextSelector(canvas,240, res.getString(R.string.s_starting_level),currentLevel,this.optionsPaint,p[Options.OPTION_STARTING_LEVEL]);
+    	String music = options.isMusicEnabled()?res.getString(R.string.s_on):res.getString(R.string.s_off);
+    	drawTextSelector(canvas,300, res.getString(R.string.s_music),music,this.optionsPaint,p[Options.OPTION_MUSIC]);
+    	String sound = options.isSoundEnabled()?res.getString(R.string.s_on):res.getString(R.string.s_off);
+    	drawTextSelector(canvas,380, res.getString(R.string.s_sound),sound,this.optionsPaint,p[Options.OPTION_SOUND]);
+    	
     }
 	private void drawClassicGameOverlay(Canvas canvas)
 	{
@@ -467,12 +520,18 @@ public class GameOverlay extends View {
 	{
 		return this.hsTable;
 	}
+	public Options getOptions()
+	{
+		return this.options;
+	}
 	private Paint curtainPaint;
 	private Paint gameOverPaint;
 	private Paint gameOverPaint2;
 	private Paint statusTextPaint1;
 	private Paint statusTextPaint2;
 	private Paint hsPaint;
+	private Paint optionsPaint;
+	private Paint selectedOptionsPaint;
 	private Bitmap leftarrow;
 	private Bitmap rightarrow;
 	private int gameOverXPos;
@@ -486,6 +545,8 @@ public class GameOverlay extends View {
 	private HighScoreTable hsTable;
 	private String nameEntry;
 	private int nameEntryLength;
+	private Options options;
+	
 	public static final int OVERLAY_TYPE_INTRO = 0;
 	public static final int OVERLAY_TYPE_GAME_CLASSIC=1;
 	public static final int OVERLAY_TYPE_GAME_MONOLITH=2;

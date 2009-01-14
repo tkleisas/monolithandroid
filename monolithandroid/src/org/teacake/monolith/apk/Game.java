@@ -30,6 +30,7 @@ public interface Game
 	public void setLevel(int level);
 	public int getLevel();
 	public String getLevelName();
+	public int[] getLevels();
 	public void setLines(int lines);
 	public int getLines();
 	public void setTimerEnabled(boolean flag);
@@ -43,4 +44,5 @@ public interface Game
 	public int getCurrentStep();
 	public void setStep(int step);
 	public boolean isBlockPlaced();
+	public int getGameType();
 }
