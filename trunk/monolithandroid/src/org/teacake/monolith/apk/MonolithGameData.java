@@ -57,6 +57,12 @@ public class MonolithGameData implements Game
 			this.clearedLines[y]=0;
 		}
 	}
+	
+	public int[] getLevels()
+	{
+		int[] retval={1,2,3,4,5,6,7,8,9,10};
+		return retval;
+	}
 	public void initGame(int theStartingLevel)
 	{
 		this.score = 0;
@@ -783,6 +789,10 @@ public class MonolithGameData implements Game
 	public boolean isBlockPlaced()
 	{
 		return blockPlaced;
+	}
+	public int getGameType()
+	{
+		return Monolith.GAME_MONOLITH;
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

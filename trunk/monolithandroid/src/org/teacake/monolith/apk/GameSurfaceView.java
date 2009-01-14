@@ -110,7 +110,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	private int viewType;
 	private int gameType;
 	private GameOverlay overlay;
-	
+	public GameOverlay getOverlay()
+	{
+		return overlay;
+	}
 	private android.content.Context context;
 	
 }

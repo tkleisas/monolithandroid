@@ -261,6 +261,12 @@ package org.teacake.monolith.apk;
 		public Block currentBlock;
 		public Block nextBlock;
 		boolean timerEnabled;
+		public int[] getLevels()
+		{
+			int[] retval={1,2,3,4,5,6,7,8,9,10};
+			return retval;
+		}
+		
 		public void clearCompleteLines()
 		{
 			int currentline =gridMaxHeight-1;
@@ -536,7 +542,11 @@ package org.teacake.monolith.apk;
 		public static void main(String[] args) {
 			// TODO Auto-generated method stub
 
-		}			
+		}	
+		public int getGameType()
+		{
+			return Monolith.GAME_CLASSIC;
+		}
 
 	}
 
