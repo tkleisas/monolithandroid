@@ -52,10 +52,14 @@ public class GameOverlay extends View {
         this.leftarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.leftarrow);
         this.rightarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.rightarrow);
 		this.options = new Options();
+		
+		timer = System.currentTimeMillis();
+		
+		
 	}
 	@Override protected synchronized void onDraw(Canvas canvas)
 	{
-		
+		timer = System.currentTimeMillis();
 		int timeindex = this.currentTextColor%5000;
 		
 		goalpha=goalpha+direction;
@@ -110,6 +114,7 @@ public class GameOverlay extends View {
         {
         	drawNameEntry(canvas);
         }
+        //this.lastDrawTime = System.currentTimeMillis();
 	}
 	
     public int getTextWidth(String str,Paint paint)
@@ -206,14 +211,14 @@ public class GameOverlay extends View {
     	int width = canvas.getWidth();
     	int height = canvas.getHeight();
     	float aperture = 1.0f;
-    	if(now-this.lastDrawTime<10000)
+    	if(now-this.lastDrawTime<5000)
     	{
     		canvas.drawRect(0,0, width,height, curtainPaint);
     		
     	}
-    	else if(now-this.lastDrawTime>=10000 && now-this.lastDrawTime<20000)
+    	else if(now-this.lastDrawTime>=5000 && now-this.lastDrawTime<10000)
     	{
-    		aperture = ((float)(now-this.lastDrawTime-10000))/10000.0f;
+    		aperture = ((float)(now-this.lastDrawTime-5000))/5000.0f;
     		canvas.drawRect(0,0,width,(height/2)-(height/2)*aperture,curtainPaint);
     		canvas.drawRect(0,(height/2)+(height/2)*aperture,width,height, curtainPaint);
     		//canvas.drawRect(0,height/2,width,(height/2)*aperture,curtainPaint);
@@ -240,8 +245,32 @@ public class GameOverlay extends View {
     	int theFullWidth = theWidth+this.leftarrow.getWidth()+this.rightarrow.getWidth();
     	int x = (canvas.getWidth()-theFullWidth)/2;
     	canvas.drawBitmap(leftarrow,null,new Rect(x,y,x+leftarrow.getWidth(),y+leftarrow.getHeight()),thePaint);
+    	
     	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
     	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
+    	
+    }
+    private void drawCenteredOptionText(Canvas canvas, int y, String text, Paint thePaint,boolean leftArrow,boolean rightArrow,boolean animate)
+    {
+    	
+    	int offset = (int)(this.timer%1000)/100;
+    	if(!animate)
+    	{
+    		offset=0;
+    	}
+    	else
+    	{
+    		if(offset>5)
+    		{
+    			offset=10-offset;
+    		}
+    	}
+    	int theWidth = this.getTextWidth(text, thePaint);
+    	int theFullWidth = theWidth+this.leftarrow.getWidth()+this.rightarrow.getWidth();
+    	int x = (canvas.getWidth()-theFullWidth)/2;
+    	if(leftArrow) canvas.drawBitmap(leftarrow,null,new Rect(x-offset,y,x+leftarrow.getWidth()-offset,y+leftarrow.getHeight()),thePaint);
+    	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
+    	if(rightArrow) canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth+offset,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth()+offset,y+rightarrow.getHeight()),thePaint);
     	
     }
     private void drawTextSelector(Canvas canvas, int y, String title, String value, Paint titlePaint,Paint valuePaint)
@@ -250,13 +279,43 @@ public class GameOverlay extends View {
     	canvas.drawText(title, (canvas.getWidth()-theWidth)/2, y, titlePaint);
     	drawCenteredOptionText(canvas,y+((int)titlePaint.getTextSize())/2+1,value,valuePaint);
     }
+    private void drawTextSelector(Canvas canvas, int y, String title, String value, Paint titlePaint, Paint valuePaint, boolean leftArrow, boolean rightArrow,boolean animate)
+    {
+    	int theWidth = this.getTextWidth(title, titlePaint);
+    	canvas.drawText(title, (canvas.getWidth()-theWidth)/2, y, titlePaint);
+    	drawCenteredOptionText(canvas,y+((int)titlePaint.getTextSize())/2+1,value,valuePaint, leftArrow, rightArrow, animate);
+    	
+    }
     private void drawOptionsOverlay(Canvas canvas)
     {
-    	Paint[] p ={this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint};
-    	p[options.getCurrentSelectedOption()]=this.selectedOptionsPaint;
     	
-
+    	Paint[] p ={this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint};
+    	boolean[] animate = {false,false,false,false,false,false,false};
+    	animate[options.getCurrentSelectedOption()]=true;
+    	p[options.getCurrentSelectedOption()]=this.selectedOptionsPaint;
+    	int transitionMilliseconds = 1500;
+    	
+    	int yoffset = -30;
+    	int widgetdistance=100;
+    	if(options.getPreviousSelectedOption()==options.getCurrentSelectedOption())
+    	{
+    		yoffset = canvas.getHeight()-(canvas.getHeight()*5)/4 - options.getCurrentSelectedOption()*widgetdistance;
+    	}
+    	if(options.getPreviousSelectedOption()>options.getCurrentSelectedOption())
+    	{
+    		yoffset = canvas.getHeight()-(canvas.getHeight()*5)/4 -(int)(options.getCurrentSelectedOption()*widgetdistance+options.interpolatePosition(transitionMilliseconds)*widgetdistance);
+    	}
+    	if(options.getPreviousSelectedOption()<options.getCurrentSelectedOption())
+    	{
+    		yoffset = canvas.getHeight()-(canvas.getHeight()*5)/4 - (int)(options.getPreviousSelectedOption()*widgetdistance+options.interpolatePosition(transitionMilliseconds)*widgetdistance);
+    	}
+    	//int yoffset = 80-(int)(options.getPreviousSelectedOption()*60+options.interpolatePosition(2000)*60);
+    	//drawOptionText(canvas,0,60,""+yoffset+"->"+options.interpolatePosition(2000),this.optionsPaint);
+    	//int yoffset = 40-options.getCurrentSelectedOption()*40;
+    	//p[options.getCurrentSelectedOption()]=this.selectedOptionsPaint;
     	drawCenteredText(canvas, 40, res.getString(R.string.s_options),this.gameOverPaint2);
+    	drawTextSelector(canvas, 40+widgetdistance+yoffset, "",res.getString(R.string.s_back),this.optionsPaint,p[Options.OPTION_BACK],true,false,animate[Options.OPTION_BACK]);
+    	
     	String gametype="";
     	switch(options.getGameType())
     	{
@@ -270,7 +329,7 @@ public class GameOverlay extends View {
     	
     	}
     	String gameDifficulty = ""; 
-    	drawTextSelector(canvas, 80, res.getString(R.string.s_gametype),gametype,this.optionsPaint,p[Options.OPTION_GAMETYPE]);
+    	drawTextSelector(canvas, 40+widgetdistance*2+yoffset, res.getString(R.string.s_gametype),gametype,this.optionsPaint,p[Options.OPTION_GAMETYPE],true,true,animate[Options.OPTION_GAMETYPE]);
     	
     	switch(options.getDifficultyLevel())
     	{
@@ -281,14 +340,17 @@ public class GameOverlay extends View {
     		gameDifficulty = res.getString(R.string.s_difficulty_expert);
     		break;
     	}
-    	drawTextSelector(canvas, 160, res.getString(R.string.s_difficulty),gameDifficulty,this.optionsPaint,p[Options.OPTION_DIFFICULTY]);
+    	drawTextSelector(canvas, 40+widgetdistance*3+yoffset, res.getString(R.string.s_difficulty),gameDifficulty,this.optionsPaint,p[Options.OPTION_DIFFICULTY],true,true,animate[Options.OPTION_DIFFICULTY]);
     	String currentLevel = ""+this.options.getStartingLevel();
-    	drawTextSelector(canvas,240, res.getString(R.string.s_starting_level),currentLevel,this.optionsPaint,p[Options.OPTION_STARTING_LEVEL]);
+    	drawTextSelector(canvas,40+widgetdistance*4+yoffset, res.getString(R.string.s_starting_level),currentLevel,this.optionsPaint,p[Options.OPTION_STARTING_LEVEL],true,true,animate[Options.OPTION_STARTING_LEVEL]);
     	String music = options.isMusicEnabled()?res.getString(R.string.s_on):res.getString(R.string.s_off);
-    	drawTextSelector(canvas,300, res.getString(R.string.s_music),music,this.optionsPaint,p[Options.OPTION_MUSIC]);
+    	drawTextSelector(canvas,40+widgetdistance*5+yoffset, res.getString(R.string.s_music),music,this.optionsPaint,p[Options.OPTION_MUSIC],true,true,animate[Options.OPTION_MUSIC]);
     	String sound = options.isSoundEnabled()?res.getString(R.string.s_on):res.getString(R.string.s_off);
-    	drawTextSelector(canvas,380, res.getString(R.string.s_sound),sound,this.optionsPaint,p[Options.OPTION_SOUND]);
+    	drawTextSelector(canvas,40+widgetdistance*6+yoffset, res.getString(R.string.s_sound),sound,this.optionsPaint,p[Options.OPTION_SOUND],true,true,animate[Options.OPTION_SOUND]);
+    	String ok = res.getString(R.string.s_ok);
     	
+       	drawTextSelector(canvas, 40+widgetdistance*7+yoffset,"", res.getString(R.string.s_ok),this.optionsPaint,p[Options.OPTION_OK],false,true,animate[Options.OPTION_OK]);
+        
     }
 	private void drawClassicGameOverlay(Canvas canvas)
 	{
@@ -341,16 +403,16 @@ public class GameOverlay extends View {
 		String charstr = characters.substring(this.currentCharacter,this.currentCharacter+1);
 		if (charstr.equals("<"))
 		{
-			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+12,gameOverPaint2);
-			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint2);				
-			canvas.drawText("L",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+68,gameOverPaint2);
+			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+20,statusTextPaint1);
+			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,statusTextPaint1);				
+			canvas.drawText("L",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+60,statusTextPaint1);
 		}
 		else
 		if(charstr.equals("@"))
 		{
-			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+12,gameOverPaint2);
-			canvas.drawText("N",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,gameOverPaint2);				
-			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+68,gameOverPaint2);
+			canvas.drawText("E",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+20,statusTextPaint1);
+			canvas.drawText("N",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+40,statusTextPaint1);				
+			canvas.drawText("D",(canvas.getWidth()-8*16)/2+this.currentCharacterPosition*xw,canvas.getHeight()/2+60,statusTextPaint1);
 		}
 		else
 		{
@@ -546,6 +608,7 @@ public class GameOverlay extends View {
 	private String nameEntry;
 	private int nameEntryLength;
 	private Options options;
+	private long timer;
 	
 	public static final int OVERLAY_TYPE_INTRO = 0;
 	public static final int OVERLAY_TYPE_GAME_CLASSIC=1;

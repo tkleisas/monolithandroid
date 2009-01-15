@@ -11,9 +11,14 @@ public class Options
 		this.setGameType(game.getGameType());
 		this.startingLevel = this.getFirstLevel();
 		this.difficultyLevel = Options.DIFFICULTY_NORMAL;
-		this.currentSelectedOption = Options.ALLOPTIONS[0];
+		this.currentSelectedOption = 0;//Options.ALLOPTIONS[0];
+		this.previousSelectedOption = 1;
+		status = Options.STATUS_SELECTING;
+		this.currentSelectedOptionTime = System.currentTimeMillis();
+		this.previousSelectedOptionTime = this.currentSelectedOptionTime;
+		this.currentSelectedOption = 1;
 	}
-	
+	private int status;
 	private boolean enabledmusic;
 	private int difficultyLevel;
 	
@@ -91,7 +96,7 @@ public class Options
 	{
 		if(this.currentLevelIndex>0)
 		{
-			this.startingLevel = this.game.getLevels()[currentLevelIndex--];
+			this.startingLevel = this.game.getLevels()[--currentLevelIndex];
 		}
 		else
 		{
@@ -103,19 +108,31 @@ public class Options
 	{
 		return this.currentSelectedOption;
 	}
+	public int getPreviousSelectedOption()
+	{
+		return this.previousSelectedOption;
+	}
 	public void nextOption()
 	{
+		
+		this.previousSelectedOption = currentSelectedOption;
+		this.previousSelectedOptionTime = currentSelectedOptionTime;
 		if(currentSelectedOption<ALLOPTIONS.length-1)
 		{
+			
 			currentSelectedOption++;
 		}
 		else
 		{
+		
 			currentSelectedOption =0;
 		}
+		currentSelectedOptionTime = System.currentTimeMillis();
 	}
 	public void previousOption()
 	{
+		this.previousSelectedOption = currentSelectedOption;
+		this.previousSelectedOptionTime = currentSelectedOptionTime;
 		if(currentSelectedOption>0)
 		{
 			currentSelectedOption--;
@@ -124,11 +141,36 @@ public class Options
 		{
 			currentSelectedOption = ALLOPTIONS.length-1;
 		}
+		currentSelectedOptionTime = System.currentTimeMillis();
+	}
+	public float interpolatePosition(int milliseconds)
+	{
+		long now = System.currentTimeMillis();
+		float retval = 0.0f;
+		if(now-this.previousSelectedOptionTime>milliseconds)
+		{
+			retval = 1.0f;
+		}
+		else
+		{
+			retval = ((float)(System.currentTimeMillis()-this.previousSelectedOptionTime))/(float)milliseconds;
+		}
+		if(this.currentSelectedOption>this.previousSelectedOption)
+		{
+			return retval;
+		}
+		else
+		{
+			return 1.0f-retval;
+		}
 	}
 	public void setNextValue()
 	{
 		switch(currentSelectedOption)
 		{
+		case OPTION_BACK:
+			
+			break;
 		case OPTION_GAMETYPE:
 			if(this.gameType==Monolith.GAME_MONOLITH)
 			{
@@ -158,7 +200,8 @@ public class Options
 		case OPTION_SOUND:
 			this.setSoundEnabled(!this.enabledsound);
 			break;
-		case OPTION_END:
+		case OPTION_OK:
+			this.status = Options.STATUS_OK;
 			break;
 			
 		}
@@ -167,6 +210,9 @@ public class Options
 	{
 		switch(currentSelectedOption)
 		{
+		case OPTION_BACK:
+			status = Options.STATUS_BACK;
+			break;
 		case OPTION_GAMETYPE:
 			if(this.gameType==Monolith.GAME_MONOLITH)
 			{
@@ -196,7 +242,7 @@ public class Options
 		case OPTION_SOUND:
 			this.setSoundEnabled(!this.enabledsound);
 			break;
-		case OPTION_END:
+		case OPTION_OK:
 			break;
 			
 		}		
@@ -204,18 +250,26 @@ public class Options
 	public static final int DIFFICULTY_NORMAL = 0;
 	public static final int DIFFICULTY_EXPERT = 1;
 	private int currentSelectedOption;
-	public static final int OPTION_GAMETYPE = 0;
-	public static final int OPTION_DIFFICULTY = 1;
-	public static final int OPTION_STARTING_LEVEL = 2;
-	public static final int OPTION_MUSIC = 3;
-	public static final int OPTION_SOUND = 4;
-	public static final int OPTION_END = 5;
+	private long currentSelectedOptionTime;
+	private int previousSelectedOption;
+	private long previousSelectedOptionTime;
+	public static final int OPTION_BACK = 0;
+	public static final int OPTION_GAMETYPE = 1;
+	public static final int OPTION_DIFFICULTY = 2;
+	public static final int OPTION_STARTING_LEVEL = 3;
+	public static final int OPTION_MUSIC = 4;
+	public static final int OPTION_SOUND = 5;
+	public static final int OPTION_OK = 6;
+	public static final int STATUS_SELECTING =0;
+	public static final int STATUS_OK = 1;
+	public static final int STATUS_BACK = 2;
 	public static int[] ALLOPTIONS = {
+										OPTION_BACK,
 										OPTION_GAMETYPE,
 										OPTION_DIFFICULTY,
 										OPTION_STARTING_LEVEL,
 										OPTION_MUSIC,
 										OPTION_SOUND,
-										OPTION_END
+										OPTION_OK
 										}; 
 }
