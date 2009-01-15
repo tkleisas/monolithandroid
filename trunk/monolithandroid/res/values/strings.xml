@@ -37,5 +37,8 @@
     <string name="s_sound">Sound</string>
     <string name="s_on">On</string>
     <string name="s_off">Off</string>
+    <string name="s_ok">OK</string>
+    <string name="s_back">Back</string>
+    
 
 </resources>
