@@ -19,24 +19,34 @@ public class Monolith extends Activity
     OptionsView optionsView;
     View highscoreNameEntry;
     HighScoreTable hsTable;
- 
+    Options options;
+    SoundManager soundManager;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        this.soundManager = new SoundManager(this);
         hsTable = new HighScoreTable(this,10);
-        overlay = new GameOverlay(this,hsTable);
+        options = new Options();
+        overlay = new GameOverlay(this,hsTable,options);
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         optionsView = new OptionsView(getApplication());
         android.content.res.AssetManager mgr = getApplication().getAssets();
-        gsf = new GameSurfaceView(this,overlay);
+        gsf = new GameSurfaceView(this,overlay,this.soundManager);
         gsf.setViewType(GLThread.VIEW_INTRO);
         gsf.setGameType(Monolith.GAME_MONOLITH);
         setContentView(gsf);
         gsf.setVisibility(View.VISIBLE);        
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
-         
+		
+		soundManager.addSound(R.raw.monolith, true);
+		soundManager.addSound(R.raw.explosion2, false);
+		soundManager.addSound(R.raw.place, false);
+		soundManager.addSound(R.raw.rotate,false);
+		soundManager.addSound(R.raw.pluck, false);
+		soundManager.startSound();
+		soundManager.playSound(R.raw.monolith); 
         
          
     }
@@ -44,13 +54,14 @@ public class Monolith extends Activity
     public void onPause()
     {
     	super.onPause();
+    	this.soundManager.stopSound();
     	//gsf.stopMusic();
     }
     @Override
     public void onStop()
     {
     	super.onStop();
-    	//gsf.stopMusic();
+    	this.soundManager.stopSound();
     }
 
     
@@ -92,7 +103,8 @@ public class Monolith extends Activity
 
     public void exitApplication()
     {
-    		gsf.stopMusic();
+    		this.soundManager.stopSound();
+    	
 			finish();
     }
     @Override

@@ -6,7 +6,7 @@ import android.graphics.*;
 
 import android.content.res.Resources;;
 public class GameOverlay extends View {
-	public GameOverlay(Context context, HighScoreTable table)
+	public GameOverlay(Context context, HighScoreTable table, Options options)
 	{
 		
 		super(context);
@@ -51,7 +51,7 @@ public class GameOverlay extends View {
         this.nameEntryLength = 9;
         this.leftarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.leftarrow);
         this.rightarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.rightarrow);
-		this.options = new Options();
+		this.options = options;
 		
 		timer = System.currentTimeMillis();
 		
