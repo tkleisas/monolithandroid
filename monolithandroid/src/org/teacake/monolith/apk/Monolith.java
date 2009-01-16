@@ -77,6 +77,20 @@ public class Monolith extends Activity
         
          
     }
+    @Override
+    public void onPause()
+    {
+    	super.onPause();
+    	gsf.stopMusic();
+    }
+    @Override
+    public void onStop()
+    {
+    	super.onStop();
+    	gsf.stopMusic();
+    }
+
+    
     public void playGame()
     {
     	
@@ -91,7 +105,10 @@ public class Monolith extends Activity
     	gsf.setViewType(GLThread.VIEW_OPTIONS);
     	
     	gsf.initGame();
+    	gsf.getOverlay().getOptions().setStatus(Options.STATUS_SELECTING);
+    	gsf.getOverlay().setDrawType(GameOverlay.DRAW_GAME_OPTIONS);
     	gsf.getOverlay().setOverlayType(GameOverlay.OVERLAY_TYPE_OPTIONS);
+    	
     }
     public void playMonolithGame()
     {
@@ -226,13 +243,9 @@ public class Monolith extends Activity
         	}
         	handled = true;
         }
-        /*
-        if(keyCode == KeyEvent.KEYCODE_ENDCALL)
-        {
-        	this.finish();
-        	handled = true;
-        }
-        */
+        
+
+        
         return handled;
     }
 

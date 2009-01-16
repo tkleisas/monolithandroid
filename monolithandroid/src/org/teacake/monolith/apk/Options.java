@@ -21,7 +21,14 @@ public class Options
 	private int status;
 	private boolean enabledmusic;
 	private int difficultyLevel;
-	
+	public int getStatus()
+	{
+		return this.status;
+	}
+	public void setStatus(int status)
+	{
+		this.status = status;
+	}
 	public void setDifficultyLevel(int difficultyLevel)
 	{
 		this.difficultyLevel = difficultyLevel;
