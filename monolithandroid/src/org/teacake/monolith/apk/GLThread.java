@@ -156,7 +156,7 @@ public class GLThread extends Thread
 			
 				// Bind context to current thread and surface
 				
-				//glc.makeCurrent(view.getHolder());
+
 				
 				egl.eglMakeCurrent(dpy, surface, surface, glc);
 				
@@ -169,7 +169,7 @@ public class GLThread extends Thread
 				mMoon.setTextures(this.textures);
 				mEarth.setTextureId(R.drawable.earth);
 				mEarth.setTextures(textures);
-				//init(gl);
+
 				reinit();
 	        }			
 		// Draw a single frame here...
@@ -182,13 +182,7 @@ public class GLThread extends Thread
                     ((Activity)c).finish();
                 }
             }
-
-			//glc.post();
-			
 		}
-		
-		// Free OpenGL resources
-			//glc.destroy();
 	}
 	
 	public void reinit()
@@ -199,7 +193,6 @@ public class GLThread extends Thread
         zx=0.0f;
         zy=0.0f;
         xoff = -10.0f;
-        //-10.0f+x*2.0f, 21.0f-y*2.0f, zoff
     	yoff = 21.0f;
     	zoff = -50.0f;
 
@@ -225,7 +218,6 @@ public class GLThread extends Thread
         demogame.setScore(0);
         demogame.setLines(0);
         demogame.setEnergy(100);
-        //demogame.setTimer(5000);
         
         demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
         this.setupDemoGrid();

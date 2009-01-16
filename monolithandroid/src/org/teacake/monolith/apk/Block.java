@@ -2,8 +2,7 @@ package org.teacake.monolith.apk;
 
 
 
-//typedef enum statustype{TETRIS_STARTUP,TETRIS_PLAYING,TETRIS_PAUSE,TETRIS_GAME_OVER} ;
-//typedef enum blocktype{STICK, SQUARE, LETTERT, LETTERS, NUMBER2, GAMMA, GAMMAINV};
+
 
 
 public class Block
