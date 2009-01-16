@@ -82,9 +82,10 @@ public class Options
 	}
 	public void setNextLevel()
 	{
-		if(this.currentLevelIndex<this.game.getLevels().length)
+		if(this.currentLevelIndex<this.game.getLevels().length-1)
 		{
-			this.startingLevel = this.game.getLevels()[this.currentLevelIndex++];
+			this.currentLevelIndex++;
+			this.startingLevel = this.game.getLevels()[this.currentLevelIndex];
 		}
 		else
 		{
@@ -96,7 +97,8 @@ public class Options
 	{
 		if(this.currentLevelIndex>0)
 		{
-			this.startingLevel = this.game.getLevels()[--currentLevelIndex];
+			currentLevelIndex--;
+			this.startingLevel = this.game.getLevels()[currentLevelIndex];
 		}
 		else
 		{
@@ -157,12 +159,13 @@ public class Options
 		}
 		if(this.currentSelectedOption>this.previousSelectedOption)
 		{
-			return retval;
+			return -(1.0f-retval);
 		}
 		else
 		{
-			return 1.0f-retval;
+			return (1.0f-retval);
 		}
+
 	}
 	public void setNextValue()
 	{

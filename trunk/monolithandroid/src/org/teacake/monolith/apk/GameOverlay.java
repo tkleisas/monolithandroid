@@ -107,6 +107,7 @@ public class GameOverlay extends View {
 			break;
 		case OVERLAY_TYPE_OPTIONS:
 			drawOptionsOverlay(canvas);
+			this.drawType = this.DRAW_GAME_OPTIONS;
 			break;
 		
 		}
@@ -288,33 +289,67 @@ public class GameOverlay extends View {
     }
     private void drawOptionsOverlay(Canvas canvas)
     {
+    	int transitionMilliseconds = 1500;
+    	int firstEntry = canvas.getHeight()/3;
+    	int widgetdistance=80;
     	
-    	Paint[] p ={this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint};
+    	//Paint[] p ={this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint};
     	boolean[] animate = {false,false,false,false,false,false,false};
+    	int[] coordinates = {0,0,0,0,0,0,0};
+    	Paint[] p = new Paint[coordinates.length];
+    	
+
+    	int interpolatedOffset = (int)(options.interpolatePosition(transitionMilliseconds)*widgetdistance);
+    	
+    	//interpolatedOffset = 0;
+    	coordinates[options.getCurrentSelectedOption()]=firstEntry-interpolatedOffset;
+    	for(int i=options.getCurrentSelectedOption()+1;i<coordinates.length;i++)
+    	{
+    		coordinates[i]=firstEntry+(i-options.getCurrentSelectedOption())*widgetdistance-interpolatedOffset;
+    		
+    	}
+    	for(int i=1;i<=options.getCurrentSelectedOption();i++)
+    	{
+    		coordinates[options.getCurrentSelectedOption()-i]=firstEntry-i*widgetdistance-interpolatedOffset;
+    	}
+    	
     	animate[options.getCurrentSelectedOption()]=true;
     	p[options.getCurrentSelectedOption()]=this.selectedOptionsPaint;
-    	int transitionMilliseconds = 1500;
-    	
-    	int yoffset = -30;
-    	int widgetdistance=100;
-    	if(options.getPreviousSelectedOption()==options.getCurrentSelectedOption())
+    	for(int i=0;i<coordinates.length;i++)
     	{
-    		yoffset = canvas.getHeight()-(canvas.getHeight()*5)/4 - options.getCurrentSelectedOption()*widgetdistance;
+    		if(i==options.getCurrentSelectedOption())
+    		{
+    			p[i]=this.selectedOptionsPaint;
+    			continue;
+    		}
+    		Paint newp = new Paint();
+    		
+    		newp.setARGB(255, 255, 10, 10);
+    		newp.setTextSize(22);
+            p[i]=newp;
+            int distance=0;
+            if(coordinates[i]>firstEntry)
+            {
+            	distance = coordinates[i]-firstEntry;
+            }
+            else
+            {
+            	distance = firstEntry-coordinates[i];
+            }
+            float alpharatio = 0.0f;
+            if(distance<canvas.getHeight())
+            {
+            	alpharatio=1.0f-((float)distance*2)/(float)canvas.getHeight();
+            }
+            
+
+            p[i].setAlpha((int)(alpharatio*255));
+            
     	}
-    	if(options.getPreviousSelectedOption()>options.getCurrentSelectedOption())
-    	{
-    		yoffset = canvas.getHeight()-(canvas.getHeight()*5)/4 -(int)(options.getCurrentSelectedOption()*widgetdistance+options.interpolatePosition(transitionMilliseconds)*widgetdistance);
-    	}
-    	if(options.getPreviousSelectedOption()<options.getCurrentSelectedOption())
-    	{
-    		yoffset = canvas.getHeight()-(canvas.getHeight()*5)/4 - (int)(options.getPreviousSelectedOption()*widgetdistance+options.interpolatePosition(transitionMilliseconds)*widgetdistance);
-    	}
-    	//int yoffset = 80-(int)(options.getPreviousSelectedOption()*60+options.interpolatePosition(2000)*60);
-    	//drawOptionText(canvas,0,60,""+yoffset+"->"+options.interpolatePosition(2000),this.optionsPaint);
-    	//int yoffset = 40-options.getCurrentSelectedOption()*40;
-    	//p[options.getCurrentSelectedOption()]=this.selectedOptionsPaint;
-    	drawCenteredText(canvas, 40, res.getString(R.string.s_options),this.gameOverPaint2);
-    	drawTextSelector(canvas, 40+widgetdistance+yoffset, "",res.getString(R.string.s_back),this.optionsPaint,p[Options.OPTION_BACK],true,false,animate[Options.OPTION_BACK]);
+    	p[options.getCurrentSelectedOption()].setAlpha(255);
+
+    	drawCenteredText(canvas, 40, res.getString(R.string.s_options),this.gameOverPaint);
+    	drawTextSelector(canvas, coordinates[Options.OPTION_BACK], "",res.getString(R.string.s_back),p[Options.OPTION_BACK],p[Options.OPTION_BACK],animate[Options.OPTION_BACK],false,animate[Options.OPTION_BACK]);
     	
     	String gametype="";
     	switch(options.getGameType())
@@ -329,7 +364,7 @@ public class GameOverlay extends View {
     	
     	}
     	String gameDifficulty = ""; 
-    	drawTextSelector(canvas, 40+widgetdistance*2+yoffset, res.getString(R.string.s_gametype),gametype,this.optionsPaint,p[Options.OPTION_GAMETYPE],true,true,animate[Options.OPTION_GAMETYPE]);
+    	drawTextSelector(canvas, coordinates[Options.OPTION_GAMETYPE], res.getString(R.string.s_gametype),gametype,p[Options.OPTION_GAMETYPE],p[Options.OPTION_GAMETYPE],animate[Options.OPTION_GAMETYPE],animate[Options.OPTION_GAMETYPE],animate[Options.OPTION_GAMETYPE]);
     	
     	switch(options.getDifficultyLevel())
     	{
@@ -340,16 +375,17 @@ public class GameOverlay extends View {
     		gameDifficulty = res.getString(R.string.s_difficulty_expert);
     		break;
     	}
-    	drawTextSelector(canvas, 40+widgetdistance*3+yoffset, res.getString(R.string.s_difficulty),gameDifficulty,this.optionsPaint,p[Options.OPTION_DIFFICULTY],true,true,animate[Options.OPTION_DIFFICULTY]);
+    	
+    	drawTextSelector(canvas, coordinates[Options.OPTION_DIFFICULTY], res.getString(R.string.s_difficulty),gameDifficulty,p[Options.OPTION_DIFFICULTY],p[Options.OPTION_DIFFICULTY],animate[Options.OPTION_DIFFICULTY],animate[Options.OPTION_DIFFICULTY],animate[Options.OPTION_DIFFICULTY]);
     	String currentLevel = ""+this.options.getStartingLevel();
-    	drawTextSelector(canvas,40+widgetdistance*4+yoffset, res.getString(R.string.s_starting_level),currentLevel,this.optionsPaint,p[Options.OPTION_STARTING_LEVEL],true,true,animate[Options.OPTION_STARTING_LEVEL]);
+    	drawTextSelector(canvas,coordinates[Options.OPTION_STARTING_LEVEL], res.getString(R.string.s_starting_level),currentLevel,p[Options.OPTION_STARTING_LEVEL],p[Options.OPTION_STARTING_LEVEL],animate[Options.OPTION_STARTING_LEVEL],animate[Options.OPTION_STARTING_LEVEL],animate[Options.OPTION_STARTING_LEVEL]);
     	String music = options.isMusicEnabled()?res.getString(R.string.s_on):res.getString(R.string.s_off);
-    	drawTextSelector(canvas,40+widgetdistance*5+yoffset, res.getString(R.string.s_music),music,this.optionsPaint,p[Options.OPTION_MUSIC],true,true,animate[Options.OPTION_MUSIC]);
+    	drawTextSelector(canvas,coordinates[Options.OPTION_MUSIC], res.getString(R.string.s_music),music,p[Options.OPTION_MUSIC],p[Options.OPTION_MUSIC],animate[Options.OPTION_MUSIC],animate[Options.OPTION_MUSIC],animate[Options.OPTION_MUSIC]);
     	String sound = options.isSoundEnabled()?res.getString(R.string.s_on):res.getString(R.string.s_off);
-    	drawTextSelector(canvas,40+widgetdistance*6+yoffset, res.getString(R.string.s_sound),sound,this.optionsPaint,p[Options.OPTION_SOUND],true,true,animate[Options.OPTION_SOUND]);
+    	drawTextSelector(canvas,coordinates[Options.OPTION_SOUND], res.getString(R.string.s_sound),sound,p[Options.OPTION_SOUND],p[Options.OPTION_SOUND],animate[Options.OPTION_SOUND],animate[Options.OPTION_SOUND],animate[Options.OPTION_SOUND]);
     	String ok = res.getString(R.string.s_ok);
     	
-       	drawTextSelector(canvas, 40+widgetdistance*7+yoffset,"", res.getString(R.string.s_ok),this.optionsPaint,p[Options.OPTION_OK],false,true,animate[Options.OPTION_OK]);
+       	drawTextSelector(canvas, coordinates[Options.OPTION_OK],"", res.getString(R.string.s_ok),p[Options.OPTION_OK],p[Options.OPTION_OK],false,animate[Options.OPTION_OK],animate[Options.OPTION_OK]);
         
     }
 	private void drawClassicGameOverlay(Canvas canvas)
