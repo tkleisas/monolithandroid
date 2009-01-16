@@ -115,7 +115,7 @@ public class GameOverlay extends View {
         {
         	drawNameEntry(canvas);
         }
-        //this.lastDrawTime = System.currentTimeMillis();
+        
 	}
 	
     public int getTextWidth(String str,Paint paint)
@@ -293,7 +293,7 @@ public class GameOverlay extends View {
     	int firstEntry = canvas.getHeight()/3;
     	int widgetdistance=80;
     	
-    	//Paint[] p ={this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint,this.optionsPaint};
+    	
     	boolean[] animate = {false,false,false,false,false,false,false};
     	int[] coordinates = {0,0,0,0,0,0,0};
     	Paint[] p = new Paint[coordinates.length];
@@ -301,7 +301,7 @@ public class GameOverlay extends View {
 
     	int interpolatedOffset = (int)(options.interpolatePosition(transitionMilliseconds)*widgetdistance);
     	
-    	//interpolatedOffset = 0;
+    	
     	coordinates[options.getCurrentSelectedOption()]=firstEntry-interpolatedOffset;
     	for(int i=options.getCurrentSelectedOption()+1;i<coordinates.length;i++)
     	{

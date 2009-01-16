@@ -7,9 +7,6 @@ import android.view.*;
 public class Monolith extends Activity
 {
 	
-	//private static final int MONOLITH_ID = Menu.FIRST;
-    //private static final int CLASSIC_ID = Menu.FIRST + 1;
-    //private static final int EXIT_ID = Menu.FIRST + 2;
 	private static final int ID_PLAY_GAME = Menu.FIRST;
 	private static final int ID_OPTIONS = Menu.FIRST + 1;
 	private static final int ID_EXIT = Menu.FIRST+2;
@@ -17,7 +14,6 @@ public class Monolith extends Activity
 	public static final int GAME_CLASSIC = 0;
 	public static final int GAME_MONOLITH = 1;
 	public static final int GAME_PUZZLE = 2;
-    //GLView view;
     GameSurfaceView gsf;
     GameOverlay overlay;
     OptionsView optionsView;
@@ -29,13 +25,6 @@ public class Monolith extends Activity
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         hsTable = new HighScoreTable(this,10);
-        
-        //view = new GLView( getApplication(),GAME_MONOLITH );
-        //view.setViewType(GLView.VIEW_INTRO);
-        //view.doInit();
-        //view.running=true;
-        
-        
         overlay = new GameOverlay(this,hsTable);
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
@@ -44,32 +33,6 @@ public class Monolith extends Activity
         gsf = new GameSurfaceView(this,overlay);
         gsf.setViewType(GLThread.VIEW_INTRO);
         gsf.setGameType(Monolith.GAME_MONOLITH);
-        
-        //overlay.setVisibility(View.VISIBLE);
-        
-        
-        //String[] assetlist=null;
-        /*
-        String message = "->";
-        try
-        {
-        	assetlist = mgr.list("/");
-        	if (assetlist!=null)
-        	{
-        		for(int i=0;i<assetlist.length;i++)
-        		{
-        			message+=assetlist[i]+"{";
-        		}
-        		view.message = message;
-        	}
-        }
-        catch(Exception e)
-        {
-        	
-        }
-        */
-        //this.addContentView(gsf,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
-        //this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
         setContentView(gsf);
         gsf.setVisibility(View.VISIBLE);        
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
@@ -81,13 +44,13 @@ public class Monolith extends Activity
     public void onPause()
     {
     	super.onPause();
-    	gsf.stopMusic();
+    	//gsf.stopMusic();
     }
     @Override
     public void onStop()
     {
     	super.onStop();
-    	gsf.stopMusic();
+    	//gsf.stopMusic();
     }
 
     
@@ -135,17 +98,6 @@ public class Monolith extends Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        /*
-        case MONOLITH_ID:
-            playMonolithGame();
-            return true;
-        case CLASSIC_ID:
-        	playClassicGame();
-        	return true;
-        case EXIT_ID:
-        	exitApplication();
-        	return true;
-        	*/
         case ID_PLAY_GAME:
             playGame();
             return true;
@@ -164,32 +116,15 @@ public class Monolith extends Activity
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
 
-        /*
-        menu.add(0, MONOLITH_ID,0 ,R.string.m_new_monolith);
-        menu.add(0, CLASSIC_ID,0,R.string.m_new_classic);
-        menu.add(0, EXIT_ID,0,R.string.s_exit_game );
-        */
         menu.add(0, ID_PLAY_GAME,0 ,R.string.s_play);
         menu.add(0, ID_OPTIONS,0,R.string.s_options);
         menu.add(0, ID_EXIT,0,R.string.s_exit);
-        
-                
-   
         return true;
     }   
     
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent msg) {
         boolean handled = false;
-        /*
-        if(view.game!=null)
-        {
-        	if (view.game.getStatus()!= SimpleGameData.STATUS_PLAYING)
-        	{
-        		return handled;
-        	}
-        }
-        */
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
         {
         	try
@@ -256,21 +191,6 @@ public class Monolith extends Activity
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent msg) {
         boolean handled = false;
-        /*
-        if (mMode == RUNNING) {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER ||
-                keyCode == KeyEvent.KEYCODE_SPACE) {
-                setFiring(false);
-                handled = true;
-            } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT ||
-                       keyCode == KeyEvent.KEYCODE_Q || 
-                       keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ||
-                       keyCode == KeyEvent.KEYCODE_W) {
-                mRotating = 0;
-                handled = true;
-            }
-        }
-		*/
         return handled;
     }
     @Override

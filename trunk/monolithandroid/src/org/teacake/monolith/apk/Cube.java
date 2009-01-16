@@ -10,7 +10,7 @@ class Cube
 {
     public Cube()
     {
-        //int one = 0x10000;
+        
         int one = 0x10000;
         int vertices[] = {
                -one, -one, -one,
