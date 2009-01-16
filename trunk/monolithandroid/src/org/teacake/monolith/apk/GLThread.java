@@ -908,8 +908,9 @@ public class GLThread extends Thread
             //canvas.drawBitmap(drawableBackground, rect, rect, bgpaint);
             //canvas.drawText("width ="+drawableBackground.width()+" height="+this.drawableBackground.height()+" new_w="+bg_new_width+" new_h="+bg_new_height,10,300,  paint);
             //canvas.drawText(message, 10, 10, paint);
-            if (this.viewType==VIEW_INTRO)
+            switch(this.viewType)
             {
+            case VIEW_INTRO:
 	            now = SystemClock.uptimeMillis();
 	            if(now>lastcalltime+demogame.getTimer())
 	            {
@@ -918,15 +919,10 @@ public class GLThread extends Thread
 	            		this.demogame.gameLoop();
 	            }
 	            this.drawIntroScreen(gl,w,h);
-            	//this.drawIntroScreen(gl, canvas, w, h);
-            	String logo="MonolithAndroid";
-
-            	//int textxpos = this.getTextWidth(logo,this.gameOverPaint);
-            	//canvas.drawText(logo, (getWidth()-textxpos)/2, (getHeight()-gameOverPaint.getTextSize())/2, gameOverPaint);
+            	String logo="MonolithAndroid";            	
+            	break;
+            case VIEW_OPTIONS:
             	
-            }
-            if(this.viewType==VIEW_OPTIONS)
-            {
 	            now = SystemClock.uptimeMillis();
 	            if(now>lastcalltime+demogame.getTimer())
 	            {
@@ -956,12 +952,19 @@ public class GLThread extends Thread
         		{
         			action=MSG_DO_NOTHING;
         			overlay.getOptions().nextOption();
-        		}            	
-            	           	
-            }
-            int savedaction = action;
-            if (this.viewType==VIEW_GAME)
-            {
+        		}
+        		if(overlay.getOptions().getStatus()==Options.STATUS_BACK)
+        		{
+        			this.viewType=VIEW_GAME;
+        			this.setViewType(GLThread.VIEW_INTRO);
+        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
+        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+        		}
+        		int savedaction = action;
+        		break;
+            
+
+            case VIEW_GAME:
             	if (action == MSG_ROTATE)
         		{
         			action=MSG_DO_NOTHING;
@@ -1040,19 +1043,19 @@ public class GLThread extends Thread
 	            	}
 	            	else
 	            	{
-            			if(savedaction==MSG_ROTATE)
+            			if(action==MSG_ROTATE)
             			{
             				this.overlay.selectPreviousChar();
             			}
-            			if(savedaction==MSG_MOVE_DOWN)
+            			if(action==MSG_MOVE_DOWN)
             			{
             				this.overlay.selectNextChar();
             			}
-            			if(savedaction==MSG_MOVE_LEFT)
+            			if(action==MSG_MOVE_LEFT)
             			{
             				this.overlay.moveBack();
             			}
-            			if(savedaction==MSG_MOVE_RIGHT)
+            			if(action==MSG_MOVE_RIGHT)
             			{
             				this.highscoreEntry = this.overlay.moveForward();
             				if(!this.highscoreEntry)
@@ -1120,15 +1123,18 @@ public class GLThread extends Thread
                 }	            
 	            gl.glPopMatrix();
 	            //game.gameLoop();
+            
+            	break;
+            	}
             }
-
+            
         /*
          * Once we're done with GL, we need to flush all GL commands and
          * make sure they complete before we can issue more native
          * drawing commands. This is done by calling waitGL().
          */
         //mGLContext.waitGL();
-        }
+        
     }
 
 
