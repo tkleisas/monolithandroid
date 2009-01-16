@@ -19,19 +19,13 @@ public class GLThread extends Thread
 
 	private  final org.teacake.monolith.apk.GameSurfaceView view;
 	private boolean done;
-	public GLThread(org.teacake.monolith.apk.GameSurfaceView view, GameOverlay overlay, android.content.Context context)
+	public GLThread(org.teacake.monolith.apk.GameSurfaceView view, GameOverlay overlay, android.content.Context context,SoundManager soundManager)
 	{
 		done=false;
 		this.view = view;
 		this.overlay = overlay;
 		this.context = context;
-		soundManager = new SoundManager(context);
-		soundManager.addSound(R.raw.monolith, true);
-		soundManager.addSound(R.raw.explosion2, false);
-		soundManager.addSound(R.raw.place, false);
-		soundManager.addSound(R.raw.rotate,false);
-		soundManager.startSound();
-		soundManager.playSound(R.raw.monolith);
+		this.soundManager = soundManager;
         mCube = new Cube[8];
         mCube[0] = new Cube(0xff00,0,0,0x10000);
         mCube[1] = new Cube(0,0xff00,0,0x10000);
@@ -914,6 +908,7 @@ public class GLThread extends Thread
             	String logo="MonolithAndroid";            	
             	break;
             case VIEW_OPTIONS:
+        		int savedaction = action;
             	
 	            now = SystemClock.uptimeMillis();
 	            if(now>lastcalltime+demogame.getTimer())
@@ -926,24 +921,43 @@ public class GLThread extends Thread
             	//this.drawIntroScreen(gl, canvas, w, h);
             	if (action == MSG_ROTATE)
         		{
+            		
         			action=MSG_DO_NOTHING;
         			overlay.getOptions().previousOption();
+        			if(overlay.getOptions().isSoundEnabled())
+        			{
+        				this.soundManager.playSound(R.raw.pluck);
+        			}
         		}
         		if (action == MSG_MOVE_LEFT)
         		{
         			action=MSG_DO_NOTHING;
         			overlay.getOptions().setPreviousValue();
+        			if(overlay.getOptions().isSoundEnabled())
+        			{
+        				this.soundManager.playSound(R.raw.pluck);
+        			}
             	
         		}
         		if (action == MSG_MOVE_RIGHT)
         		{
         			action=MSG_DO_NOTHING;
         			overlay.getOptions().setNextValue();
+        			if(overlay.getOptions().isSoundEnabled())
+        			{
+        				this.soundManager.playSound(R.raw.pluck);
+        			}
+
         		}
         		if (action == MSG_MOVE_DOWN)
         		{
         			action=MSG_DO_NOTHING;
         			overlay.getOptions().nextOption();
+        			if(overlay.getOptions().isSoundEnabled())
+        			{
+        				this.soundManager.playSound(R.raw.pluck);
+        			}
+
         		}
         		if(overlay.getOptions().getStatus()==Options.STATUS_BACK)
         		{
@@ -952,7 +966,6 @@ public class GLThread extends Thread
         			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
         			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         		}
-        		int savedaction = action;
         		break;
             
 

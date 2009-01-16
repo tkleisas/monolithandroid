@@ -8,15 +8,17 @@ import android.view.View;
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
 	
-	public GameSurfaceView(Context context) {
+	public GameSurfaceView(Context context,SoundManager soundManager) {
 		super(context);
+		this.soundManager = soundManager;
 		this.context = context;
 		getHolder().addCallback(this);
 		getHolder().setType(android.view.SurfaceHolder.SURFACE_TYPE_GPU);
 	}
-	public GameSurfaceView(Context context,GameOverlay overlay)
+	public GameSurfaceView(Context context,GameOverlay overlay,SoundManager soundManager)
 	{
 		super(context);
+		this.soundManager = soundManager;
 		this.context = context;
 		this.overlay = overlay;
 		this.overlay.setCurtain(100);
@@ -75,7 +77,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	{
 		
 		// The Surface has been created so start our drawing thread
-		glThread =new org.teacake.monolith.apk.GLThread(this,this.overlay,context);
+		glThread =new org.teacake.monolith.apk.GLThread(this,this.overlay,context,this.soundManager);
 		glThread.setViewType(viewType);
 		glThread.setGameType(gameType);
 		glThread.start();
@@ -110,6 +112,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	private int viewType;
 	private int gameType;
 	private GameOverlay overlay;
+	private SoundManager soundManager;
 	public GameOverlay getOverlay()
 	{
 		return overlay;
