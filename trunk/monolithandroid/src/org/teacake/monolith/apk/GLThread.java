@@ -44,7 +44,7 @@ public class GLThread extends Thread
         this.explodingCubes = new java.util.LinkedList<ExplodingCube>();
         randomgen = new java.util.Random(SystemClock.uptimeMillis());
         this.overlay.setCurtain(100);
-        
+        this.game = overlay.getOptions().getGame();
 	}
 	
     public void onWindowResize(int w, int h) {
@@ -190,19 +190,14 @@ public class GLThread extends Thread
     	yoff = 21.0f;
     	zoff = -50.0f;
 
-        mAnimate = false;
-        if(gametype==Monolith.GAME_CLASSIC)
-        {
-        	game = new SimpleGameData();
-        }
-        if(gametype==Monolith.GAME_MONOLITH)
-        {
-        	game = new MonolithGameData();
-        }
+        
+
+        game = overlay.getOptions().getGame();
+        
         
        
         
-        game.initGame(1);
+        game.initGame(this.overlay.getOptions().getStartingLevel());
         game.setScore(0);
         game.setLines(0);
         game.setTimerEnabled(true);
@@ -234,12 +229,12 @@ public class GLThread extends Thread
     	yoff = 21.0f;
     	zoff = -63.0f;
 
-        mAnimate = false;
-        if(gametype==Monolith.GAME_CLASSIC)
+        
+        if(gametype==Game.GAME_CLASSIC)
         {
         	game = new SimpleGameData();
         }
-        if(gametype==Monolith.GAME_MONOLITH)
+        if(gametype==Game.GAME_MONOLITH)
         {
         	game = new MonolithGameData();
         }
@@ -247,7 +242,7 @@ public class GLThread extends Thread
 
         
         
-        game.initGame(1);
+        game.initGame(this.overlay.getOptions().getDifficultyLevel());
         game.setScore(0);
         game.setLines(0);
         game.setTimerEnabled(true);
@@ -265,7 +260,7 @@ public class GLThread extends Thread
         rangle=0;
         paint = new Paint();
         paint2 = new Paint();
-        bgpaint = new Paint();
+        
         paint.setARGB(200, 255, 0, 0);
         //paint.setFakeBoldText(true);
         paint.setTextSize(14);
@@ -968,6 +963,15 @@ public class GLThread extends Thread
         			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
         			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         		}
+        		if(overlay.getOptions().getStatus()==Options.STATUS_OK);
+        		{
+        			this.game = this.overlay.getOptions().getGame();
+        			this.viewType=VIEW_GAME;
+        			this.setViewType(GLThread.VIEW_INTRO);
+        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
+        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+        			
+        		}
         		int changed = overlay.getOptions().getChangedOption();
         		if(changed == Options.OPTION_MUSIC)
         		{
@@ -981,6 +985,7 @@ public class GLThread extends Thread
         				this.soundManager.stopSound(R.raw.monolithogg2);
         			}
         		}
+        		
         		break;
         		
 
@@ -1039,7 +1044,7 @@ public class GLThread extends Thread
         		this.overlay.setLevel(game.getLevelName());
         		this.overlay.setScore(""+game.getScore());
         		this.overlay.setLines(""+game.getLines());
-	            if(this.gametype==Monolith.GAME_MONOLITH)
+	            if(this.gametype==Game.GAME_MONOLITH)
 	            {
 	            	
 	            	this.overlay.setEnergy(""+game.getEnergy());
@@ -1162,7 +1167,7 @@ public class GLThread extends Thread
 
 
     
-    private static final int INVALIDATE = 1;
+    //private static final int INVALIDATE = 1;
 
 
     
@@ -1185,7 +1190,7 @@ public class GLThread extends Thread
     private Square			mEarth;
     private float           mAngle;
     private long            mNextTime;
-    private boolean         mAnimate;
+
     private float			rangle;
     private boolean			highscoreEntry;
     private int xval;
@@ -1199,10 +1204,10 @@ public class GLThread extends Thread
     private long lastcalltime;
     private Paint paint;
     private Paint paint2;
-    private Paint bgpaint;
+    
     private Paint gameOverPaint;
-    private int gameOverXPos;
-    private int evolvingXPos;
+    
+    
     public boolean running;
     private Resources res;
     int gametype;
@@ -1219,8 +1224,7 @@ public class GLThread extends Thread
     public boolean mSizeChanged = true;
     private long lastdrawtime;
     private java.util.Random randomgen;
-    private android.graphics.Bitmap background;
-    private android.graphics.Bitmap drawableBackground;
+    
     private boolean backgroundInitialized;
     private int steps;
     private GameOverlay overlay;

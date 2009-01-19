@@ -13,7 +13,7 @@ public class GameOverlay extends View {
 		this.options = options;
 		this.hsTable = table;
 		this.overlayType = OVERLAY_TYPE_GAME_MONOLITH;
-		this.drawType = this.DRAW_NORMAL;
+		this.drawType = DRAW_NORMAL;
 		res = context.getResources();
 		curtainPaint = new Paint();
 		curtainPaint.setARGB(255, 0, 0, 0);
@@ -107,11 +107,11 @@ public class GameOverlay extends View {
 			break;
 		case OVERLAY_TYPE_OPTIONS:
 			drawOptionsOverlay(canvas);
-			this.drawType = this.DRAW_GAME_OPTIONS;
+			this.drawType = DRAW_GAME_OPTIONS;
 			break;
 		
 		}
-        if(this.drawType == this.DRAW_NAME_ENTRY)
+        if(this.drawType == DRAW_NAME_ENTRY)
         {
         	drawNameEntry(canvas);
         }
@@ -354,11 +354,11 @@ public class GameOverlay extends View {
     	String gametype="";
     	switch(options.getGameType())
     	{
-    	case Monolith.GAME_CLASSIC:
+    	case Game.GAME_CLASSIC:
     		gametype = res.getString(R.string.s_classicgame);
     		break;
     		
-    	case Monolith.GAME_MONOLITH:
+    	case Game.GAME_MONOLITH:
     		gametype = res.getString(R.string.s_monolithgame);
     		break;
     	

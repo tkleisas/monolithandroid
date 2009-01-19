@@ -13,15 +13,18 @@ class SoundPoolEvent
 	
 	public static final int SOUND_PLAY=0;
 	public static final int SOUND_STOP=1;
+	public static final int SOUND_STOP_DELAYED=2;
 }
-class SoundPoolInfo
+class SoundStatus
 {
-	public SoundPoolInfo()
+	public SoundStatus()
 	{
 		
 	}
-	public static final int STATUS_NOT_PLAYING=0;
-	public static final int STATUS_PLAYING=1;
+	public static final int STATUS_LOOPING_NOT_STARTED=0;
+	public static final int STATUS_LOOPING_PAUSED=1;
+	public static final int STATUS_LOOPING_PLAYING=2;
+	
 	
 }
 public class SoundPoolManager extends Thread implements Sound
@@ -45,7 +48,7 @@ public class SoundPoolManager extends Thread implements Sound
 			try
 			{
 				android.media.MediaPlayer mp = android.media.MediaPlayer.create(context, resid);
-				//mp.setLooping(true);
+				mp.setLooping(true);
 				mp.seekTo(0);
 				//mp.prepare();
 				mediaPlayers.put(resid, mp);
@@ -108,6 +111,7 @@ public class SoundPoolManager extends Thread implements Sound
 								//if(mp.isPlaying())
 								//{
 								
+									
 									mp.pause();
 								
 								//}
@@ -123,7 +127,8 @@ public class SoundPoolManager extends Thread implements Sound
 
 			try
 			{
-				java.lang.Thread.currentThread().sleep(100);
+				this.wait(100);
+				//java.lang.Thread.currentThread().sleep(100);
 			}
 			catch(Exception e)
 			{
@@ -190,7 +195,7 @@ public class SoundPoolManager extends Thread implements Sound
 		{
 			try
 			{
-				soundEvents.add(new SoundEvent(SoundEvent.SOUND_STOP,resid));
+				soundEvents.add(new SoundEvent(SoundPoolEvent.SOUND_STOP_DELAYED,resid));
 			}
 			catch(Exception e)
 			{
@@ -204,7 +209,8 @@ public class SoundPoolManager extends Thread implements Sound
 		{
 			try
 			{
-				soundEvents.add(new SoundEvent(SoundEvent.SOUND_PLAY,resid));
+				soundEvents.add(new SoundEvent(SoundPoolEvent.SOUND_PLAY,resid));
+				this.notify();
 			}
 			catch(Exception e)
 			{

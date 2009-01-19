@@ -2,22 +2,32 @@ package org.teacake.monolith.apk;
 
 public class Options 
 {
-	public Options()
+	public Options(Game currentGame)
 	{
 		this.setMusicEnabled(true);
 		this.setSoundEnabled(true);
 		
-		this.setGame(new MonolithGameData());
-		this.setGameType(game.getGameType());
+		this.game = currentGame;
+		if(game.getGameType()==Game.GAME_CLASSIC)
+		{
+			this.newGame = new SimpleGameData();
+		}
+		else
+		{
+			this.newGame = new MonolithGameData();
+		}
+		this.newGame.setLevel(this.game.getLevel());
+		this.setGameType(newGame.getGameType());
 		this.startingLevel = this.getFirstLevel();
 		this.difficultyLevel = Options.DIFFICULTY_NORMAL;
 		this.currentSelectedOption = 0;//Options.ALLOPTIONS[0];
 		this.previousSelectedOption = 1;
-		status = Options.STATUS_SELECTING;
+		this.status = Options.STATUS_SELECTING;
 		this.currentSelectedOptionTime = System.currentTimeMillis();
 		this.previousSelectedOptionTime = this.currentSelectedOptionTime;
 		this.currentSelectedOption = 1;
 		this.changedOption = Options.OPTION_NONE;
+		
 	}
 	private int status;
 	private boolean enabledmusic;
@@ -57,9 +67,19 @@ public class Options
 	}
 	public void setGame(Game game)
 	{
-		this.game = game;
+		this.game= game;
 	}
+	public void setNewGame(Game game)
+	{
+		this.newGame = game;
+	}
+	public Game getGame()
+	{
+		return this.game;
+	}
+	
 	private Game game;
+	private Game newGame;
 	private int gameType;
 	public void setGameType(int gameType)
 	{
@@ -81,24 +101,24 @@ public class Options
 	}
 	public int getFirstLevel()
 	{
-		return this.game.getLevels()[0];
+		return this.newGame.getLevels()[0];
 	}
 	public void setFirstLevel()
 	{
 		this.currentLevelIndex=0;
-		this.startingLevel = this.game.getLevels()[currentLevelIndex];
+		this.startingLevel = this.newGame.getLevels()[currentLevelIndex];
 	}
 	public void setNextLevel()
 	{
-		if(this.currentLevelIndex<this.game.getLevels().length-1)
+		if(this.currentLevelIndex<this.newGame.getLevels().length-1)
 		{
 			this.currentLevelIndex++;
-			this.startingLevel = this.game.getLevels()[this.currentLevelIndex];
+			this.startingLevel = this.newGame.getLevels()[this.currentLevelIndex];
 		}
 		else
 		{
 			this.currentLevelIndex = 0;
-			this.startingLevel = this.game.getLevels()[0];
+			this.startingLevel = this.newGame.getLevels()[0];
 		}
 	}
 	public void setPreviousLevel()
@@ -106,12 +126,12 @@ public class Options
 		if(this.currentLevelIndex>0)
 		{
 			currentLevelIndex--;
-			this.startingLevel = this.game.getLevels()[currentLevelIndex];
+			this.startingLevel = this.newGame.getLevels()[currentLevelIndex];
 		}
 		else
 		{
-			this.currentLevelIndex = this.game.getLevels().length-1;
-			this.startingLevel = this.game.getLevels()[this.currentLevelIndex];
+			this.currentLevelIndex = this.newGame.getLevels().length-1;
+			this.startingLevel = this.newGame.getLevels()[this.currentLevelIndex];
 		}
 	}
 	public int getCurrentSelectedOption()
@@ -183,13 +203,15 @@ public class Options
 			this.changedOption = OPTION_BACK;
 			break;
 		case OPTION_GAMETYPE:
-			if(this.gameType==Monolith.GAME_MONOLITH)
+			if(this.gameType==Game.GAME_MONOLITH)
 			{
-				gameType=Monolith.GAME_CLASSIC;
+				gameType=Game.GAME_CLASSIC;
+				this.newGame = new SimpleGameData();
 			}
 			else
 			{
-				gameType=Monolith.GAME_MONOLITH;
+				gameType= Game.GAME_MONOLITH;
+				this.newGame = new MonolithGameData();
 			}
 			this.changedOption = OPTION_GAMETYPE;
 			break;
@@ -219,27 +241,49 @@ public class Options
 		case OPTION_OK:
 			this.status = Options.STATUS_OK;
 			this.changedOption = OPTION_OK;
+			this.game = newGame;
+			initNewGame();
 			break;
 			
 		}
+	}
+	private void initNewGame()
+	{
+		switch(game.getGameType())
+		{
+		case Game.GAME_CLASSIC:
+				newGame = new SimpleGameData();
+				this.setFirstLevel();
+				
+			break;
+		case Game.GAME_MONOLITH:
+				newGame = new MonolithGameData();
+				this.setFirstLevel();
+			break;
+		}
+	}
+	public void resetOptions()
+	{
+		this.status = Options.STATUS_SELECTING;
 	}
 	public void setPreviousValue()
 	{
 		switch(currentSelectedOption)
 		{
 		case OPTION_BACK:
-			status = Options.STATUS_BACK;
+			this.setStatus(Options.STATUS_BACK);
+			
 			this.changedOption = OPTION_BACK;
 			break;
 		case OPTION_GAMETYPE:
-			if(this.gameType==Monolith.GAME_MONOLITH)
+			if(this.gameType==Game.GAME_MONOLITH)
 			{
-				gameType=Monolith.GAME_CLASSIC;
+				gameType=Game.GAME_CLASSIC;
 				
 			}
 			else
 			{
-				gameType=Monolith.GAME_MONOLITH;
+				gameType=Game.GAME_MONOLITH;
 			}
 			this.changedOption = OPTION_GAMETYPE;
 			break;

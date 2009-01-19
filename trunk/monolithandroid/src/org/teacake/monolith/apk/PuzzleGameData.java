@@ -654,7 +654,7 @@ public class PuzzleGameData implements Game
 	}
 	public int getGameType()
 	{
-		return Monolith.GAME_PUZZLE;
+		return Game.GAME_PUZZLE;
 	}
 	public void setLines(int lines)
 	{
