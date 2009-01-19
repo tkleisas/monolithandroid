@@ -8,13 +8,7 @@ import android.view.View;
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
 	
-	public GameSurfaceView(Context context,Sound soundManager) {
-		super(context);
-		this.soundManager = soundManager;
-		this.context = context;
-		getHolder().addCallback(this);
-		getHolder().setType(android.view.SurfaceHolder.SURFACE_TYPE_GPU);
-	}
+
 	public GameSurfaceView(Context context,GameOverlay overlay,Sound soundManager)
 	{
 		super(context);
@@ -22,7 +16,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 		this.context = context;
 		this.overlay = overlay;
 		this.overlay.setCurtain(100);
-		
+		this.viewType = GLThread.VIEW_INTRO;
+		this.gameType = Game.GAME_MONOLITH;
 		getHolder().addCallback(this);
 		getHolder().setType(android.view.SurfaceHolder.SURFACE_TYPE_GPU);
 
@@ -48,29 +43,32 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 		}
 	}
 	
-	public void initGame()
+	public void initGame(int gameType)
 	{
-		glThread.setGameType(this.gameType);
-		glThread.setViewType(viewType);
-        if(this.viewType==GLThread.VIEW_INTRO)
-        {
-        	overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
-        }
-        else
-        {
-        	switch(this.gameType)
-        	{
-        	case Monolith.GAME_CLASSIC:
-        		
-        		overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_GAME_CLASSIC);
-        		break;
-        	case Monolith.GAME_MONOLITH:
-        		overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_GAME_MONOLITH);
-        		break;
-        	}
-        	
-        }
-		
+		switch(gameType)
+		{
+			case GLThread.VIEW_INTRO:
+				glThread.setGameType(Game.GAME_MONOLITH);
+				glThread.setViewType(GLThread.VIEW_INTRO);
+				overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+		    	
+		    	overlay.setDrawType(GameOverlay.DRAW_NORMAL);
+		    	
+				break;
+			case GLThread.VIEW_GAME:
+				glThread.setGameType(overlay.getOptions().getGameType());
+				glThread.setViewType(GLThread.VIEW_GAME);
+				overlay.setOverlayType(overlay.getOptions().getGameType());
+				overlay.setDrawType(GameOverlay.DRAW_NORMAL);
+				
+			case GLThread.VIEW_OPTIONS:
+				glThread.setGameType(Game.GAME_MONOLITH);
+				glThread.setViewType(GLThread.VIEW_OPTIONS);
+				overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_OPTIONS);
+				overlay.setDrawType(GameOverlay.DRAW_GAME_OPTIONS);
+				break;
+			
+		}
 		glThread.reinit();
 	}
 	public void surfaceCreated(SurfaceHolder holder)

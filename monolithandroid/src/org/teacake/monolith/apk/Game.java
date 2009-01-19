@@ -7,6 +7,9 @@ public interface Game
 	public static final int STATUS_PAUSE=2;
 	public static final int STATUS_GAME_OVER=3;
 	public static final int STATUS_EVOLVING=4;
+	public static final int GAME_CLASSIC = 0;
+	public static final int GAME_MONOLITH = 1;
+	public static final int GAME_PUZZLE = 2;
 	public void clearGrid();
 	public void initGame(int theStartingLevel);
 	public void setStatus(int status);

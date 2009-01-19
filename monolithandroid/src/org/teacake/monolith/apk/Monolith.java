@@ -11,16 +11,14 @@ public class Monolith extends Activity
 	private static final int ID_OPTIONS = Menu.FIRST + 1;
 	private static final int ID_EXIT = Menu.FIRST+2;
     
-	public static final int GAME_CLASSIC = 0;
-	public static final int GAME_MONOLITH = 1;
-	public static final int GAME_PUZZLE = 2;
+
     GameSurfaceView gsf;
     GameOverlay overlay;
-    OptionsView optionsView;
     View highscoreNameEntry;
     HighScoreTable hsTable;
     Options options;
     Sound soundManager;
+    Game game;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
@@ -29,17 +27,19 @@ public class Monolith extends Activity
         
         this.soundManager = new SoundPoolManager(this);
         hsTable = new HighScoreTable(this,10);
-        options = new Options();
+        game = new MonolithGameData();
+        
+        options = new Options(game);
         overlay = new GameOverlay(this,hsTable,options);
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
-        optionsView = new OptionsView(getApplication());
+        
         android.content.res.AssetManager mgr = getApplication().getAssets();
         gsf = new GameSurfaceView(this,overlay,this.soundManager);
-        gsf.setViewType(GLThread.VIEW_INTRO);
-        gsf.setGameType(Monolith.GAME_MONOLITH);
+
         setContentView(gsf);
-        gsf.setVisibility(View.VISIBLE);        
+        gsf.setVisibility(View.VISIBLE);   
+        
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
 		
 		
@@ -81,36 +81,20 @@ public class Monolith extends Activity
     {
     	
 		gsf.setGameType(overlay.getOptions().getGameType());
-		gsf.setViewType(GLThread.VIEW_GAME);
-		gsf.initGame();
+	
+		gsf.initGame(GLThread.VIEW_GAME);
+		
     	
     }
     public void showOptions()
     {
-    	gsf.setGameType(Monolith.GAME_MONOLITH);
-    	gsf.setViewType(GLThread.VIEW_OPTIONS);
-    	
-    	gsf.initGame();
-    	gsf.getOverlay().getOptions().setStatus(Options.STATUS_SELECTING);
-    	gsf.getOverlay().setDrawType(GameOverlay.DRAW_GAME_OPTIONS);
-    	gsf.getOverlay().setOverlayType(GameOverlay.OVERLAY_TYPE_OPTIONS);
-    	
-    }
-    public void playMonolithGame()
-    {
-    	
-		gsf.setGameType(Monolith.GAME_MONOLITH);
-		gsf.setViewType(GLThread.VIEW_GAME);
-		gsf.initGame();
+    	gsf.setGameType(game.getGameType());
+    	this.options.resetOptions();
+    	gsf.initGame(GLThread.VIEW_OPTIONS);
 
     	
     }
-    public void playClassicGame()
-    {
-    	gsf.setGameType(Monolith.GAME_CLASSIC);
-    	gsf.setViewType(GLThread.VIEW_GAME);
-    	gsf.initGame();   	
-    }
+
     
 
     public void exitApplication()
@@ -201,6 +185,10 @@ public class Monolith extends Activity
         		
         	}
         	handled = true;
+        }
+        if(keyCode == KeyEvent.KEYCODE_BACK)
+        {
+        	this.exitApplication();
         }
         
 

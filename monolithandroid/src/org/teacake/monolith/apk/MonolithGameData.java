@@ -792,7 +792,7 @@ public class MonolithGameData implements Game
 	}
 	public int getGameType()
 	{
-		return Monolith.GAME_MONOLITH;
+		return Game.GAME_MONOLITH;
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

@@ -545,7 +545,7 @@ package org.teacake.monolith.apk;
 		}	
 		public int getGameType()
 		{
-			return Monolith.GAME_CLASSIC;
+			return Game.GAME_CLASSIC;
 		}
 
 	}
