@@ -29,9 +29,10 @@ public class SoundPoolManager extends Thread implements Sound
 	SoundPoolManager(android.content.Context context)
 	{
 		this.context = context;
-		
+		soundEvents = new java.util.LinkedList<SoundEvent>();
 		sounds = new java.util.HashMap<Integer, Boolean>();
 		handles = new java.util.HashMap<Integer, Integer>();
+		mediaPlayers = new java.util.HashMap<Integer, android.media.MediaPlayer>();
 		isRunning = false;
 		
 	}
@@ -39,6 +40,28 @@ public class SoundPoolManager extends Thread implements Sound
 	{
 		
 		sounds.put(resid, new Boolean(isLooping));
+		if(isLooping)
+		{
+			try
+			{
+				android.media.MediaPlayer mp = android.media.MediaPlayer.create(context, resid);
+				//mp.setLooping(true);
+				mp.seekTo(0);
+				//mp.prepare();
+				mediaPlayers.put(resid, mp);
+				
+			
+				//mp.seekTo(0);
+				//mp.setAudioStreamType(android.media.AudioManager.STREAM_MUSIC);
+			}
+			catch(Exception e)
+			{
+				Log.d("ERROR",e.getMessage());
+			}
+				
+
+			
+		}
 	}
 	
 	public void run()
@@ -55,55 +78,41 @@ public class SoundPoolManager extends Thread implements Sound
 					{
 						if(event.eventType == SoundEvent.SOUND_PLAY)
 						{
+						
 							currentPlayer = event.eventSound;
-					
-					
-							//Thread t = new Thread()
-							//{
-							//	public void run()
-							//	{
-							//		try
-							//		{
-										android.media.AudioManager mgr = (android.media.AudioManager) context.getSystemService(android.content.Context.AUDIO_SERVICE); 
-										int streamVolume = mgr.getStreamVolume(android.media.AudioManager.STREAM_MUSIC); 
-										
-										soundPool.play(handles.get( event.eventSound).intValue(), streamVolume, streamVolume, 1, 0, 1.0f);
-										
-							//		}
-							//		catch(Exception e2)
-							//		{
-									
-							//		}
-								
-							//	}
-							//};
-							//t.start();
-						}else
+							if(sounds.get(currentPlayer).booleanValue())
+							{
+								android.media.MediaPlayer mp = mediaPlayers.get(currentPlayer);
+								if(!mp.isPlaying())
+								{
+									mp.seekTo(0);
+									mp.start();
+								}
+							}
+							else
+							{
+								android.media.AudioManager mgr = (android.media.AudioManager) context.getSystemService(android.content.Context.AUDIO_SERVICE); 
+								int streamVolume = mgr.getStreamVolume(android.media.AudioManager.STREAM_MUSIC); 
+								soundPool.play(handles.get( event.eventSound).intValue(), streamVolume, streamVolume, 1, 0, 1.0f);
+						
+							}
+						}
+						else 
 						if(event.eventType == SoundEvent.SOUND_STOP)
 						{
-							currentPlayer = event.eventSound;
-					
-					
-							//Thread t = new Thread()
-							//{
-							//	public void run()
-							//	{
-							//		try
-							//		{
-										soundPool.pause(handles.get( event.eventSound).intValue());
-										//soundPool.stop(handles.get( event.eventSound).intValue());
-							//		}
-							//		catch(Exception e2)
-							//		{
-									
-							//		}
+							if(sounds.get(currentPlayer).booleanValue())
+							{
+								currentPlayer = event.eventSound;
+							
+								android.media.MediaPlayer mp = mediaPlayers.get(currentPlayer);
+								//if(mp.isPlaying())
+								//{
 								
-							//	}
-							//};
-							//t.start();
+									mp.pause();
+								
+								//}
+							}
 						}
-						
-						
 					}
 				}
 			}
@@ -145,13 +154,27 @@ public class SoundPoolManager extends Thread implements Sound
 		
 		while(iterator.hasNext())
 		{
+			
 			int soundid = iterator.next().intValue();
-			this.soundPool.pause(soundid);
+			if(this.sounds.get(soundid).booleanValue())
+			{
+				android.media.MediaPlayer mp = mediaPlayers.get(soundid);
+				mp.stop();
+				mp.release();
+				mp=null;
+			}
+			else
+			{
+				this.soundPool.pause( this.handles.get(soundid).intValue());
+				this.soundPool.stop(this.handles.get(soundid).intValue());
+				
+			}
+			
 			
 		}		
 		
 		isRunning=false;
-		
+		this.soundPool.release();
 	}
 
 	public int currentPlayer;
@@ -160,7 +183,7 @@ public class SoundPoolManager extends Thread implements Sound
 	private java.util.HashMap<Integer, Integer> handles;
 	private android.content.Context context;
 	private java.util.LinkedList<SoundEvent > soundEvents;
-	
+	private java.util.HashMap<Integer, android.media.MediaPlayer> mediaPlayers;
 	public void stopSound(int resid)
 	{
 		if(soundEvents!=null)
