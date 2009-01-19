@@ -17,6 +17,7 @@ public class Options
 		this.currentSelectedOptionTime = System.currentTimeMillis();
 		this.previousSelectedOptionTime = this.currentSelectedOptionTime;
 		this.currentSelectedOption = 1;
+		this.changedOption = Options.OPTION_NONE;
 	}
 	private int status;
 	private boolean enabledmusic;
@@ -179,7 +180,7 @@ public class Options
 		switch(currentSelectedOption)
 		{
 		case OPTION_BACK:
-			
+			this.changedOption = OPTION_BACK;
 			break;
 		case OPTION_GAMETYPE:
 			if(this.gameType==Monolith.GAME_MONOLITH)
@@ -190,6 +191,7 @@ public class Options
 			{
 				gameType=Monolith.GAME_MONOLITH;
 			}
+			this.changedOption = OPTION_GAMETYPE;
 			break;
 		case OPTION_DIFFICULTY:
 			if(this.difficultyLevel==DIFFICULTY_NORMAL)
@@ -200,18 +202,23 @@ public class Options
 			{
 				this.difficultyLevel=DIFFICULTY_NORMAL;
 			}
+			this.changedOption = OPTION_DIFFICULTY;
 			break;
 		case OPTION_STARTING_LEVEL:
 			this.setNextLevel();
+			this.changedOption = OPTION_STARTING_LEVEL;
 			break;
 		case OPTION_MUSIC:
 			this.setMusicEnabled(!this.enabledmusic);
+			this.changedOption = OPTION_MUSIC;
 			break;
 		case OPTION_SOUND:
 			this.setSoundEnabled(!this.enabledsound);
+			this.changedOption = OPTION_SOUND;
 			break;
 		case OPTION_OK:
 			this.status = Options.STATUS_OK;
+			this.changedOption = OPTION_OK;
 			break;
 			
 		}
@@ -222,16 +229,19 @@ public class Options
 		{
 		case OPTION_BACK:
 			status = Options.STATUS_BACK;
+			this.changedOption = OPTION_BACK;
 			break;
 		case OPTION_GAMETYPE:
 			if(this.gameType==Monolith.GAME_MONOLITH)
 			{
 				gameType=Monolith.GAME_CLASSIC;
+				
 			}
 			else
 			{
 				gameType=Monolith.GAME_MONOLITH;
 			}
+			this.changedOption = OPTION_GAMETYPE;
 			break;
 		case OPTION_DIFFICULTY:
 			if(this.difficultyLevel==DIFFICULTY_NORMAL)
@@ -242,27 +252,41 @@ public class Options
 			{
 				this.difficultyLevel=DIFFICULTY_NORMAL;
 			}
+			this.changedOption = OPTION_DIFFICULTY;
 			break;
 		case OPTION_STARTING_LEVEL:
 			this.setPreviousLevel();
+			this.changedOption = OPTION_STARTING_LEVEL;
 			break;
 		case OPTION_MUSIC:
 			this.setMusicEnabled(!this.enabledmusic);
+			this.changedOption = OPTION_MUSIC;
 			break;
 		case OPTION_SOUND:
 			this.setSoundEnabled(!this.enabledsound);
+			this.changedOption = OPTION_SOUND;
 			break;
 		case OPTION_OK:
+			
 			break;
 			
 		}		
 	}
+	public int getChangedOption()
+	{
+		int retval = this.changedOption;
+		this.changedOption = OPTION_NONE;
+		return retval;
+	}
 	public static final int DIFFICULTY_NORMAL = 0;
 	public static final int DIFFICULTY_EXPERT = 1;
+	private int changedOption;
+	
 	private int currentSelectedOption;
 	private long currentSelectedOptionTime;
 	private int previousSelectedOption;
 	private long previousSelectedOptionTime;
+	public static final int OPTION_NONE=-1;
 	public static final int OPTION_BACK = 0;
 	public static final int OPTION_GAMETYPE = 1;
 	public static final int OPTION_DIFFICULTY = 2;

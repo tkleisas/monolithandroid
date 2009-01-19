@@ -19,7 +19,7 @@ public class GLThread extends Thread
 
 	private  final org.teacake.monolith.apk.GameSurfaceView view;
 	private boolean done;
-	public GLThread(org.teacake.monolith.apk.GameSurfaceView view, GameOverlay overlay, android.content.Context context,SoundManager soundManager)
+	public GLThread(org.teacake.monolith.apk.GameSurfaceView view, GameOverlay overlay, android.content.Context context,Sound soundManager)
 	{
 		done=false;
 		this.view = view;
@@ -299,7 +299,7 @@ public class GLThread extends Thread
     	if(game.isBlockPlaced())
     	{
     		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
-    		SoundManager.playSound(R.raw.place);
+    		this.soundManager.playSound(R.raw.place);
     		//message.sendToTarget();    		
     	}
     	game.flagCompletedLines();
@@ -336,7 +336,7 @@ public class GLThread extends Thread
     		return;
     	}
 		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_ROTATE_BLOCK);
-		SoundManager.playSound(R.raw.rotate);
+		this.soundManager.playSound(R.raw.rotate);
     	//message.sendToTarget();
     	game.rotateCurrentBlockClockwise();
     }
@@ -606,7 +606,7 @@ public class GLThread extends Thread
     			}
         		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_EXPLOSION);
         		//message.sendToTarget();
-    			SoundManager.playSound(R.raw.explosion2);
+    			this.soundManager.playSound(R.raw.explosion2);
     		}
     	}
     }
@@ -897,6 +897,7 @@ public class GLThread extends Thread
             switch(this.viewType)
             {
             case VIEW_INTRO:
+            	
 	            now = SystemClock.uptimeMillis();
 	            if(now>lastcalltime+demogame.getTimer())
 	            {
@@ -907,6 +908,7 @@ public class GLThread extends Thread
 	            this.drawIntroScreen(gl,w,h);
             	String logo="MonolithAndroid";            	
             	break;
+            	
             case VIEW_OPTIONS:
         		int savedaction = action;
             	
@@ -966,8 +968,21 @@ public class GLThread extends Thread
         			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
         			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         		}
+        		int changed = overlay.getOptions().getChangedOption();
+        		if(changed == Options.OPTION_MUSIC)
+        		{
+        			if(overlay.getOptions().isMusicEnabled())
+        			{
+        				this.soundManager.playSound(R.raw.monolithogg2);
+        				
+        			}
+        			else
+        			{
+        				this.soundManager.stopSound(R.raw.monolithogg2);
+        			}
+        		}
         		break;
-            
+        		
 
             case VIEW_GAME:
             	if (action == MSG_ROTATE)
@@ -1098,7 +1113,7 @@ public class GLThread extends Thread
 	            		{
 	                		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
 	                		//message.sendToTarget();
-	            			SoundManager.playSound(R.raw.place);
+	            			this.soundManager.playSound(R.raw.place);
 	            		}
 	            		game.flagCompletedLines();
 	            		this.createExplosions(game);
@@ -1193,7 +1208,7 @@ public class GLThread extends Thread
     int gametype;
     private int viewType;
     //private javax.sound.midi.AndroidMIDIPlayBackEngine soundEngine;
-    private android.media.MediaPlayer mediaPlayer;
+    //private android.media.MediaPlayer mediaPlayer;
     public String message;
     private java.util.LinkedList<ExplodingCube> explodingCubes;
     public static final float Y_ACCELERATION=-0.3f;
@@ -1213,7 +1228,7 @@ public class GLThread extends Thread
     
     public int action;
     //private SoundSystem soundSystem;
-    private SoundManager soundManager;
+    private Sound soundManager;
     private android.content.Context context;
     public final Handler messageHandler = new Handler() {
         @Override

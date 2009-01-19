@@ -20,12 +20,14 @@ public class Monolith extends Activity
     View highscoreNameEntry;
     HighScoreTable hsTable;
     Options options;
-    SoundManager soundManager;
+    Sound soundManager;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        this.soundManager = new SoundManager(this);
+        
+        
+        this.soundManager = new SoundPoolManager(this);
         hsTable = new HighScoreTable(this,10);
         options = new Options();
         overlay = new GameOverlay(this,hsTable,options);
@@ -40,13 +42,23 @@ public class Monolith extends Activity
         gsf.setVisibility(View.VISIBLE);        
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
 		
-		soundManager.addSound(R.raw.monolith, true);
+		
 		soundManager.addSound(R.raw.explosion2, false);
 		soundManager.addSound(R.raw.place, false);
 		soundManager.addSound(R.raw.rotate,false);
 		soundManager.addSound(R.raw.pluck, false);
 		soundManager.startSound();
-		soundManager.playSound(R.raw.monolith); 
+		soundManager.addSound(R.raw.monolithogg2, true);
+		//try
+		//{
+		//	Thread.currentThread().sleep(10000);
+		//}
+		//catch(Exception e)
+		//{
+		//	
+		//}
+	
+		soundManager.playSound(R.raw.monolithogg2); 
         
          
     }

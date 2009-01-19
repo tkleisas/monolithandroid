@@ -10,7 +10,7 @@ public class GameOverlay extends View {
 	{
 		
 		super(context);
-		
+		this.options = options;
 		this.hsTable = table;
 		this.overlayType = OVERLAY_TYPE_GAME_MONOLITH;
 		this.drawType = this.DRAW_NORMAL;
@@ -51,7 +51,7 @@ public class GameOverlay extends View {
         this.nameEntryLength = 9;
         this.leftarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.leftarrow);
         this.rightarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.rightarrow);
-		this.options = options;
+		
 		
 		timer = System.currentTimeMillis();
 		

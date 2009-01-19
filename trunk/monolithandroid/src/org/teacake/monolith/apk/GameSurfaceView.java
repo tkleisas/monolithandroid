@@ -8,14 +8,14 @@ import android.view.View;
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
 	
-	public GameSurfaceView(Context context,SoundManager soundManager) {
+	public GameSurfaceView(Context context,Sound soundManager) {
 		super(context);
 		this.soundManager = soundManager;
 		this.context = context;
 		getHolder().addCallback(this);
 		getHolder().setType(android.view.SurfaceHolder.SURFACE_TYPE_GPU);
 	}
-	public GameSurfaceView(Context context,GameOverlay overlay,SoundManager soundManager)
+	public GameSurfaceView(Context context,GameOverlay overlay,Sound soundManager)
 	{
 		super(context);
 		this.soundManager = soundManager;
@@ -112,7 +112,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	private int viewType;
 	private int gameType;
 	private GameOverlay overlay;
-	private SoundManager soundManager;
+	private Sound soundManager;
 	public GameOverlay getOverlay()
 	{
 		return overlay;

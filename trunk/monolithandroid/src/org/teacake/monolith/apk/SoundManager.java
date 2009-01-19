@@ -1,13 +1,36 @@
 package org.teacake.monolith.apk;
 import android.media.MediaPlayer;
-
-public class SoundManager extends Thread
+import android.util.Log;
+class SoundEvent
+{
+	public SoundEvent(int eventType,int eventSound)
+	{
+		this.eventType = eventType;
+		this.eventSound = eventSound;
+	}
+	public int eventType;
+	public int eventSound;
+	
+	public static final int SOUND_PLAY=0;
+	public static final int SOUND_STOP=1;
+}
+class MediaPlayerSettings
+{
+	public MediaPlayerSettings(MediaPlayer player,boolean isLooping)
+	{
+		this.mediaPlayer = player;
+		this.looping = isLooping;
+	}
+	public boolean looping;
+	public MediaPlayer mediaPlayer;
+}
+public class SoundManager extends Thread implements Sound
 {
 	SoundManager(android.content.Context context)
 	{
 		this.context = context;
-		soundEvents = new java.util.LinkedList<Integer>();
-		players = new java.util.HashMap<Integer, MediaPlayer>();
+		soundEvents = new java.util.LinkedList<SoundEvent>();
+		players = new java.util.HashMap<Integer, MediaPlayerSettings>();
 		isRunning = false;
 	}
 	public void addSound(int resid, boolean isLooping)
@@ -17,8 +40,8 @@ public class SoundManager extends Thread
 			MediaPlayer mediaPlayer = MediaPlayer.create(context, resid);
 			
 			
-			mediaPlayer.setLooping(isLooping);			
-			players.put(new Integer(resid), mediaPlayer);
+			//mediaPlayer.setLooping(isLooping);			
+			players.put((resid), new MediaPlayerSettings(mediaPlayer,isLooping));
 
 			
 		}
@@ -37,37 +60,66 @@ public class SoundManager extends Thread
 			{
 				while(soundEvents.size()>0)
 				{
-					Integer resid = soundEvents.remove();
-					if(resid!=null)
+					SoundEvent event = soundEvents.remove();
+					if(event!=null)
 					{
-						currentPlayer = resid.intValue();
-					
-					
-						Thread t = new Thread()
+						if(event.eventType == SoundEvent.SOUND_PLAY)
 						{
-							public void run()
-							{
-								try
-								{
-									int player = currentPlayer;
-									MediaPlayer mediaPlayer=players.get(player);
-									mediaPlayer.seekTo(0);
-									mediaPlayer.start();
-								}
-								catch(Exception e2)
-								{
+							currentPlayer = event.eventSound;
+					
+					
+							//Thread t = new Thread()
+							//{
+							//	public void run()
+							//	{
+							//		try
+							//		{
+										
+										int player = currentPlayer;
+
+										MediaPlayerSettings mediaPlayerSettings=players.get(player);
+										if(mediaPlayerSettings.mediaPlayer==null)
+										{
+											mediaPlayerSettings.mediaPlayer=MediaPlayer.create(context, player);
+										}
+										mediaPlayerSettings.mediaPlayer.setLooping(mediaPlayerSettings.looping);
+										mediaPlayerSettings.mediaPlayer.seekTo(0);
+										mediaPlayerSettings.mediaPlayer.start();
+							//		}
+							//		catch(Exception e2)
+							//		{
 									
-								}
+							//		}
 								
-							}
-						};
-						t.start();
+							//	}
+							//};
+							//t.start();
+						}else
+						if(event.eventType == SoundEvent.SOUND_STOP)
+						{
+							currentPlayer = event.eventSound;
+					
+
+										int player = currentPlayer;
+										MediaPlayerSettings mediaPlayerSettings=players.get(player);
+										if(mediaPlayerSettings.mediaPlayer!=null)
+										{
+											mediaPlayerSettings.mediaPlayer.stop();
+											if(mediaPlayerSettings.looping)
+											{
+												mediaPlayerSettings.mediaPlayer.release();
+												mediaPlayerSettings=null;
+											}
+										}
+						}
+						
 						
 					}
 				}
 			}
 			catch(Exception e)
 			{
+				Log.d("Error",e.getMessage());
 			}
 
 			try
@@ -101,39 +153,47 @@ public class SoundManager extends Thread
 		
 		while(iterator.hasNext())
 		{
-			MediaPlayer mp = players.get(iterator.next());
-			mp.stop();
-			//mp.release();
-			
+			MediaPlayerSettings mps = players.get(iterator.next());
+			if(mps.mediaPlayer!=null)
+			{
+
+				mps.mediaPlayer.stop();
+				mps.mediaPlayer.release();
+				mps.mediaPlayer=null;
+			}
 		}
 		
 		isRunning=false;
 		
 	}
-	public void stopSound(int resid)
-	{
-		try
-		{
-			MediaPlayer mediaPlayer = players.get(new Integer(resid));
-			mediaPlayer.stop();
-		}
-		catch(Exception e)
-		{
-			
-		}
-	}
+
 	public int currentPlayer;
 	private boolean isRunning;
-	private java.util.HashMap<Integer, MediaPlayer> players;
+	private java.util.HashMap<Integer, MediaPlayerSettings> players;
 	private android.content.Context context;
-	public static java.util.LinkedList<Integer > soundEvents;
-	public static void playSound(int resid)
+	private java.util.LinkedList<SoundEvent > soundEvents;
+	
+	public void stopSound(int resid)
 	{
 		if(soundEvents!=null)
 		{
 			try
 			{
-				soundEvents.add(new Integer(resid));
+				soundEvents.add(new SoundEvent(SoundEvent.SOUND_STOP,resid));
+			}
+			catch(Exception e)
+			{
+				
+			}
+		}		
+	}
+	public void playSound(int resid)
+	{
+		if(soundEvents!=null)
+		{
+			try
+			{
+				soundEvents.add(new SoundEvent(SoundEvent.SOUND_PLAY,resid));
 			}
 			catch(Exception e)
 			{

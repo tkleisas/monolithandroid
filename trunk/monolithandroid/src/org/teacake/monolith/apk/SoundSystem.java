@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 
-public class SoundSystem extends Thread
+public class SoundSystem extends Thread 
 {
 	public SoundSystem(android.content.Context context)
 	{
@@ -14,7 +14,7 @@ public class SoundSystem extends Thread
 		this.context = context;
 		try
 		{
-			musicPlayer = android.media.MediaPlayer.create(context, R.raw.monolith);
+			musicPlayer = android.media.MediaPlayer.create(context, R.raw.monolithogg2);
 			soundPlayerRotateBlock = android.media.MediaPlayer.create(context, R.raw.pluck);
 			soundPlayerExplosion = android.media.MediaPlayer.create(context, R.raw.explosion);
 			soundPlayerPlaceBlock = android.media.MediaPlayer.create(context, R.raw.place);
