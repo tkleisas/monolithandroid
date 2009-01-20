@@ -281,11 +281,13 @@ public class GLThread extends Thread
 	    		}
 	    	break;
 	    	case 2:
+	    		chooser = time%60000;
 	    		xy=0;
 	    		zx = (360*chooser/60000);
 	    		zy=0;
 	    	break;
 	    	case 3:
+	    		chooser = time%60000;
 	    		xy=(360*chooser/60000);
 	    		zx = 0;
 	    		zy=0;
