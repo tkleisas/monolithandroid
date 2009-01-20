@@ -242,8 +242,17 @@ public class Options
 		case OPTION_OK:
 			this.setSelectionStatus(Options.STATUS_OK);
 			this.changedOption = OPTION_OK;
-			this.game = newGame;
+			switch(this.getGameType())
+			{
+				case Game.GAME_CLASSIC:
+					game = new SimpleGameData();
+					break;
+				case Game.GAME_MONOLITH:
+					game = new MonolithGameData();
+					break;
+			}
 			
+			this.game.setLevel(this.getStartingLevel());
 			initNewGame();
 			break;
 			
@@ -255,20 +264,11 @@ public class Options
 		{
 			case Game.GAME_CLASSIC:
 				newGame = new SimpleGameData();
-				//this.setFirstLevel();
-				
+				newGame.setLevel(game.getLevel());
 			break;
 			case Game.GAME_MONOLITH:
 				newGame = new MonolithGameData();
-				if(game.getGameType()==Game.GAME_CLASSIC)
-				{
-					this.newGame = new SimpleGameData();
-				}
-				else
-				{
-					this.newGame = new MonolithGameData();
-				}
-				//this.setFirstLevel();
+				newGame.setLevel(game.getLevel());
 			break;
 		}
 	}
@@ -281,47 +281,46 @@ public class Options
 		switch(currentSelectedOption)
 		{
 			case OPTION_BACK:
-			this.setSelectionStatus(Options.STATUS_BACK);
-			
-			this.changedOption = OPTION_BACK;
+				this.setSelectionStatus(Options.STATUS_BACK);
+				this.changedOption = OPTION_BACK;
 			break;
-		case OPTION_GAMETYPE:
-			if(this.gameType==Game.GAME_MONOLITH)
-			{
-				gameType=Game.GAME_CLASSIC;
-				
-			}
-			else
-			{
-				gameType=Game.GAME_MONOLITH;
-			}
-			this.changedOption = OPTION_GAMETYPE;
+			case OPTION_GAMETYPE:
+				if(this.gameType==Game.GAME_MONOLITH)
+				{
+					gameType=Game.GAME_CLASSIC;
+					
+				}
+				else
+				{
+					gameType=Game.GAME_MONOLITH;
+				}
+				this.changedOption = OPTION_GAMETYPE;
 			break;
-		case OPTION_DIFFICULTY:
-			if(this.difficultyLevel==DIFFICULTY_NORMAL)
-			{
-				this.difficultyLevel=DIFFICULTY_EXPERT;
-			}
-			else
-			{
-				this.difficultyLevel=DIFFICULTY_NORMAL;
-			}
-			this.changedOption = OPTION_DIFFICULTY;
+			case OPTION_DIFFICULTY:
+				if(this.difficultyLevel==DIFFICULTY_NORMAL)
+				{
+					this.difficultyLevel=DIFFICULTY_EXPERT;
+				}
+				else
+				{
+					this.difficultyLevel=DIFFICULTY_NORMAL;
+				}
+				this.changedOption = OPTION_DIFFICULTY;
 			break;
-		case OPTION_STARTING_LEVEL:
-			this.setPreviousLevel();
-			this.changedOption = OPTION_STARTING_LEVEL;
+			case OPTION_STARTING_LEVEL:
+				this.setPreviousLevel();
+				this.changedOption = OPTION_STARTING_LEVEL;
 			break;
-		case OPTION_MUSIC:
-			this.setMusicEnabled(!this.enabledmusic);
-			this.changedOption = OPTION_MUSIC;
+			case OPTION_MUSIC:
+				this.setMusicEnabled(!this.enabledmusic);
+				this.changedOption = OPTION_MUSIC;
 			break;
-		case OPTION_SOUND:
-			this.setSoundEnabled(!this.enabledsound);
-			this.changedOption = OPTION_SOUND;
+			case OPTION_SOUND:
+				this.setSoundEnabled(!this.enabledsound);
+				this.changedOption = OPTION_SOUND;
 			break;
-		case OPTION_OK:
-			this.changedOption = OPTION_NONE;
+			case OPTION_OK:
+				this.changedOption = OPTION_NONE;
 			break;
 			
 		}		

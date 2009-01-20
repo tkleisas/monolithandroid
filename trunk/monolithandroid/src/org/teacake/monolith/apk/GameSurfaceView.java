@@ -57,7 +57,24 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 			case GLThread.VIEW_GAME:
 				glThread.setGameType(overlay.getOptions().getGameType());
 				glThread.setViewType(GLThread.VIEW_GAME);
-				overlay.setOverlayType(overlay.getOptions().getGameType());
+				switch(overlay.getOptions().getGameType())
+				{
+				case Game.GAME_CLASSIC:
+					overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_GAME_CLASSIC);
+					overlay.getOptions().setGame(new SimpleGameData());
+					overlay.getOptions().getGame().setLevel(overlay.getOptions().getStartingLevel());
+					overlay.setLevel(overlay.getOptions().getGame().getLevelName());
+					overlay.getOptions().getGame().initGame(overlay.getOptions().getStartingLevel());
+					break;
+				case Game.GAME_MONOLITH:
+					overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_GAME_MONOLITH);
+					overlay.getOptions().setGame(new MonolithGameData());
+					overlay.getOptions().getGame().setLevel(overlay.getOptions().getStartingLevel());
+					overlay.setLevel(overlay.getOptions().getGame().getLevelName());
+					overlay.getOptions().getGame().initGame(overlay.getOptions().getStartingLevel());
+					break;
+					
+				}
 				overlay.setDrawType(GameOverlay.DRAW_NORMAL);
 				break;
 			case GLThread.VIEW_OPTIONS:
@@ -66,6 +83,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 				overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_OPTIONS);
 				overlay.setDrawType(GameOverlay.DRAW_GAME_OPTIONS);
 				overlay.getOptions().setSelectionStatus(Options.STATUS_SELECTING);
+				
 				break;
 			
 		}

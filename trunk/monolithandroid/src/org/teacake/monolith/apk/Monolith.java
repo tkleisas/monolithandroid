@@ -81,7 +81,7 @@ public class Monolith extends Activity
     {
     	
 		gsf.setGameType(overlay.getOptions().getGameType());
-	
+		
 		gsf.initGame(GLThread.VIEW_GAME);
 		
     	
