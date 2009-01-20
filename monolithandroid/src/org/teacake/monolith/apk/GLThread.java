@@ -186,6 +186,7 @@ public class GLThread extends Thread
     	//yval =0;
         zx=0.0f;
         zy=0.0f;
+        xy=0.0f;
         xoff = -10.0f;
     	yoff = 21.0f;
     	zoff = -50.0f;
@@ -200,6 +201,7 @@ public class GLThread extends Thread
         game.initGame(this.overlay.getOptions().getStartingLevel());
         game.setTimerEnabled(true);
         game.setStatus(SimpleGameData.STATUS_PLAYING);
+        
         demogame = new MonolithGameData();
         demogame.initGame(1);
         demogame.setScore(0);
@@ -256,6 +258,57 @@ public class GLThread extends Thread
     {
     	this.zx = zx;
     	this.zy = zy;
+    }
+    public synchronized void doRotatePlayfield(long time)
+    {
+    	long chooser = time;
+    	switch(overlay.getOptions().getGame().getLevel())
+    	{
+    	
+	    	case 1:
+	    		xy=0;
+	    		zx =0;
+	    		chooser = time%60000;
+	    		if(chooser<30000)
+	    		{
+	    			zy = (360*chooser)/60000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(360*(chooser-30000))/60000;
+	    		}
+	    	break;
+	    	case 2:
+	    		xy=0;
+	    		zx = (360*chooser/60000);
+	    		zy=0;
+	    	break;
+	    	case 3:
+	    		xy=(360*chooser/60000);
+	    		zx = 0;
+	    		zy=0;
+	    		
+	    	break;
+	    	case 4:
+	    	break;
+	    	case 5:
+	    	break;
+	    	case 6:
+	    	break;
+	    	case 7:
+	    	break;
+	    	case 8:
+	    	break;
+	    	case 9:
+	    	break;
+	    	case 10:
+	    	break;
+	    	default:
+	    	break;
+    			
+    	}
     }
     public synchronized void doRotateBlock()
     {
@@ -786,6 +839,7 @@ public class GLThread extends Thread
             }
             gl.glRotatef(zx, 0.0f, 1.0f, 0.0f);
             gl.glRotatef(zy, 1.0f, 0.0f, 0.0f);
+            gl.glRotatef(xy, 0.0f, 0.0f, 1.0f);
             gl.glTranslatef(0,0,-zoff);
             gl.glMatrixMode(GL10.GL_MODELVIEW);
             gl.glPushMatrix();
@@ -899,7 +953,8 @@ public class GLThread extends Thread
 	        		if(overlay.getOptions().getSelectionStatus()==Options.STATUS_OK)
 	        		{
 	        			this.game = this.overlay.getOptions().getGame();
-	        			
+	        			this.game.setLevel(this.overlay.getOptions().getStartingLevel());
+	        			this.overlay.getOptions().getGame().setLevel(this.overlay.getOptions().getStartingLevel());
 	        			this.viewType=VIEW_GAME;
 	        			this.setViewType(GLThread.VIEW_INTRO);
 	        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
@@ -942,7 +997,11 @@ public class GLThread extends Thread
 	        			action=MSG_DO_NOTHING;
 	        			doMoveDown();
 	        		}            	
-	
+	        		if(this.overlay.getOptions().getDifficultyLevel() == Options.DIFFICULTY_EXPERT)
+	        		{
+	        			
+	        			this.doRotatePlayfield(current);
+	        		}
 	        		
 	        		gl.glLoadIdentity();
 	            	
@@ -972,9 +1031,9 @@ public class GLThread extends Thread
 	                //this.drawString(canvas,""+game.getLevel(), 10, 74);
 	                //this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
 	                //this.drawString(canvas,""+game.getLines(),10,114);
-	        		this.overlay.setLevel(game.getLevelName());
-	        		this.overlay.setScore(""+game.getScore());
-	        		this.overlay.setLines(""+game.getLines());
+	        		this.overlay.setLevel(this.overlay.getOptions().getGame().getLevelName());
+	        		this.overlay.setScore(""+this.overlay.getOptions().getGame().getScore());
+	        		this.overlay.setLines(""+this.overlay.getOptions().getGame().getLines());
 		            if(this.gametype==Game.GAME_MONOLITH)
 		            {
 		            	
@@ -1128,6 +1187,7 @@ public class GLThread extends Thread
     //private int yval;
     public float zx=0.0f;
     public float zy=0.0f;
+    public float xy=0.0f;
     private float xoff;
     private float yoff;
     private float zoff;
@@ -1159,7 +1219,10 @@ public class GLThread extends Thread
     private boolean backgroundInitialized;
     
     private GameOverlay overlay;
-    
+    public GameOverlay getGameOverlay()
+    {
+    	return this.overlay;
+    }
     
     public int action;
     //private SoundSystem soundSystem;
@@ -1175,7 +1238,15 @@ public class GLThread extends Thread
         		
         		if (msg.what == MSG_ROTATE_PLAYFIELD)
         		{
-        			doRotatePlayfield(msg.arg1,msg.arg2);
+        			if(getGameOverlay().getOptions().getDifficultyLevel()== Options.DIFFICULTY_EXPERT)
+        			{
+        				
+        			}
+        			else
+        			{
+        				doRotatePlayfield(msg.arg1,msg.arg2);
+        			}
+        			
         				//zx=msg.arg1;
         				//zy=msg.arg2;
         			

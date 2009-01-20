@@ -110,7 +110,7 @@ public class SoundPoolManager extends Thread implements Sound
 								android.media.MediaPlayer mp = mediaPlayers.get(currentPlayer);
 								//if(mp.isPlaying())
 								//{
-								
+
 									
 									mp.pause();
 								
