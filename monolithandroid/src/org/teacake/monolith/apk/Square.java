@@ -4,7 +4,7 @@ package org.teacake.monolith.apk;
 	import java.nio.ByteBuffer;
 	import java.nio.ByteOrder;
 	import java.nio.IntBuffer;
-	import android.graphics.*;
+	
 	
 
 	import javax.microedition.khronos.opengles.GL10;

@@ -16,29 +16,30 @@ public class Options
 		{
 			this.newGame = new MonolithGameData();
 		}
-		this.newGame.setLevel(this.game.getLevel());
-		this.setGameType(newGame.getGameType());
+		
+		this.newGame.setLevel(this.game.getLevels()[0]);
+		this.setGameType(game.getGameType());
 		this.startingLevel = this.getFirstLevel();
 		this.difficultyLevel = Options.DIFFICULTY_NORMAL;
 		this.currentSelectedOption = 0;//Options.ALLOPTIONS[0];
-		this.previousSelectedOption = 1;
-		this.status = Options.STATUS_SELECTING;
+		this.previousSelectedOption = 0;
+		setSelectionStatus(Options.STATUS_SELECTING);
 		this.currentSelectedOptionTime = System.currentTimeMillis();
 		this.previousSelectedOptionTime = this.currentSelectedOptionTime;
-		this.currentSelectedOption = 1;
+		
 		this.changedOption = Options.OPTION_NONE;
 		
 	}
-	private int status;
+	private int selectionStatus;
 	private boolean enabledmusic;
 	private int difficultyLevel;
-	public int getStatus()
+	public int getSelectionStatus()
 	{
-		return this.status;
+		return this.selectionStatus;
 	}
-	public void setStatus(int status)
+	public void setSelectionStatus(int status)
 	{
-		this.status = status;
+		this.selectionStatus = status;
 	}
 	public void setDifficultyLevel(int difficultyLevel)
 	{
@@ -239,9 +240,10 @@ public class Options
 			this.changedOption = OPTION_SOUND;
 			break;
 		case OPTION_OK:
-			this.status = Options.STATUS_OK;
+			this.setSelectionStatus(Options.STATUS_OK);
 			this.changedOption = OPTION_OK;
 			this.game = newGame;
+			
 			initNewGame();
 			break;
 			
@@ -251,27 +253,35 @@ public class Options
 	{
 		switch(game.getGameType())
 		{
-		case Game.GAME_CLASSIC:
+			case Game.GAME_CLASSIC:
 				newGame = new SimpleGameData();
-				this.setFirstLevel();
+				//this.setFirstLevel();
 				
 			break;
-		case Game.GAME_MONOLITH:
+			case Game.GAME_MONOLITH:
 				newGame = new MonolithGameData();
-				this.setFirstLevel();
+				if(game.getGameType()==Game.GAME_CLASSIC)
+				{
+					this.newGame = new SimpleGameData();
+				}
+				else
+				{
+					this.newGame = new MonolithGameData();
+				}
+				//this.setFirstLevel();
 			break;
 		}
 	}
 	public void resetOptions()
 	{
-		this.status = Options.STATUS_SELECTING;
+		this.setSelectionStatus(Options.STATUS_SELECTING);
 	}
 	public void setPreviousValue()
 	{
 		switch(currentSelectedOption)
 		{
-		case OPTION_BACK:
-			this.setStatus(Options.STATUS_BACK);
+			case OPTION_BACK:
+			this.setSelectionStatus(Options.STATUS_BACK);
 			
 			this.changedOption = OPTION_BACK;
 			break;
@@ -311,7 +321,7 @@ public class Options
 			this.changedOption = OPTION_SOUND;
 			break;
 		case OPTION_OK:
-			
+			this.changedOption = OPTION_NONE;
 			break;
 			
 		}		
@@ -338,9 +348,9 @@ public class Options
 	public static final int OPTION_MUSIC = 4;
 	public static final int OPTION_SOUND = 5;
 	public static final int OPTION_OK = 6;
-	public static final int STATUS_SELECTING =0;
-	public static final int STATUS_OK = 1;
-	public static final int STATUS_BACK = 2;
+	public static final int STATUS_SELECTING =11;
+	public static final int STATUS_OK = 10;
+	public static final int STATUS_BACK = 12;
 	public static int[] ALLOPTIONS = {
 										OPTION_BACK,
 										OPTION_GAMETYPE,

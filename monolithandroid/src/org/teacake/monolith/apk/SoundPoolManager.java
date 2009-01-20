@@ -32,7 +32,7 @@ public class SoundPoolManager extends Thread implements Sound
 	SoundPoolManager(android.content.Context context)
 	{
 		this.context = context;
-		soundEvents = new java.util.LinkedList<SoundEvent>();
+		soundEvents = new java.util.LinkedList<SoundPoolEvent>();
 		sounds = new java.util.HashMap<Integer, Boolean>();
 		handles = new java.util.HashMap<Integer, Integer>();
 		mediaPlayers = new java.util.HashMap<Integer, android.media.MediaPlayer>();
@@ -76,10 +76,10 @@ public class SoundPoolManager extends Thread implements Sound
 			{
 				while(soundEvents.size()>0)
 				{
-					SoundEvent event = soundEvents.remove();
+					SoundPoolEvent event = soundEvents.remove();
 					if(event!=null)
 					{
-						if(event.eventType == SoundEvent.SOUND_PLAY)
+						if(event.eventType == SoundPoolEvent.SOUND_PLAY)
 						{
 						
 							currentPlayer = event.eventSound;
@@ -101,7 +101,7 @@ public class SoundPoolManager extends Thread implements Sound
 							}
 						}
 						else 
-						if(event.eventType == SoundEvent.SOUND_STOP)
+						if(event.eventType == SoundPoolEvent.SOUND_STOP)
 						{
 							if(sounds.get(currentPlayer).booleanValue())
 							{
@@ -187,7 +187,7 @@ public class SoundPoolManager extends Thread implements Sound
 	private java.util.HashMap<Integer, Boolean> sounds;
 	private java.util.HashMap<Integer, Integer> handles;
 	private android.content.Context context;
-	private java.util.LinkedList<SoundEvent > soundEvents;
+	private java.util.LinkedList<SoundPoolEvent > soundEvents;
 	private java.util.HashMap<Integer, android.media.MediaPlayer> mediaPlayers;
 	public void stopSound(int resid)
 	{
@@ -195,7 +195,7 @@ public class SoundPoolManager extends Thread implements Sound
 		{
 			try
 			{
-				soundEvents.add(new SoundEvent(SoundPoolEvent.SOUND_STOP_DELAYED,resid));
+				soundEvents.add(new SoundPoolEvent(SoundPoolEvent.SOUND_STOP_DELAYED,resid));
 			}
 			catch(Exception e)
 			{
@@ -209,7 +209,7 @@ public class SoundPoolManager extends Thread implements Sound
 		{
 			try
 			{
-				soundEvents.add(new SoundEvent(SoundPoolEvent.SOUND_PLAY,resid));
+				soundEvents.add(new SoundPoolEvent(SoundPoolEvent.SOUND_PLAY,resid));
 				this.notify();
 			}
 			catch(Exception e)

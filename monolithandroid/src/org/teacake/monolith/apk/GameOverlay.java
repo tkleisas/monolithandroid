@@ -46,7 +46,7 @@ public class GameOverlay extends View {
         message="monolith android";
         goalpha=0;
         direction=8;
-        this.curtain = 0;
+        //this.curtain = 0;
         this.lastDrawTime = System.currentTimeMillis();
         this.nameEntryLength = 9;
         this.leftarrow = android.graphics.BitmapFactory.decodeResource(res, R.drawable.leftarrow);
@@ -107,7 +107,6 @@ public class GameOverlay extends View {
 			break;
 		case OVERLAY_TYPE_OPTIONS:
 			drawOptionsOverlay(canvas);
-			this.drawType = DRAW_GAME_OPTIONS;
 			break;
 		
 		}
@@ -227,30 +226,30 @@ public class GameOverlay extends View {
     	
     }
     
-    private void drawOptionText(Canvas canvas,int x, int y,String text, Paint thePaint)
-    {
-    	
-    	canvas.drawBitmap(leftarrow,null,new Rect(x,y,x+leftarrow.getWidth(),y+leftarrow.getHeight()),thePaint);
-    	int theWidth = this.getTextWidth(text, thePaint);
-    	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
-    	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
-    }
+    //private void drawOptionText(Canvas canvas,int x, int y,String text, Paint thePaint)
+    //{
+    //	
+    //	canvas.drawBitmap(leftarrow,null,new Rect(x,y,x+leftarrow.getWidth(),y+leftarrow.getHeight()),thePaint);
+    //	int theWidth = this.getTextWidth(text, thePaint);
+    //	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
+    //	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
+    //}
     private void drawCenteredText(Canvas canvas, int y, String text, Paint paint)
     {
     	int theWidth = this.getTextWidth(text, paint);
     	canvas.drawText(text, (canvas.getWidth()-theWidth)/2, y, paint);
     }
-    private void drawCenteredOptionText(Canvas canvas, int y, String text, Paint thePaint)
-    {
-    	int theWidth = this.getTextWidth(text, thePaint);
-    	int theFullWidth = theWidth+this.leftarrow.getWidth()+this.rightarrow.getWidth();
-    	int x = (canvas.getWidth()-theFullWidth)/2;
-    	canvas.drawBitmap(leftarrow,null,new Rect(x,y,x+leftarrow.getWidth(),y+leftarrow.getHeight()),thePaint);
-    	
-    	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
-    	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
-    	
-    }
+    //private void drawCenteredOptionText(Canvas canvas, int y, String text, Paint thePaint)
+    //{
+    //	int theWidth = this.getTextWidth(text, thePaint);
+    //	int theFullWidth = theWidth+this.leftarrow.getWidth()+this.rightarrow.getWidth();
+    //	int x = (canvas.getWidth()-theFullWidth)/2;
+    //	canvas.drawBitmap(leftarrow,null,new Rect(x,y,x+leftarrow.getWidth(),y+leftarrow.getHeight()),thePaint);
+    //	
+    //	canvas.drawText(text, x+leftarrow.getWidth(), y+leftarrow.getHeight(), thePaint);
+    //	canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth(),y+rightarrow.getHeight()),thePaint);
+    //	
+    //}
     private void drawCenteredOptionText(Canvas canvas, int y, String text, Paint thePaint,boolean leftArrow,boolean rightArrow,boolean animate)
     {
     	
@@ -274,12 +273,12 @@ public class GameOverlay extends View {
     	if(rightArrow) canvas.drawBitmap(rightarrow, null, new Rect(x+leftarrow.getWidth()+theWidth+offset,y,x+leftarrow.getWidth()+theWidth+rightarrow.getWidth()+offset,y+rightarrow.getHeight()),thePaint);
     	
     }
-    private void drawTextSelector(Canvas canvas, int y, String title, String value, Paint titlePaint,Paint valuePaint)
-    {
-    	int theWidth = this.getTextWidth(title, titlePaint);
-    	canvas.drawText(title, (canvas.getWidth()-theWidth)/2, y, titlePaint);
-    	drawCenteredOptionText(canvas,y+((int)titlePaint.getTextSize())/2+1,value,valuePaint);
-    }
+    //private void drawTextSelector(Canvas canvas, int y, String title, String value, Paint titlePaint,Paint valuePaint)
+    //{
+    //	int theWidth = this.getTextWidth(title, titlePaint);
+    //	canvas.drawText(title, (canvas.getWidth()-theWidth)/2, y, titlePaint);
+    //	drawCenteredOptionText(canvas,y+((int)titlePaint.getTextSize())/2+1,value,valuePaint);
+    //}
     private void drawTextSelector(Canvas canvas, int y, String title, String value, Paint titlePaint, Paint valuePaint, boolean leftArrow, boolean rightArrow,boolean animate)
     {
     	int theWidth = this.getTextWidth(title, titlePaint);
@@ -383,7 +382,7 @@ public class GameOverlay extends View {
     	drawTextSelector(canvas,coordinates[Options.OPTION_MUSIC], res.getString(R.string.s_music),music,p[Options.OPTION_MUSIC],p[Options.OPTION_MUSIC],animate[Options.OPTION_MUSIC],animate[Options.OPTION_MUSIC],animate[Options.OPTION_MUSIC]);
     	String sound = options.isSoundEnabled()?res.getString(R.string.s_on):res.getString(R.string.s_off);
     	drawTextSelector(canvas,coordinates[Options.OPTION_SOUND], res.getString(R.string.s_sound),sound,p[Options.OPTION_SOUND],p[Options.OPTION_SOUND],animate[Options.OPTION_SOUND],animate[Options.OPTION_SOUND],animate[Options.OPTION_SOUND]);
-    	String ok = res.getString(R.string.s_ok);
+    	
     	
        	drawTextSelector(canvas, coordinates[Options.OPTION_OK],"", res.getString(R.string.s_ok),p[Options.OPTION_OK],p[Options.OPTION_OK],false,animate[Options.OPTION_OK],animate[Options.OPTION_OK]);
         
@@ -433,7 +432,7 @@ public class GameOverlay extends View {
 			String charstr = this.nameEntry.substring(i,i+1);
 			if(i!=this.currentCharacterPosition)
 			{
-				canvas.drawText(this.nameEntry.substring(i,i+1),(canvas.getWidth()-8*16)/2+i*xw,canvas.getHeight()/2+40,gameOverPaint);
+				canvas.drawText(charstr,(canvas.getWidth()-8*16)/2+i*xw,canvas.getHeight()/2+40,gameOverPaint);
 			}
 		}
 		String charstr = characters.substring(this.currentCharacter,this.currentCharacter+1);
@@ -609,10 +608,10 @@ public class GameOverlay extends View {
 	
 	int currentCharacterPosition=0;
 	
-	public void setCurtain(int theCurtain)
-	{
-		this.curtain = theCurtain;
-	}
+	//public void setCurtain(int theCurtain)
+	//{
+	//	this.curtain = theCurtain;
+	//}
 	
 	public HighScoreTable getHighScoreTable()
 	{
@@ -637,7 +636,7 @@ public class GameOverlay extends View {
 	private Resources res;
 	private int goalpha;
 	private int direction;
-	private int curtain;
+	//private int curtain;
 	private long lastDrawTime;
 	private int currentTextColor;
 	private HighScoreTable hsTable;
