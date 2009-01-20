@@ -211,6 +211,7 @@ public class GLThread extends Thread
         demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
         this.setupDemoGrid();
         this.lastcalltime = SystemClock.uptimeMillis();
+        this.startGameTime = this.lastcalltime;
         rangle=0;	
         this.running = true;
         this.mSizeChanged = false;
@@ -261,14 +262,15 @@ public class GLThread extends Thread
     }
     public synchronized void doRotatePlayfield(long time)
     {
-    	long chooser = time;
+    	long offset = time-startGameTime;
+    	long chooser;
     	switch(overlay.getOptions().getGame().getLevel())
     	{
     	
 	    	case 1:
 	    		xy=0;
 	    		zx =0;
-	    		chooser = time%60000;
+	    		chooser = offset%60000;
 	    		if(chooser<30000)
 	    		{
 	    			zy = (360*chooser)/60000;
@@ -281,31 +283,114 @@ public class GLThread extends Thread
 	    		}
 	    	break;
 	    	case 2:
-	    		chooser = time%60000;
+	    		chooser = offset%60000;
 	    		xy=0;
 	    		zx = (360*chooser/60000);
 	    		zy=0;
 	    	break;
 	    	case 3:
-	    		chooser = time%60000;
+	    		chooser = offset%60000;
 	    		xy=(360*chooser/60000);
 	    		zx = 0;
 	    		zy=0;
 	    		
 	    	break;
 	    	case 4:
+	    		chooser = offset%60000;
+	    		if(chooser<30000)
+	    		{
+	    			zy = (360*chooser)/60000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(360*(chooser-30000))/60000;
+	    		}	    		
+	    		zx = (360*chooser/60000);
+	    		xy=0;	    		
 	    	break;
 	    	case 5:
+	    		chooser = offset%60000;
+	    		zx = (360*chooser/60000);
+	    		xy=(360*chooser/60000);
+	    		zy=0;
 	    	break;
 	    	case 6:
+	    		chooser = offset%60000;
+	    		if(chooser<30000)
+	    		{
+	    			zy = (360*chooser)/60000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(360*(chooser-30000))/60000;
+	    		}	
+	    		xy=(360*chooser/60000);
+	    		zx = 0;
+	    		
 	    	break;
 	    	case 7:
+	    		chooser = offset%60000;
+	    		if(chooser<30000)
+	    		{
+	    			zy = (360*chooser)/60000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(360*(chooser-30000))/60000;
+	    		}	
+	    		xy=(360*chooser/60000);
+	    		zx = (360*chooser/60000);
 	    	break;
 	    	case 8:
+	    		chooser = offset%60000;
+	    		if(chooser<30000)
+	    		{
+	    			zy = (360*chooser)/60000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(360*(chooser-30000))/60000;
+	    		}	
+	    		xy=(360*chooser/60000);
+	    		zx = (360*chooser/60000);	    		
 	    	break;
 	    	case 9:
+	    		chooser = offset%50000;
+	    		if(chooser<25000)
+	    		{
+	    			zy = (360*chooser)/50000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(360*(chooser-25000))/50000;
+	    		}	
+	    		xy=(360*chooser/60000);
+	    		zx = (360*chooser/50000);	    		
 	    	break;
 	    	case 10:
+	    		chooser = offset%40000;
+	    		if(chooser<20000)
+	    		{
+	    			zy = (360*chooser)/40000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(360*(chooser-20000))/40000;
+	    		}	
+	    		xy=(360*chooser/40000);
+	    		zx = (360*chooser/40000);	    		
 	    	break;
 	    	default:
 	    	break;
@@ -1261,4 +1346,5 @@ public class GLThread extends Thread
         }
     };
     private GLTextures textures;
+    private long startGameTime;
 }
