@@ -12,13 +12,13 @@ public class Monolith extends Activity
 	private static final int ID_EXIT = Menu.FIRST+2;
     
 
-    GameSurfaceView gsf;
-    GameOverlay overlay;
-    View highscoreNameEntry;
-    HighScoreTable hsTable;
-    Options options;
-    Sound soundManager;
-    Game game;
+    private GameSurfaceView gsf;
+    private GameOverlay overlay;
+    
+    private HighScoreTable hsTable;
+    private Options options;
+    private Sound soundManager;
+    private Game game;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
@@ -34,7 +34,7 @@ public class Monolith extends Activity
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         
-        android.content.res.AssetManager mgr = getApplication().getAssets();
+        
         gsf = new GameSurfaceView(this,overlay,this.soundManager);
 
         setContentView(gsf);
@@ -89,9 +89,9 @@ public class Monolith extends Activity
     public void showOptions()
     {
     	gsf.setGameType(game.getGameType());
-    	this.options.resetOptions();
+    	
     	gsf.initGame(GLThread.VIEW_OPTIONS);
-
+    	
     	
     }
 

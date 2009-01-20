@@ -3,8 +3,7 @@ package org.teacake.monolith.apk;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
-import java.nio.FloatBuffer;
-import java.util.Vector;
+
 import javax.microedition.khronos.opengles.*;
 import java.lang.Math;
 
@@ -16,7 +15,7 @@ public class Starfield
 	{
 		this.numstars = numstars;
 		java.util.Random random = new java.util.Random();
-		int one = 0x10000;
+
 		int[] vertices = new int[3*numstars];
 		int[] colors = new int[4*numstars];
 		for(int i=0;i<numstars;i++)
@@ -63,7 +62,7 @@ public class Starfield
 	}
 	private IntBuffer   mVertexBuffer;
     private IntBuffer   mColorBuffer;
-    private ByteBuffer  mIndexBuffer;
+
     private int numstars;
     
 }

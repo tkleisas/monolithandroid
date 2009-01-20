@@ -6,10 +6,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import java.lang.Integer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-import android.opengl.GLU;
 import android.opengl.GLUtils;
 
 public class GLTextures {
@@ -30,8 +26,7 @@ public class GLTextures {
 	    	Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), textureFiles[i]);
 	    	this.textureMap.put(new Integer(textureFiles[i]),new Integer(i));
 	    	int tex = tmp_tex[i];
-	    	int width = bmp.getWidth();
-	    	int height = bmp.getHeight();
+
 	    	gl.glBindTexture(GL10.GL_TEXTURE_2D, tex);
 	    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
 	    	gl.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);

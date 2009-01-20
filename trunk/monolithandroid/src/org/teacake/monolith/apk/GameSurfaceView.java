@@ -4,7 +4,6 @@ import android.content.Context;
 
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
 	
@@ -15,7 +14,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 		this.soundManager = soundManager;
 		this.context = context;
 		this.overlay = overlay;
-		this.overlay.setCurtain(100);
+		//this.overlay.setCurtain(100);
 		this.viewType = GLThread.VIEW_INTRO;
 		this.gameType = Game.GAME_MONOLITH;
 		getHolder().addCallback(this);
@@ -60,12 +59,13 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 				glThread.setViewType(GLThread.VIEW_GAME);
 				overlay.setOverlayType(overlay.getOptions().getGameType());
 				overlay.setDrawType(GameOverlay.DRAW_NORMAL);
-				
+				break;
 			case GLThread.VIEW_OPTIONS:
 				glThread.setGameType(Game.GAME_MONOLITH);
 				glThread.setViewType(GLThread.VIEW_OPTIONS);
 				overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_OPTIONS);
 				overlay.setDrawType(GameOverlay.DRAW_GAME_OPTIONS);
+				overlay.getOptions().setSelectionStatus(Options.STATUS_SELECTING);
 				break;
 			
 		}
@@ -78,6 +78,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 		glThread =new org.teacake.monolith.apk.GLThread(this,this.overlay,context,this.soundManager);
 		glThread.setViewType(viewType);
 		glThread.setGameType(gameType);
+		
 		glThread.start();
 		
 	}

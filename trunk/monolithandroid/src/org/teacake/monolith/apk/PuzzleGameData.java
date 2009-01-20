@@ -19,9 +19,9 @@ public class PuzzleGameData implements Game
 		this.gridMaxWidth = 10;
 		this.gridMaxHeight = 20;
 		this.grid = new int[gridMaxWidth][gridMaxHeight];
-		this.newgrid = new int[gridMaxWidth][gridMaxHeight];
+		//this.newgrid = new int[gridMaxWidth][gridMaxHeight];
 		this.oldgrid = new int[gridMaxWidth][gridMaxHeight];
-		this.randomgen = new java.util.Random();
+		//this.randomgen = new java.util.Random();
 		this.energy = 0;
 		for(int y=0;y<gridMaxHeight;y++)
 		{
@@ -401,9 +401,9 @@ public class PuzzleGameData implements Game
 	}	
 	private int[][] oldgrid;
 	private int[][] grid;
-	private int[][] newgrid;
-	private int[][] puzzlegrid;
-	private int[] pieces;
+	//private int[][] newgrid;
+	//private int[][] puzzlegrid;
+	//private int[] pieces;
 	private int[] clearedLines;
 	private int status;
 	public int score;
@@ -720,7 +720,7 @@ public class PuzzleGameData implements Game
 	public int gridMaxWidth;
 	public int energy;
 	private int boundaryCondition;
-	private java.util.Random randomgen;
+	//private java.util.Random randomgen;
 	private boolean blockPlaced;
 	public boolean isBlockPlaced()
 	{

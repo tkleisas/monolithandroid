@@ -1,17 +1,16 @@
 package org.teacake.monolith.apk;
 
 import android.app.Activity;
-import android.content.res.Resources;
+
 import android.graphics.Canvas;
 import android.content.Context;
-import android.graphics.Paint;
+
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import javax.microedition.khronos.egl.*;
-import javax.microedition.khronos.opengles.*;
-//import android.graphics.glutils.*;
-//import android.util.Log;
+
+
 
 import javax.microedition.khronos.opengles.GL10;
 public class GLThread extends Thread
@@ -43,8 +42,9 @@ public class GLThread extends Thread
         highscoreEntry = false;
         this.explodingCubes = new java.util.LinkedList<ExplodingCube>();
         randomgen = new java.util.Random(SystemClock.uptimeMillis());
-        this.overlay.setCurtain(100);
+        //this.overlay.setCurtain(100);
         this.game = overlay.getOptions().getGame();
+        action = MSG_DO_NOTHING;
 	}
 	
     public void onWindowResize(int w, int h) {
@@ -127,12 +127,12 @@ public class GLThread extends Thread
 		
 		while (!done)
 		{
-	        int w, h;
+	        //int w, h;
 	        boolean changed;
 	        synchronized(this) {
 	            changed = mSizeChanged;
-	            w = mWidth;
-	            h = mHeight;
+	            //w = mWidth;
+	            //h = mHeight;
 	            mSizeChanged = false;
 	        }
 
@@ -181,9 +181,9 @@ public class GLThread extends Thread
 	
 	public void reinit()
 	{
-		this.overlay.setCurtain(100);
-    	xval = 0;
-    	yval =0;
+		//this.overlay.setCurtain(100);
+    	//xval = 0;
+    	//yval =0;
         zx=0.0f;
         zy=0.0f;
         xoff = -10.0f;
@@ -198,8 +198,6 @@ public class GLThread extends Thread
        
         
         game.initGame(this.overlay.getOptions().getStartingLevel());
-        game.setScore(0);
-        game.setLines(0);
         game.setTimerEnabled(true);
         game.setStatus(SimpleGameData.STATUS_PLAYING);
         demogame = new MonolithGameData();
@@ -216,72 +214,7 @@ public class GLThread extends Thread
         this.mSizeChanged = false;
 	}
 	
-	private void init(GL10 gl)
-	{
 
-    	this.overlay.setCurtain(100);
-    	xval = 0;
-    	yval =0;
-        zx=0.0f;
-        zy=0.0f;
-        xoff = -10.0f;
-        //-10.0f+x*2.0f, 21.0f-y*2.0f, zoff
-    	yoff = 21.0f;
-    	zoff = -63.0f;
-
-        
-        if(gametype==Game.GAME_CLASSIC)
-        {
-        	game = new SimpleGameData();
-        }
-        if(gametype==Game.GAME_MONOLITH)
-        {
-        	game = new MonolithGameData();
-        }
-        
-
-        
-        
-        game.initGame(this.overlay.getOptions().getDifficultyLevel());
-        game.setScore(0);
-        game.setLines(0);
-        game.setTimerEnabled(true);
-        game.setStatus(SimpleGameData.STATUS_PLAYING);
-        demogame = new MonolithGameData();
-        demogame.initGame(1);
-        demogame.setScore(0);
-        demogame.setLines(0);
-        demogame.setEnergy(100);
-        //demogame.setTimer(5000);
-        
-        demogame.setStatus(SimpleGameData.STATUS_EVOLVING);
-        this.setupDemoGrid();
-        this.lastcalltime = SystemClock.uptimeMillis();
-        rangle=0;
-        paint = new Paint();
-        paint2 = new Paint();
-        
-        paint.setARGB(200, 255, 0, 0);
-        //paint.setFakeBoldText(true);
-        paint.setTextSize(14);
-        paint2.setTextSize(14);
-        paint2.setARGB(255, 128, 128, 128);
-        
-        
-        gameOverPaint = new Paint();
-        gameOverPaint.setARGB(128, 20, 20, 20);
-        gameOverPaint.setTextSize(30);
-    	
-    	this.running = true;
-    	//gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-    	//gl.glEnable(GL10.GL_TEXTURE_2D);
-    	
-    	//gl.glDisable(GL10.GL_TEXTURE_2D);
-    	
-        //this.gameOverXPos = getTextWidth(res.getString( R.string.s_game_over),gameOverPaint);
-        //this.evolvingXPos = getTextWidth(res.getString( R.string.s_evolving ),gameOverPaint);
-    	
-    }		
     public synchronized void doMoveDown()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
@@ -749,7 +682,7 @@ public class GLThread extends Thread
 			}
 			overlay.postInvalidate();
 			*/
-			this.overlay.setCurtain(0);
+			//this.overlay.setCurtain(0);
 			long current = SystemClock.uptimeMillis();
 			
 			rangle=rangle+((current-lastdrawtime)/1000.0f)*2.0f;
@@ -891,263 +824,261 @@ public class GLThread extends Thread
             //canvas.drawText(message, 10, 10, paint);
             switch(this.viewType)
             {
-            case VIEW_INTRO:
+            	case VIEW_INTRO:
             	
-	            now = SystemClock.uptimeMillis();
-	            if(now>lastcalltime+demogame.getTimer())
-	            {
-
-	            		lastcalltime = now;
-	            		this.demogame.gameLoop();
-	            }
-	            this.drawIntroScreen(gl,w,h);
-            	String logo="MonolithAndroid";            	
+		            now = SystemClock.uptimeMillis();
+		            if(now>lastcalltime+demogame.getTimer())
+		            {
+	
+		            		lastcalltime = now;
+		            		this.demogame.gameLoop();
+		            }
+		            this.drawIntroScreen(gl,w,h);
+	            	//String logo="MonolithAndroid";            	
             	break;
             	
-            case VIEW_OPTIONS:
-        		int savedaction = action;
-            	
-	            now = SystemClock.uptimeMillis();
-	            if(now>lastcalltime+demogame.getTimer())
-	            {
-
-	            		lastcalltime = now;
-	            		this.demogame.gameLoop();
-	            }
-	            this.drawIntroScreen(gl,w,h);
-            	//this.drawIntroScreen(gl, canvas, w, h);
-            	if (action == MSG_ROTATE)
-        		{
-            		
-        			action=MSG_DO_NOTHING;
-        			overlay.getOptions().previousOption();
-        			if(overlay.getOptions().isSoundEnabled())
-        			{
-        				this.soundManager.playSound(R.raw.pluck);
-        			}
-        		}
-        		if (action == MSG_MOVE_LEFT)
-        		{
-        			action=MSG_DO_NOTHING;
-        			overlay.getOptions().setPreviousValue();
-        			if(overlay.getOptions().isSoundEnabled())
-        			{
-        				this.soundManager.playSound(R.raw.pluck);
-        			}
-            	
-        		}
-        		if (action == MSG_MOVE_RIGHT)
-        		{
-        			action=MSG_DO_NOTHING;
-        			overlay.getOptions().setNextValue();
-        			if(overlay.getOptions().isSoundEnabled())
-        			{
-        				this.soundManager.playSound(R.raw.pluck);
-        			}
-
-        		}
-        		if (action == MSG_MOVE_DOWN)
-        		{
-        			action=MSG_DO_NOTHING;
-        			overlay.getOptions().nextOption();
-        			if(overlay.getOptions().isSoundEnabled())
-        			{
-        				this.soundManager.playSound(R.raw.pluck);
-        			}
-
-        		}
-        		if(overlay.getOptions().getStatus()==Options.STATUS_BACK)
-        		{
-        			this.viewType=VIEW_GAME;
-        			this.setViewType(GLThread.VIEW_INTRO);
-        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
-        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
-        		}
-        		if(overlay.getOptions().getStatus()==Options.STATUS_OK);
-        		{
-        			this.game = this.overlay.getOptions().getGame();
-        			this.viewType=VIEW_GAME;
-        			this.setViewType(GLThread.VIEW_INTRO);
-        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
-        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
-        			
-        		}
-        		int changed = overlay.getOptions().getChangedOption();
-        		if(changed == Options.OPTION_MUSIC)
-        		{
-        			if(overlay.getOptions().isMusicEnabled())
-        			{
-        				this.soundManager.playSound(R.raw.monolithogg2);
-        				
-        			}
-        			else
-        			{
-        				this.soundManager.stopSound(R.raw.monolithogg2);
-        			}
-        		}
-        		
-        		break;
-        		
-
-            case VIEW_GAME:
-            	if (action == MSG_ROTATE)
-        		{
-        			action=MSG_DO_NOTHING;
-        			doRotateBlock();
-        		}
-        		if (action == MSG_MOVE_LEFT)
-        		{
-        			action=MSG_DO_NOTHING;
-        			doMoveLeft();
-            	
-        		}
-        		if (action == MSG_MOVE_RIGHT)
-        		{
-        			action=MSG_DO_NOTHING;
-        			doMoveRight();
-        		}
-        		if (action == MSG_MOVE_DOWN)
-        		{
-        			action=MSG_DO_NOTHING;
-        			doMoveDown();
-        		}            	
-
-        		
-        		gl.glLoadIdentity();
-            	
-            	
-            	//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
-        		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
-        		
-        		mMoon.draw(gl,40.0f,40.0f,1.0f);
-        		gl.glLoadIdentity();
-        		//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
-        		mEarth.setPosition(xoff+13,yoff-2, zoff+60);
-        		gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-        		mEarth.draw(gl,10.0f,10.0f,1.0f);
-            	gl.glLoadIdentity();
-            	mStarfield.draw(gl,0,rangle);        		
-        		drawPlayfield(gl);
-                drawFallingBlock(gl);
-
-                drawNextPiece(gl);
-
-        		//gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-        		
-        		//gl.glPopMatrix();
-                //this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
-                //this.drawString(canvas,""+game.getScore(), 10, 34);
-                //this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
-                //this.drawString(canvas,""+game.getLevel(), 10, 74);
-                //this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
-                //this.drawString(canvas,""+game.getLines(),10,114);
-        		this.overlay.setLevel(game.getLevelName());
-        		this.overlay.setScore(""+game.getScore());
-        		this.overlay.setLines(""+game.getLines());
-	            if(this.gametype==Game.GAME_MONOLITH)
-	            {
+            	case VIEW_OPTIONS:
+	        		//int savedaction = action;
 	            	
-	            	this.overlay.setEnergy(""+game.getEnergy());
-	            	//this.drawString(canvas,res.getString(R.string.s_energy),10,134);
-	            	//this.drawString(canvas,""+game.getEnergy(),10,154);
-
-	            }
-	            
-	            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
-	            switch (game.getStatus())
-	            {
-	            case SimpleGameData.STATUS_GAME_OVER:
-	            	this.overlay.setMessage("Game Over");
-	            	if(!this.highscoreEntry)
-	            	{
-	            		if(this.overlay.getHighScoreTable().isHighScore(this.game.getScore()))
-	            		{
-	            			this.highscoreEntry=true;
-	            			this.overlay.setDrawType(GameOverlay.DRAW_NAME_ENTRY);
-	            		}
-	            	}
-	            	else
-	            	{
-            			if(action==MSG_ROTATE)
-            			{
-            				this.overlay.selectPreviousChar();
-            			}
-            			if(action==MSG_MOVE_DOWN)
-            			{
-            				this.overlay.selectNextChar();
-            			}
-            			if(action==MSG_MOVE_LEFT)
-            			{
-            				this.overlay.moveBack();
-            			}
-            			if(action==MSG_MOVE_RIGHT)
-            			{
-            				this.highscoreEntry = this.overlay.moveForward();
-            				if(!this.highscoreEntry)
-            				{
-            					this.viewType =VIEW_INTRO;
-            					this.overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
-            				}
-            			}
-	            	}
-	            	break;
-	            case SimpleGameData.STATUS_EVOLVING:
-	            	this.overlay.setMessage("Evolving...");
-	            	break;
-	            	default:
-	            		this.overlay.setMessage("");	
-	            		break;
-	            }
-
-	            
-	            Cube c = this.mCube[0];
-	            c.setPosition(0.0f, 0.0f, -30.0f);
-	            mAngle += 1.2f;
-	            
-	            now = SystemClock.uptimeMillis();
-	            if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-	            {
-	            	this.drawCubeExplosion(gl);
-	            }
-	            if(now>lastcalltime+game.getTimer())
-	            {
-	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-	            	{
-	            		game.gameLoop();
-	            		if(game.isBlockPlaced())
-	            		{
-	                		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
-	                		//message.sendToTarget();
-	            			this.soundManager.playSound(R.raw.place);
-	            		}
-	            		game.flagCompletedLines();
-	            		this.createExplosions(game);
-	            		lastcalltime = now;
-	            	}
-	            }
-                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-                {
-                	int result=10;
-                	long now = SystemClock.uptimeMillis();;
-                	if(now-lastcalltime>game.getTimer())
-                	{
-                		result=10;
-                	}
-                	else
-                	{
-                		result = (int)((now-lastcalltime)%game.getTimer());
-                		result = (result*10)/game.getTimer();
-                	}
-            	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
-
-            		this.drawBlocks(gl,game,result,10);
-                }
-                else
-                {
-                 	drawBlocks(gl);
-                }	            
-	            gl.glPopMatrix();
-	            //game.gameLoop();
+		            now = SystemClock.uptimeMillis();
+		            if(now>lastcalltime+demogame.getTimer())
+		            {
+	
+		            		lastcalltime = now;
+		            		this.demogame.gameLoop();
+		            }
+		            this.drawIntroScreen(gl,w,h);
+	            	//this.drawIntroScreen(gl, canvas, w, h);
+	            	if (action == MSG_ROTATE)
+	        		{
+	            		
+	        			action=MSG_DO_NOTHING;
+	        			overlay.getOptions().previousOption();
+	        			if(overlay.getOptions().isSoundEnabled())
+	        			{
+	        				this.soundManager.playSound(R.raw.pluck);
+	        			}
+	        		}
+	        		if (action == MSG_MOVE_LEFT)
+	        		{
+	        			action=MSG_DO_NOTHING;
+	        			overlay.getOptions().setPreviousValue();
+	        			if(overlay.getOptions().isSoundEnabled())
+	        			{
+	        				this.soundManager.playSound(R.raw.pluck);
+	        			}
+	            	
+	        		}
+	        		if (action == MSG_MOVE_RIGHT)
+	        		{
+	        			action=MSG_DO_NOTHING;
+	        			overlay.getOptions().setNextValue();
+	        			if(overlay.getOptions().isSoundEnabled())
+	        			{
+	        				this.soundManager.playSound(R.raw.pluck);
+	        			}
+	
+	        		}
+	        		if (action == MSG_MOVE_DOWN)
+	        		{
+	        			action=MSG_DO_NOTHING;
+	        			overlay.getOptions().nextOption();
+	        			if(overlay.getOptions().isSoundEnabled())
+	        			{
+	        				this.soundManager.playSound(R.raw.pluck);
+	        			}
+	
+	        		}
+	        		if(overlay.getOptions().getSelectionStatus()==Options.STATUS_BACK)
+	        		{
+	        			this.viewType=VIEW_GAME;
+	        			this.setViewType(GLThread.VIEW_INTRO);
+	        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
+	        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+	        		}
+	        		if(overlay.getOptions().getSelectionStatus()==Options.STATUS_OK)
+	        		{
+	        			this.game = this.overlay.getOptions().getGame();
+	        			
+	        			this.viewType=VIEW_GAME;
+	        			this.setViewType(GLThread.VIEW_INTRO);
+	        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
+	        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+	        			
+	        		}
+	        		int changed = overlay.getOptions().getChangedOption();
+	        		if(changed == Options.OPTION_MUSIC)
+	        		{
+	        			if(overlay.getOptions().isMusicEnabled())
+	        			{
+	        				this.soundManager.playSound(R.raw.monolithogg2);
+	        				
+	        			}
+	        			else
+	        			{
+	        				this.soundManager.stopSound(R.raw.monolithogg2);
+	        			}
+	        		}
+        		break;
+            	case VIEW_GAME:
+	            	if (action == MSG_ROTATE)
+	        		{
+	        			action=MSG_DO_NOTHING;
+	        			doRotateBlock();
+	        		}
+	        		if (action == MSG_MOVE_LEFT)
+	        		{
+	        			action=MSG_DO_NOTHING;
+	        			doMoveLeft();
+	            	
+	        		}
+	        		if (action == MSG_MOVE_RIGHT)
+	        		{
+	        			action=MSG_DO_NOTHING;
+	        			doMoveRight();
+	        		}
+	        		if (action == MSG_MOVE_DOWN)
+	        		{
+	        			action=MSG_DO_NOTHING;
+	        			doMoveDown();
+	        		}            	
+	
+	        		
+	        		gl.glLoadIdentity();
+	            	
+	            	
+	            	//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+	        		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
+	        		
+	        		mMoon.draw(gl,40.0f,40.0f,1.0f);
+	        		gl.glLoadIdentity();
+	        		//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+	        		mEarth.setPosition(xoff+13,yoff-2, zoff+60);
+	        		gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+	        		mEarth.draw(gl,10.0f,10.0f,1.0f);
+	            	gl.glLoadIdentity();
+	            	mStarfield.draw(gl,0,rangle);        		
+	        		drawPlayfield(gl);
+	                drawFallingBlock(gl);
+	
+	                drawNextPiece(gl);
+	
+	        		//gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+	        		
+	        		//gl.glPopMatrix();
+	                //this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
+	                //this.drawString(canvas,""+game.getScore(), 10, 34);
+	                //this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
+	                //this.drawString(canvas,""+game.getLevel(), 10, 74);
+	                //this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
+	                //this.drawString(canvas,""+game.getLines(),10,114);
+	        		this.overlay.setLevel(game.getLevelName());
+	        		this.overlay.setScore(""+game.getScore());
+	        		this.overlay.setLines(""+game.getLines());
+		            if(this.gametype==Game.GAME_MONOLITH)
+		            {
+		            	
+		            	this.overlay.setEnergy(""+game.getEnergy());
+		            	//this.drawString(canvas,res.getString(R.string.s_energy),10,134);
+		            	//this.drawString(canvas,""+game.getEnergy(),10,154);
+	
+		            }
+		            
+		            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
+		            switch (game.getStatus())
+		            {
+			            case SimpleGameData.STATUS_GAME_OVER:
+			            	this.overlay.setMessage("Game Over");
+			            	if(!this.highscoreEntry)
+			            	{
+			            		if(this.overlay.getHighScoreTable().isHighScore(this.game.getScore()))
+			            		{
+			            			this.highscoreEntry=true;
+			            			this.overlay.setDrawType(GameOverlay.DRAW_NAME_ENTRY);
+			            		}
+			            	}
+			            	else
+			            	{
+		            			if(action==MSG_ROTATE)
+		            			{
+		            				this.overlay.selectPreviousChar();
+		            			}
+		            			if(action==MSG_MOVE_DOWN)
+		            			{
+		            				this.overlay.selectNextChar();
+		            			}
+		            			if(action==MSG_MOVE_LEFT)
+		            			{
+		            				this.overlay.moveBack();
+		            			}
+		            			if(action==MSG_MOVE_RIGHT)
+		            			{
+		            				this.highscoreEntry = this.overlay.moveForward();
+		            				if(!this.highscoreEntry)
+		            				{
+		            					this.viewType =VIEW_INTRO;
+		            					this.overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+		            				}
+		            			}
+			            	}
+			            	break;
+			            case SimpleGameData.STATUS_EVOLVING:
+			            	this.overlay.setMessage("Evolving...");
+			            break;
+			            default:
+			            	this.overlay.setMessage("");	
+			            break;
+		            }
+	
+		            
+		            Cube c = this.mCube[0];
+		            c.setPosition(0.0f, 0.0f, -30.0f);
+		            mAngle += 1.2f;
+		            
+		            now = SystemClock.uptimeMillis();
+		            if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+		            {
+		            	this.drawCubeExplosion(gl);
+		            }
+		            if(now>lastcalltime+game.getTimer())
+		            {
+		            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+		            	{
+		            		game.gameLoop();
+		            		if(game.isBlockPlaced())
+		            		{
+		                		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
+		                		//message.sendToTarget();
+		            			this.soundManager.playSound(R.raw.place);
+		            		}
+		            		game.flagCompletedLines();
+		            		this.createExplosions(game);
+		            		lastcalltime = now;
+		            	}
+		            }
+	                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+	                {
+	                	int result=10;
+	                	long now = SystemClock.uptimeMillis();;
+	                	if(now-lastcalltime>game.getTimer())
+	                	{
+	                		result=10;
+	                	}
+	                	else
+	                	{
+	                		result = (int)((now-lastcalltime)%game.getTimer());
+	                		result = (result*10)/game.getTimer();
+	                	}
+	            	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
+	
+	            		this.drawBlocks(gl,game,result,10);
+	                }
+	                else
+	                {
+	                 	drawBlocks(gl);
+	                }	            
+		            gl.glPopMatrix();
+		            //game.gameLoop();
             
             	break;
             	}
@@ -1182,19 +1113,19 @@ public class GLThread extends Thread
 	public static final int MSG_ROTATE_PLAYFIELD=4;
     public Game	game;
     public Game demogame;
-    private EGLContext      mGLContext;
+    
     private Starfield		mStarfield;
     private Cube[]          mCube;
     private Cube 			mPlayfieldCube;
     private Square			mMoon;
     private Square			mEarth;
     private float           mAngle;
-    private long            mNextTime;
+    
 
     private float			rangle;
     private boolean			highscoreEntry;
-    private int xval;
-    private int yval;
+    //private int xval;
+    //private int yval;
     public float zx=0.0f;
     public float zy=0.0f;
     private float xoff;
@@ -1202,14 +1133,14 @@ public class GLThread extends Thread
     private float zoff;
     private long now;
     private long lastcalltime;
-    private Paint paint;
-    private Paint paint2;
     
-    private Paint gameOverPaint;
+    
+    
+    
     
     
     public boolean running;
-    private Resources res;
+    //private Resources res;
     int gametype;
     private int viewType;
     //private javax.sound.midi.AndroidMIDIPlayBackEngine soundEngine;
@@ -1226,7 +1157,7 @@ public class GLThread extends Thread
     private java.util.Random randomgen;
     
     private boolean backgroundInitialized;
-    private int steps;
+    
     private GameOverlay overlay;
     
     
