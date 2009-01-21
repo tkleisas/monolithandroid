@@ -1,6 +1,7 @@
 package org.teacake.monolith.apk;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.*;
 
@@ -19,13 +20,71 @@ public class Monolith extends Activity
     private Options options;
     private Sound soundManager;
     private Game game;
+    private android.widget.CheckBox checkboxAcceptLicense;
+    private android.widget.Button buttonOK;
+    private android.widget.Button buttonCancel;
+    private android.widget.TextView textviewLicense;
+    public SharedPreferences.Editor prefsEditor;
+    public SharedPreferences prefs;
+    public android.view.View licenseView;
+    private boolean soundInitialized;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        soundInitialized = false;
+        prefs = this.getPreferences(android.content.Context.MODE_PRIVATE);
+        prefsEditor = prefs.edit();
+        //prefsEditor.putBoolean("LicenseAccepted", false);
+        //prefsEditor.commit();
+        if(!prefs.getBoolean("LicenseAccepted", false))
+        {
+        	
+        	//this.licenseView = this.findViewById(R.layout.licenseagreement);
+        	this.licenseView = View.inflate(this, R.layout.licenseagreement, null);
+        	this.setContentView(licenseView);
+        	this.checkboxAcceptLicense = (android.widget.CheckBox)this.findViewById(R.id.checkLicenseAgreement);
+        	this.textviewLicense = (android.widget.TextView)this.findViewById(R.id.textviewLicenseAgreement);
+        	this.buttonOK= (android.widget.Button)this.findViewById(R.id.buttonOK);
+        	this.buttonCancel = (android.widget.Button)this.findViewById(R.id.buttonCancel);
+        	this.buttonCancel.setOnClickListener(
+        											new View.OnClickListener()
+        											{
+        												public void onClick(View view)
+        												{
+        													exitNotAcceptedApplication();
+        												}
+        											}
+        										);
+        	this.buttonOK.setOnClickListener(
+					new View.OnClickListener()
+					{
+						public void onClick(View view)
+						{
+							if(checkboxAcceptLicense.isChecked())
+							{
+								prefsEditor.putBoolean("LicenseAccepted", true);
+								prefsEditor.commit();
+								licenseView.setVisibility(View.INVISIBLE);
+								initActivity();
+							}
+							
+						}
+					}
+				);
+        }
+        else
+        {
+        	initActivity();
+        }
+ 
         
-        
+         
+    }
+    public void initActivity()
+    {
         this.soundManager = new SoundPoolManager(this);
+        this.soundInitialized = true;
         hsTable = new HighScoreTable(this,10);
         game = new MonolithGameData();
         
@@ -58,22 +117,26 @@ public class Monolith extends Activity
 		//	
 		//}
 	
-		soundManager.playSound(R.raw.monolithogg2); 
-        
-         
+		soundManager.playSound(R.raw.monolithogg2);   	
     }
     @Override
     public void onPause()
     {
     	super.onPause();
-    	this.soundManager.stopSound();
+    	if(soundInitialized)
+    	{
+    		this.soundManager.stopSound();
+    	}
     	//gsf.stopMusic();
     }
     @Override
     public void onStop()
     {
     	super.onStop();
-    	this.soundManager.stopSound();
+    	if(soundInitialized)
+    	{
+    		this.soundManager.stopSound();
+    	}
     }
 
     
@@ -102,6 +165,11 @@ public class Monolith extends Activity
     		this.soundManager.stopSound();
     	
 			finish();
+    }
+    public void exitNotAcceptedApplication()
+    {
+    	
+		finish();
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
