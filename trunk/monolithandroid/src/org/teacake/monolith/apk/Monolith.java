@@ -66,6 +66,7 @@ public class Monolith extends Activity
 								prefsEditor.putBoolean("LicenseAccepted", true);
 								prefsEditor.commit();
 								licenseView.setVisibility(View.INVISIBLE);
+								
 								initActivity();
 							}
 							
