@@ -18,7 +18,28 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 		this.viewType = GLThread.VIEW_INTRO;
 		this.gameType = Game.GAME_MONOLITH;
 		getHolder().addCallback(this);
-		getHolder().setType(android.view.SurfaceHolder.SURFACE_TYPE_GPU);
+		try
+		{
+			getHolder().setType(android.view.SurfaceHolder.SURFACE_TYPE_HARDWARE);
+		}
+		catch(Exception e)
+		{
+			try
+			{
+				getHolder().setType(android.view.SurfaceHolder.SURFACE_TYPE_GPU);
+			}
+			catch(Exception e2)
+			{
+				try
+				{
+					getHolder().setType(android.view.SurfaceHolder.SURFACE_TYPE_NORMAL);
+				}
+				catch(Exception e3)
+				{
+					
+				}
+			}
+		}
 
 		
 	}
