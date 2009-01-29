@@ -1063,6 +1063,50 @@ public class GLThread extends Thread
 	        		}
         		break;
             	case VIEW_GAME:
+		            switch (game.getStatus())
+		            {
+			            case SimpleGameData.STATUS_GAME_OVER:
+			            	this.overlay.setMessage("Game Over");
+			            	if(!this.highscoreEntry)
+			            	{
+			            		if(this.overlay.getHighScoreTable().isHighScore(this.game.getScore()))
+			            		{
+			            			this.highscoreEntry=true;
+			            			this.overlay.setDrawType(GameOverlay.DRAW_NAME_ENTRY);
+			            		}
+			            	}
+			            	else
+			            	{
+		            			if(action==MSG_ROTATE)
+		            			{
+		            				this.overlay.selectPreviousChar();
+		            			}
+		            			if(action==MSG_MOVE_DOWN)
+		            			{
+		            				this.overlay.selectNextChar();
+		            			}
+		            			if(action==MSG_MOVE_LEFT)
+		            			{
+		            				this.overlay.moveBack();
+		            			}
+		            			if(action==MSG_MOVE_RIGHT)
+		            			{
+		            				this.highscoreEntry = this.overlay.moveForward();
+		            				if(!this.highscoreEntry)
+		            				{
+		            					this.viewType =VIEW_INTRO;
+		            					this.overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+		            				}
+		            			}
+			            	}
+			            	break;
+			            case SimpleGameData.STATUS_EVOLVING:
+			            	this.overlay.setMessage("Evolving...");
+			            break;
+			            default:
+			            	this.overlay.setMessage("");	
+			            break;
+		            }
 	            	if (action == MSG_ROTATE)
 	        		{
 	        			action=MSG_DO_NOTHING;
@@ -1131,50 +1175,7 @@ public class GLThread extends Thread
 		            }
 		            
 		            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
-		            switch (game.getStatus())
-		            {
-			            case SimpleGameData.STATUS_GAME_OVER:
-			            	this.overlay.setMessage("Game Over");
-			            	if(!this.highscoreEntry)
-			            	{
-			            		if(this.overlay.getHighScoreTable().isHighScore(this.game.getScore()))
-			            		{
-			            			this.highscoreEntry=true;
-			            			this.overlay.setDrawType(GameOverlay.DRAW_NAME_ENTRY);
-			            		}
-			            	}
-			            	else
-			            	{
-		            			if(action==MSG_ROTATE)
-		            			{
-		            				this.overlay.selectPreviousChar();
-		            			}
-		            			if(action==MSG_MOVE_DOWN)
-		            			{
-		            				this.overlay.selectNextChar();
-		            			}
-		            			if(action==MSG_MOVE_LEFT)
-		            			{
-		            				this.overlay.moveBack();
-		            			}
-		            			if(action==MSG_MOVE_RIGHT)
-		            			{
-		            				this.highscoreEntry = this.overlay.moveForward();
-		            				if(!this.highscoreEntry)
-		            				{
-		            					this.viewType =VIEW_INTRO;
-		            					this.overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
-		            				}
-		            			}
-			            	}
-			            	break;
-			            case SimpleGameData.STATUS_EVOLVING:
-			            	this.overlay.setMessage("Evolving...");
-			            break;
-			            default:
-			            	this.overlay.setMessage("");	
-			            break;
-		            }
+
 	
 		            
 		            Cube c = this.mCube[0];
