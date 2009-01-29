@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MonolithAndroid</string>
+    <string name="app_name">Robotic Space Rock</string>
     <string name="s_score">SCORE</string>
     <string name="s_level">LEVEL</string>
     <string name="s_lines">LINES</string>
@@ -12,7 +12,7 @@
     <string name="s_previous_level">-</string>
     <string name="s_classic">Classic. "Tetris" style game.</string>
     <string name="s_dizzy">Dizzy. "Tetris" style game with a twist!</string>
-    <string name="s_monolith">Monolith. "Tetris" meets Conway's game of life.</string>
+    <string name="s_monolith">Monolith. Block game with Conway's game of life.</string>
     <string name="s_dizzy_monolith">Dizzy Monolith. "Tetris" meets Conway's game of life with a twist!</string>
     <string name="s_game_over">GAME OVER</string>
     <string name="s_next_game_mode">next</string>
@@ -39,6 +39,10 @@
     <string name="s_off">Off</string>
     <string name="s_ok">OK</string>
     <string name="s_back">Back</string>
+    <string name="s_robotic_space_rock">Robotic Space Rock</string>
+    <string name="s_authorname">by Tasos Kleisas</string>
+    <string name="s_website">www.mprizols.org</string>
+    <string name="s_press_menu_to_play">Press MENU to play</string>
     
 
 </resources>

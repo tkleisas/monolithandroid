@@ -133,26 +133,26 @@ public class GameOverlay extends View {
 	{
 		Long now = System.currentTimeMillis();
 		
-		String logo="MonolithAndroid";
+		String logo=res.getString(R.string.app_name);
 		
 		int index = (int)((now-this.lastDrawTime)%35000);
 		
 		this.currentTextColor = index;
 		if (index>=0 && index<10000)
 		{
-			logo = "MonolithAndroid";
+			logo = res.getString(R.string.app_name);
 		}
 		if(index>=10000 && index<15000)
 		{
-			logo = "by Tasos Kleisas";
+			logo = res.getString(R.string.s_authorname);
 		}
 		if(index>=15000 && index<20000)
 		{
-			logo = "www.mprizols.org";
+			logo = res.getString(R.string.s_website);
 		}
 		if(index>=20000 && index<25000)
 		{
-			logo = "press MENU to play";
+			logo = res.getString(R.string.s_press_menu_to_play);
 		}
 		if(index>=25000 && index<35000)
 		{
@@ -457,52 +457,32 @@ public class GameOverlay extends View {
 	private String score;
 	public boolean moveForward()
 	{
-		if(this.currentCharacterPosition<this.nameEntryLength)
+		char c = this.characters.charAt(currentCharacter);
+		if(c=='@')
 		{
-			String theChar = this.characters.substring(this.currentCharacter,this.currentCharacter+1);
-			if(theChar.equals("<") )
+			this.hsTable.isHighScore(Integer.parseInt(this.score,10), this.nameEntry, this.level);
+			this.hsTable.saveHighScores();
+			this.drawType = DRAW_NORMAL;
+			return false;
+		}
+		if(this.currentCharacterPosition<this.nameEntryLength-1)
+		{
+			
+			if(c=='<')
 			{
 				if(this.currentCharacterPosition>0)
 				{
-					if(this.currentCharacterPosition<nameEntry.length()-1)
-					{
-						String head = nameEntry.substring(0,this.currentCharacterPosition-1);
-						String tail = nameEntry.substring(this.currentCharacterPosition+1);
-						nameEntry = head+tail;
-					}
-					else
-					{
-						nameEntry = nameEntry.substring(0,this.currentCharacterPosition-1);
-					}
-					this.currentCharacterPosition--;
-					if(currentCharacterPosition>0 && currentCharacterPosition<nameEntry.length())
-					{
-						for(int i=0;i<characters.length();i++)
-						{
-							String cc = characters.substring(i,i+1);
-							
-							
-							String nec = nameEntry.substring(this.currentCharacterPosition,this.currentCharacterPosition+1);
-							if(cc.equals(nec));
-							{
-								this.currentCharacter = i;
-							
-								break;
-							}
-						}
-					}
+					this.nameEntry=this.nameEntry.substring(0,currentCharacterPosition)+" "+this.nameEntry.substring(currentCharacterPosition+1);
+					currentCharacterPosition--;
 				}
 				return true;
+
 			}
-			if(theChar.equals("@"))
-			{
-				this.hsTable.isHighScore(Integer.parseInt(this.score,10), this.nameEntry, this.level);
-				this.hsTable.saveHighScores();
-				this.drawType = DRAW_NORMAL;
-				return false;
-			}
+			
+
+			
+			this.nameEntry = this.nameEntry.substring(0,currentCharacterPosition)+this.characters.charAt(this.currentCharacter)+this.nameEntry.substring(currentCharacterPosition+1);
 			this.currentCharacterPosition++;
-			this.nameEntry = this.nameEntry+this.characters.substring(this.currentCharacter,this.currentCharacter+1);
 			return true;
 		}
 		return true;
@@ -595,7 +575,7 @@ public class GameOverlay extends View {
 	{
 		if(drawType == DRAW_NAME_ENTRY)
 		{
-			this.nameEntry = "";
+			this.nameEntry = "         ";
 			this.currentCharacter = 0;
 			this.currentCharacterPosition=0;
 		}
