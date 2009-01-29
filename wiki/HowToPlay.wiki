@@ -1,9 +1,9 @@
-#summary How to play MonolithAndroid.
-= MonolithAndroid / how to play. =
+#summary How to play Robotic Space Rock.
+= Robotic Space Rock / how to play. =
 
 = Introduction =
 
-MonolithAndroid at present provides two modes of gameplay. "Classic" and "Monolith"
+Robotic Space Rock at present provides two modes of gameplay. "Classic" and "Monolith"
 
 
 = Details =
