@@ -1,4 +1,4 @@
-#summary MonolithAndroid project details
+#summary Robotic Space Rock project details
 
 = Development Environment =
 The code is currently developed using Eclipse with the ADT plugin. The current Android SDK used is 1.0. The development machine is an AMD Phenom 9750 @2.4GHz with 8Gig of RAM that I put together lately and a Macbook @2.4GHz 4Gig of Ram, running Windows Vista Ultimate Edition and MacOSX respectively.
