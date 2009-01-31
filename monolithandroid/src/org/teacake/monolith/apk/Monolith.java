@@ -119,7 +119,7 @@ public class Monolith extends Activity
 		soundManager.addSound(R.raw.speech, false);
 		soundManager.addSound(R.raw.evolving, false );
 		soundManager.startSound();
-		soundManager.addSound(R.raw.monolithogg2, true);
+		soundManager.addSound(R.raw.monolith, true);
 		//try
 		//{
 		//	Thread.currentThread().sleep(10000);
@@ -129,10 +129,10 @@ public class Monolith extends Activity
 		//	
 		//}
 	
-		soundManager.startMusic(R.raw.monolithogg2);
+		soundManager.startMusic(R.raw.monolith);
 		if(!options.isMusicEnabled())
 		{
-			soundManager.pauseMusic(R.raw.monolithogg2);
+			soundManager.pauseMusic(R.raw.monolith);
 		}
 		
     }
@@ -218,7 +218,7 @@ public class Monolith extends Activity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent msg) {
         boolean handled = false;
-        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
+        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN||keyCode==KeyEvent.KEYCODE_Z||keyCode==KeyEvent.KEYCODE_X||keyCode==KeyEvent.KEYCODE_C)
         {
         	try
         	{
@@ -231,7 +231,7 @@ public class Monolith extends Activity
         	}
         	handled = true;
         }
-        if(keyCode == KeyEvent.KEYCODE_DPAD_LEFT)
+        if(keyCode == KeyEvent.KEYCODE_DPAD_LEFT||keyCode== KeyEvent.KEYCODE_A||keyCode== KeyEvent.KEYCODE_S)
         {
         	try
         	{
@@ -245,7 +245,7 @@ public class Monolith extends Activity
         	}
         	handled = true;
         }
-        if(keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
+        if(keyCode == KeyEvent.KEYCODE_DPAD_RIGHT||keyCode== KeyEvent.KEYCODE_D||keyCode== KeyEvent.KEYCODE_F)
         {
         	try
         	{
@@ -258,7 +258,7 @@ public class Monolith extends Activity
         	}
         	handled = true;
         }
-        if(keyCode == KeyEvent.KEYCODE_SPACE || keyCode == KeyEvent.KEYCODE_DPAD_UP)
+        if(keyCode == KeyEvent.KEYCODE_SPACE || keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_L)
         {
         	try
         	{
