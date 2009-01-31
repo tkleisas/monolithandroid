@@ -57,6 +57,7 @@ public class GameOverlay extends View {
 		
 		
 	}
+	
 	@Override protected synchronized void onDraw(Canvas canvas)
 	{
 		timer = System.currentTimeMillis();
@@ -73,6 +74,7 @@ public class GameOverlay extends View {
 			direction=8;
 			goalpha=goalpha+direction;
 		}
+		
 		if(overlayType==OVERLAY_TYPE_INTRO)
 		{
 			if(timeindex<2500)

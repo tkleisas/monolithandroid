@@ -13,7 +13,10 @@ class SoundPoolEvent
 	
 	public static final int SOUND_PLAY=0;
 	public static final int SOUND_STOP=1;
-	public static final int SOUND_STOP_DELAYED=2;
+	public static final int SOUND_MUSIC_PLAY=2;
+	public static final int SOUND_MUSIC_PAUSE=3;
+	public static final int SOUND_MUSIC_STOP=4;
+	public static final int SOUND_MUSIC_RESUME=5;
 }
 class SoundStatus
 {
@@ -69,7 +72,7 @@ public class SoundPoolManager extends Thread implements Sound
 	
 	public void run()
 	{
-	
+		android.media.MediaPlayer mp = null;
 		while(isRunning)
 		{
 			try
@@ -79,44 +82,49 @@ public class SoundPoolManager extends Thread implements Sound
 					SoundPoolEvent event = soundEvents.remove();
 					if(event!=null)
 					{
-						if(event.eventType == SoundPoolEvent.SOUND_PLAY)
+						switch(event.eventType)
 						{
-						
+						case SoundPoolEvent.SOUND_PLAY:
+							android.media.AudioManager mgr = (android.media.AudioManager) context.getSystemService(android.content.Context.AUDIO_SERVICE); 
+							int streamVolume = mgr.getStreamVolume(android.media.AudioManager.STREAM_MUSIC); 
+							soundPool.play(handles.get( event.eventSound).intValue(), streamVolume, streamVolume, 1, 0, 1.0f);
+
+							break;
+						case SoundPoolEvent.SOUND_STOP:
+
+							break;
+						case SoundPoolEvent.SOUND_MUSIC_PLAY:
 							currentPlayer = event.eventSound;
-							if(sounds.get(currentPlayer).booleanValue())
+							if(sounds.get(currentPlayer)!=null)
 							{
-								android.media.MediaPlayer mp = mediaPlayers.get(currentPlayer);
+								mp = mediaPlayers.get(currentPlayer);
+								
 								if(!mp.isPlaying())
 								{
 									mp.seekTo(0);
 									mp.start();
 								}
 							}
-							else
-							{
-								android.media.AudioManager mgr = (android.media.AudioManager) context.getSystemService(android.content.Context.AUDIO_SERVICE); 
-								int streamVolume = mgr.getStreamVolume(android.media.AudioManager.STREAM_MUSIC); 
-								soundPool.play(handles.get( event.eventSound).intValue(), streamVolume, streamVolume, 1, 0, 1.0f);
-						
-							}
-						}
-						else 
-						if(event.eventType == SoundPoolEvent.SOUND_STOP)
-						{
-							if(sounds.get(currentPlayer).booleanValue())
-							{
-								currentPlayer = event.eventSound;
 							
-								android.media.MediaPlayer mp = mediaPlayers.get(currentPlayer);
-								//if(mp.isPlaying())
-								//{
-
-									
-									mp.pause();
-								
-								//}
-							}
+							break;
+						case SoundPoolEvent.SOUND_MUSIC_STOP:
+							currentPlayer = event.eventSound;
+							mp = mediaPlayers.get(currentPlayer);
+							mp.pause();							
+							break;
+						case SoundPoolEvent.SOUND_MUSIC_PAUSE:
+							currentPlayer = event.eventSound;
+							mp = mediaPlayers.get(currentPlayer);
+							mp.pause();							
+							break;
+						case SoundPoolEvent.SOUND_MUSIC_RESUME:
+							currentPlayer = event.eventSound;
+							mp = mediaPlayers.get(currentPlayer);
+							mp.start();
+							break;
+						
 						}
+
 					}
 				}
 			}
@@ -195,7 +203,7 @@ public class SoundPoolManager extends Thread implements Sound
 		{
 			try
 			{
-				soundEvents.add(new SoundPoolEvent(SoundPoolEvent.SOUND_STOP_DELAYED,resid));
+				soundEvents.add(new SoundPoolEvent(SoundPoolEvent.SOUND_STOP,resid));
 			}
 			catch(Exception e)
 			{
@@ -217,6 +225,66 @@ public class SoundPoolManager extends Thread implements Sound
 				
 			}
 		}
+	}
+	public void startMusic(int resid)
+	{
+		if(soundEvents!=null)
+		{
+			try
+			{
+				soundEvents.add(new SoundPoolEvent(SoundPoolEvent.SOUND_MUSIC_PLAY,resid));
+				this.notify();
+			}
+			catch(Exception e)
+			{
+				
+			}
+		}		
+	}
+	public void stopMusic(int resid)
+	{
+		if(soundEvents!=null)
+		{
+			try
+			{
+				soundEvents.add(new SoundPoolEvent(SoundPoolEvent.SOUND_MUSIC_STOP,resid));
+				this.notify();
+			}
+			catch(Exception e)
+			{
+				
+			}
+		}		
+	}
+	public void pauseMusic(int resid)
+	{
+		if(soundEvents!=null)
+		{
+			try
+			{
+				soundEvents.add(new SoundPoolEvent(SoundPoolEvent.SOUND_MUSIC_PAUSE,resid));
+				this.notify();
+			}
+			catch(Exception e)
+			{
+				
+			}
+		}		
+	}
+	public void resumeMusic(int resid)
+	{
+		if(soundEvents!=null)
+		{
+			try
+			{
+				soundEvents.add(new SoundPoolEvent(SoundPoolEvent.SOUND_MUSIC_RESUME,resid));
+				this.notify();
+			}
+			catch(Exception e)
+			{
+				
+			}
+		}		
 	}
 	SoundPool soundPool;
 	

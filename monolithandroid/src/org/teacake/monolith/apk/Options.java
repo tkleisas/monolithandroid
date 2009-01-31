@@ -1,13 +1,32 @@
 package org.teacake.monolith.apk;
-
+import android.content.SharedPreferences;
 public class Options 
 {
-	public Options(Game currentGame)
+	public Options(Game currentGame, SharedPreferences preferences)
 	{
+		this.preferences = preferences;
+		
 		this.setMusicEnabled(true);
 		this.setSoundEnabled(true);
-		
 		this.game = currentGame;
+		this.gameType = preferences.getInt("gameType", Game.GAME_MONOLITH);
+		this.difficultyLevel = preferences.getInt("difficultyLevel", Options.DIFFICULTY_NORMAL);
+		this.startingLevel = preferences.getInt("startingLevel", 1);
+		this.enabledmusic = preferences.getBoolean("enabledmusic", true);
+		this.enabledsound = preferences.getBoolean("enabledsound", true);
+		
+		if(this.gameType==Game.GAME_MONOLITH)
+		{
+			this.game = new MonolithGameData();
+			this.game.initGame(this.startingLevel);
+		}
+		else
+		{
+			this.game = new SimpleGameData();
+			this.game.initGame(this.startingLevel);
+		}
+				
+
 		if(game.getGameType()==Game.GAME_CLASSIC)
 		{
 			this.newGame = new SimpleGameData();
@@ -18,9 +37,8 @@ public class Options
 		}
 		
 		this.newGame.setLevel(this.game.getLevels()[0]);
-		this.setGameType(game.getGameType());
-		this.startingLevel = this.getFirstLevel();
-		this.difficultyLevel = Options.DIFFICULTY_NORMAL;
+
+		
 		this.currentSelectedOption = 0;//Options.ALLOPTIONS[0];
 		this.previousSelectedOption = 0;
 		setSelectionStatus(Options.STATUS_SELECTING);
@@ -30,6 +48,17 @@ public class Options
 		this.changedOption = Options.OPTION_NONE;
 		
 	}
+	public void savePreferences()
+	{
+		android.content.SharedPreferences.Editor editor= preferences.edit();
+		editor.putInt("difficultyLevel", this.difficultyLevel);
+		editor.putInt("startingLevel", this.startingLevel);
+		editor.putInt("gameType",this.gameType);
+		editor.putBoolean("enabledsound", this.enabledsound );
+		editor.putBoolean("enabledmusic", this.enabledmusic);
+		editor.commit();
+	}
+	private SharedPreferences preferences;
 	private int selectionStatus;
 	private boolean enabledmusic;
 	private int difficultyLevel;
