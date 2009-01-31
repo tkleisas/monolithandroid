@@ -37,7 +37,8 @@ public class Monolith extends Activity
         prefsEditor = prefs.edit();
         //prefsEditor.putBoolean("LicenseAccepted", false);
         //prefsEditor.commit();
-        if(!prefs.getBoolean("LicenseAccepted", false))
+        
+        if(false/*!prefs.getBoolean("LicenseAccepted", false)*/)
         {
         	
         	//this.licenseView = this.findViewById(R.layout.licenseagreement);
