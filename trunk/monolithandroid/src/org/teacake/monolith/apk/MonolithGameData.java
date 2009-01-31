@@ -41,7 +41,15 @@ public class MonolithGameData implements Game
 			this.clearedLines[y]=0;
 		}
 	}
+	public Game loadGame()
+	{
+		return new MonolithGameData();
 		
+	}
+	public String saveGameAsString()
+	{
+		return "";
+	}
 	public void clearGrid()
 	{
 		for(int x=0;x<gridMaxWidth;x++)

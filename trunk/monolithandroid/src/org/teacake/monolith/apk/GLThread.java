@@ -45,6 +45,7 @@ public class GLThread extends Thread
         //this.overlay.setCurtain(100);
         this.game = overlay.getOptions().getGame();
         action = MSG_DO_NOTHING;
+        
 	}
 	
     public void onWindowResize(int w, int h) {
@@ -215,6 +216,12 @@ public class GLThread extends Thread
         rangle=0;	
         this.running = true;
         this.mSizeChanged = false;
+        if(this.overlay.getOptions().isSoundEnabled())
+		{
+			soundManager.playSound(R.raw.speech);
+		}
+        this.sayEvolving = true;
+        this.timeaccumulator = 0;
 	}
 	
 
@@ -230,7 +237,10 @@ public class GLThread extends Thread
     	if(game.isBlockPlaced())
     	{
     		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
-    		this.soundManager.playSound(R.raw.place);
+    		if(overlay.getOptions().isSoundEnabled())
+    		{
+    			this.soundManager.playSound(R.raw.place);
+    		}
     		//message.sendToTarget();    		
     	}
     	game.flagCompletedLines();
@@ -404,8 +414,11 @@ public class GLThread extends Thread
     		return;
     	}
 		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_ROTATE_BLOCK);
-		this.soundManager.playSound(R.raw.rotate);
-    	//message.sendToTarget();
+		if(overlay.getOptions().isSoundEnabled())
+		{
+			this.soundManager.playSound(R.raw.rotate);
+		}
+			//message.sendToTarget();
     	game.rotateCurrentBlockClockwise();
     }
     public synchronized void stopMusic()
@@ -564,7 +577,33 @@ public class GLThread extends Thread
     		}
     	}
     }
-    
+    protected void drawFallingBlock(GL10 gl, int result)
+    {
+    	
+    	float offset = 0.0f;
+
+    	offset = (float)(this.timeaccumulator%game.getTimer())/(float)game.getTimer();
+    	
+    	float ystart=21.0f;
+    	if(game.getCurrentBlock().color>=0 && game.getCurrentBlock().color<this.mCube.length)
+    	{
+    		Cube c = this.mCube[game.getCurrentBlock().color];
+    	
+    		for(int i=0;i<4;i++)
+    		{
+    			gl.glLoadIdentity();
+    			if(result!=0 && game.canMoveBlockDown())
+    			{
+    				c.setPosition(-10.0f+(game.getCurrentBlock().xPos+game.getCurrentBlock().subblocks[i].xpos)*2.0f,-(game.getCurrentBlock().yPos+game.getCurrentBlock().subblocks[i].ypos)*2.0f+ystart-offset*2.0f,zoff);
+    			}
+    			else
+    			{
+    				c.setPosition(-10.0f+(game.getCurrentBlock().xPos+game.getCurrentBlock().subblocks[i].xpos)*2.0f,-(game.getCurrentBlock().yPos+game.getCurrentBlock().subblocks[i].ypos)*2.0f+ystart,zoff);
+    			}
+    			c.draw(gl);
+    		}
+    	}
+    }    
     protected void drawCubeExplosion(GL10 gl)
     {
     	
@@ -674,7 +713,11 @@ public class GLThread extends Thread
     			}
         		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_EXPLOSION);
         		//message.sendToTarget();
-    			this.soundManager.playSound(R.raw.explosion2);
+    			if(this.overlay.getOptions().isSoundEnabled())
+    			{
+    				this.soundManager.playSound(R.raw.explosion2);
+    		
+    			}
     		}
     	}
     }
@@ -937,32 +980,11 @@ public class GLThread extends Thread
             gl.glColor4f(0.7f, 0.7f, 0.7f, 1.0f);
             gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
             gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-            //int bg_width = background.width();
-            //int bg_height = background.height();
-            //int bg_new_width = 0;
-            //int bg_new_height = 0;
 
             if(!this.backgroundInitialized)
             {
-                //if(w>h)
-                //{
-                //	bg_new_width = bg_width;
-                //	bg_new_height = (bg_height*h)/w;
-                //}
-                //else
-                //{
-                //	bg_new_height = bg_height;
-                //	bg_new_width = (bg_width*w)/h;
-                //}
-            	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(int)(bg_width-bg_new_width)/2,(int)(bg_height-bg_new_height)/2,(int)(bg_width-(bg_width-bg_new_width)/2)-1,(int)(bg_height-(bg_height-bg_new_height)/2-1),new android.graphics.Matrix(),false);
-            	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.drawableBackground,(this.drawableBackground.width()-w-1)/2,(this.drawableBackground.height()-h-1)/2,w,h);
-            	//this.drawableBackground = android.graphics.Bitmap.createBitmap(this.background,(bg_width-w)/2-1, (bg_height-h)/2-1,w+1,h+1,new android.graphics.Matrix(),false);
             	this.backgroundInitialized = true;
             }
-            //android.graphics.Rect rect = new android.graphics.Rect(0,0,drawableBackground.width()-1,drawableBackground.height()-1);
-            //canvas.drawBitmap(drawableBackground, rect, rect, bgpaint);
-            //canvas.drawText("width ="+drawableBackground.width()+" height="+this.drawableBackground.height()+" new_w="+bg_new_width+" new_h="+bg_new_height,10,300,  paint);
-            //canvas.drawText(message, 10, 10, paint);
             switch(this.viewType)
             {
             	case VIEW_INTRO:
@@ -997,7 +1019,7 @@ public class GLThread extends Thread
 	        			overlay.getOptions().previousOption();
 	        			if(overlay.getOptions().isSoundEnabled())
 	        			{
-	        				this.soundManager.playSound(R.raw.pluck);
+	        				this.soundManager.playSound(R.raw.pluck2);
 	        			}
 	        		}
 	        		if (action == MSG_MOVE_LEFT)
@@ -1026,7 +1048,7 @@ public class GLThread extends Thread
 	        			overlay.getOptions().nextOption();
 	        			if(overlay.getOptions().isSoundEnabled())
 	        			{
-	        				this.soundManager.playSound(R.raw.pluck);
+	        				this.soundManager.playSound(R.raw.pluck2);
 	        			}
 	
 	        		}
@@ -1046,6 +1068,7 @@ public class GLThread extends Thread
 	        			this.setViewType(GLThread.VIEW_INTRO);
 	        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
 	        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+	        			overlay.getOptions().savePreferences();
 	        			
 	        		}
 	        		int changed = overlay.getOptions().getChangedOption();
@@ -1053,12 +1076,12 @@ public class GLThread extends Thread
 	        		{
 	        			if(overlay.getOptions().isMusicEnabled())
 	        			{
-	        				this.soundManager.playSound(R.raw.monolithogg2);
+	        				this.soundManager.resumeMusic(R.raw.monolithogg2);
 	        				
 	        			}
 	        			else
 	        			{
-	        				this.soundManager.stopSound(R.raw.monolithogg2);
+	        				this.soundManager.pauseMusic(R.raw.monolithogg2);
 	        			}
 	        		}
         		break;
@@ -1102,9 +1125,18 @@ public class GLThread extends Thread
 			            	break;
 			            case SimpleGameData.STATUS_EVOLVING:
 			            	this.overlay.setMessage("Evolving...");
+		                	if(this.sayEvolving)
+		                	{
+		                		if(this.overlay.getOptions().isSoundEnabled())
+		                		{
+		                			this.soundManager.playSound(R.raw.evolving);
+		                		}
+		                		this.sayEvolving = false;
+		                	}
 			            break;
 			            default:
-			            	this.overlay.setMessage("");	
+			            	this.overlay.setMessage("");
+			            	
 			            break;
 		            }
 	            	if (action == MSG_ROTATE)
@@ -1149,7 +1181,7 @@ public class GLThread extends Thread
 	            	gl.glLoadIdentity();
 	            	mStarfield.draw(gl,0,rangle);        		
 	        		drawPlayfield(gl);
-	                drawFallingBlock(gl);
+	                
 	
 	                drawNextPiece(gl);
 	
@@ -1183,28 +1215,58 @@ public class GLThread extends Thread
 		            mAngle += 1.2f;
 		            
 		            now = SystemClock.uptimeMillis();
+		            if(game.getStatus()==SimpleGameData.STATUS_PLAYING)
+		            {
+		            	this.sayEvolving = true;
+		            }
 		            if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 		            {
 		            	this.drawCubeExplosion(gl);
 		            }
-		            if(now>lastcalltime+game.getTimer())
-		            {
-		            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-		            	{
-		            		game.gameLoop();
-		            		if(game.isBlockPlaced())
-		            		{
-		                		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
-		                		//message.sendToTarget();
-		            			this.soundManager.playSound(R.raw.place);
-		            		}
-		            		game.flagCompletedLines();
-		            		this.createExplosions(game);
-		            		lastcalltime = now;
-		            	}
-		            }
+		            long deltatime = now-lastcalltime;
+		            timeaccumulator+=deltatime;
+		            long simsteps = timeaccumulator/game.getTimer();
+		            long remainder = timeaccumulator%game.getTimer();
+		            int blockoffset = 0;
+	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+	            	{
+	            		if(simsteps>0)
+	            		{
+	            			for(long i=0;i<simsteps;i++)
+	            			{
+	            				
+	            				game.gameLoop();
+	            				if(game.isBlockPlaced())
+	            				{
+	                		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
+	                		//message.sendToTarget();
+	            					if(this.overlay.getOptions().isSoundEnabled())
+	            					{
+	            						this.soundManager.playSound(R.raw.place);
+	            					}
+	            				}
+	            				game.flagCompletedLines();
+	            				this.createExplosions(game);
+		            		
+	            			}
+	            			timeaccumulator=remainder;
+	            		}
+	            		blockoffset=((int)remainder*10)/game.getTimer();
+	            		
+		            	
+	            	}
+	            	lastcalltime = now;
+	            	if(this.game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+	            	{
+	            		drawFallingBlock(gl,0);
+	            	}
+	            	else
+	            	{
+	            		drawFallingBlock(gl,blockoffset);
+	            	}
 	                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 	                {
+
 	                	int result=10;
 	                	long now = SystemClock.uptimeMillis();;
 	                	if(now-lastcalltime>game.getTimer())
@@ -1346,6 +1408,8 @@ public class GLThread extends Thread
         	}
         }
     };
+    private boolean sayEvolving;
     private GLTextures textures;
     private long startGameTime;
+    private long timeaccumulator;
 }

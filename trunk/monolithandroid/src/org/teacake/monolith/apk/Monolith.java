@@ -63,11 +63,8 @@ public class Monolith extends Activity
 						{
 							if(checkboxAcceptLicense.isChecked())
 							{
-								prefsEditor.putBoolean("LicenseAccepted", true);
-								prefsEditor.commit();
-								licenseView.setVisibility(View.INVISIBLE);
+								startAcceptedApplication();
 								
-								initActivity();
 							}
 							
 						}
@@ -82,6 +79,16 @@ public class Monolith extends Activity
         
          
     }
+    public void startAcceptedApplication()
+    {
+    	prefsEditor.putBoolean("LicenseAccepted", true);
+		//prefsEditor.commit();
+		licenseView.setVisibility(View.INVISIBLE);
+		licenseView = null;		
+		initActivity();
+		
+		
+    }
     public void initActivity()
     {
         this.soundManager = new SoundPoolManager(this);
@@ -89,7 +96,7 @@ public class Monolith extends Activity
         hsTable = new HighScoreTable(this,10);
         game = new MonolithGameData();
         
-        options = new Options(game);
+        options = new Options(game,prefs);
         overlay = new GameOverlay(this,hsTable,options);
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
@@ -107,6 +114,9 @@ public class Monolith extends Activity
 		soundManager.addSound(R.raw.place, false);
 		soundManager.addSound(R.raw.rotate,false);
 		soundManager.addSound(R.raw.pluck, false);
+		soundManager.addSound(R.raw.pluck2, false);
+		soundManager.addSound(R.raw.speech, false);
+		soundManager.addSound(R.raw.evolving, false );
 		soundManager.startSound();
 		soundManager.addSound(R.raw.monolithogg2, true);
 		//try
@@ -118,7 +128,12 @@ public class Monolith extends Activity
 		//	
 		//}
 	
-		soundManager.playSound(R.raw.monolithogg2);   	
+		soundManager.startMusic(R.raw.monolithogg2);
+		if(!options.isMusicEnabled())
+		{
+			soundManager.pauseMusic(R.raw.monolithogg2);
+		}
+		
     }
     @Override
     public void onPause()
