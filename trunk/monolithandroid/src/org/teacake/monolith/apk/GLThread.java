@@ -1076,12 +1076,12 @@ public class GLThread extends Thread
 	        		{
 	        			if(overlay.getOptions().isMusicEnabled())
 	        			{
-	        				this.soundManager.resumeMusic(R.raw.monolithogg2);
+	        				this.soundManager.resumeMusic(R.raw.monolith);
 	        				
 	        			}
 	        			else
 	        			{
-	        				this.soundManager.pauseMusic(R.raw.monolithogg2);
+	        				this.soundManager.pauseMusic(R.raw.monolith);
 	        			}
 	        		}
         		break;
