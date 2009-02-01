@@ -37,10 +37,13 @@ public class GLThread extends Thread
         mStarfield = new Starfield(100,90.0f);	
         mMoon = new Square(0xffff,0x0ffff,0xffff,0xffff);
         mEarth = new Square(0xffff,0x0ffff,0xffff,0xffff);
+        mExplosionRing = new Square(0xffff,0x0ffff,0xffff,0xffff);
+        mExplosionRing = new Square(0xffff,0x0ffff,0xffff,0xffff,true,true);
         this.mPlayfieldCube = new Cube(0x8000,0x8000,0x8000,0x0);
         running=false;
         highscoreEntry = false;
         this.explodingCubes = new java.util.LinkedList<ExplodingCube>();
+        this.explodingRings = new java.util.LinkedList<ExplodingRing>();
         randomgen = new java.util.Random(SystemClock.uptimeMillis());
         //this.overlay.setCurtain(100);
         this.game = overlay.getOptions().getGame();
@@ -159,11 +162,14 @@ public class GLThread extends Thread
 				this.textures = new GLTextures(gl,this.context);
 				this.textures.add(R.drawable.moon2);
 				this.textures.add(R.drawable.earth);
+				this.textures.add(R.drawable.ring);
 				this.textures.loadTextures();
 				mMoon.setTextureId(R.drawable.moon2);
 				mMoon.setTextures(this.textures);
 				mEarth.setTextureId(R.drawable.earth);
 				mEarth.setTextures(textures);
+				mExplosionRing.setTextureId(R.drawable.ring);
+				mExplosionRing.setTextures(textures);
 
 				reinit();
 	        }			
@@ -428,6 +434,7 @@ public class GLThread extends Thread
     	//message.sendToTarget();  
     	this.soundManager.stopSound();
     }
+
     protected void drawNextPiece(GL10 gl)
     {
     	
@@ -667,6 +674,34 @@ public class GLThread extends Thread
     		}
     	}
     }
+    protected void drawRingExplosions(GL10 gl)
+    {
+    	java.util.ListIterator<ExplodingRing > iter=this.explodingRings.listIterator();
+    	ExplodingRing r = null;
+    	long now = System.currentTimeMillis();
+    	if(iter!=null)
+    	{
+    		
+    		while(iter.hasNext())
+    		{
+    			
+    			r=iter.next();
+    			if(r.frame>5)
+    			{
+    				
+    				iter.remove();
+    			}
+    			else
+    			{
+    				
+    				this.mExplosionRing.setPosition(r.x, r.y, r.z);
+    				float scale= r.frame*2.4f;
+    				mExplosionRing.draw(gl,scale,1.0f,scale,90.0f);
+    				r.frame=r.frame+1;
+    			}
+    		}
+    	}    	
+    }
     public void createExplosions(Game game)
     {
     	int[] clearedLines = game.getClearedLines();
@@ -709,7 +744,10 @@ public class GLThread extends Thread
     					break;
     				}
     				c.explosionType=0;
+    				
     				this.explodingCubes.add(c);
+    				ExplodingRing r = new ExplodingRing(xoff+9.0f,yoff-y*2.0f,zoff);
+    				this.explodingRings.add(r);
     			}
         		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_EXPLOSION);
         		//message.sendToTarget();
@@ -829,10 +867,17 @@ public class GLThread extends Thread
     	result = (result*10)/demogame.getTimer();
     	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
     	//canvas.drawText("energy="+demogame.getEnergy()+" result="+org.teacake.util.FixedPointFloat.floatToFixedPoint(0.25f), 10, 10, paint);
-		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
-		mMoon.draw(gl,28.0f,28.0f,1.0f);
-    	this.drawBlocks(gl,demogame,result,10);
     	
+    	mMoon.setPosition(xoff+13,yoff-22, zoff-50);
+		mMoon.draw(gl,28.0f,28.0f,1.0f);
+		//this.drawRingExplosion(gl, 0.0f, 0.0f, 0.0f, 90.0f, 10.0f);
+    	
+		//mExplosionRing.setPosition(xoff+10, yoff-22, zoff-45);
+		//mExplosionRing.draw(gl,1.0f,1.0f,1.0f,90.0f); //found it!!!!
+		
+		
+		//mExplosionRing.draw(gl,28.0f,28.0f,1.0f,-90.0f);
+		this.drawBlocks(gl,demogame,result,10);
     	//lastdrawtime = System.currentTimeMillis();
     	//this.drawBlocks(gl, demogame);
     	
@@ -1219,10 +1264,6 @@ public class GLThread extends Thread
 		            {
 		            	this.sayEvolving = true;
 		            }
-		            if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-		            {
-		            	this.drawCubeExplosion(gl);
-		            }
 		            long deltatime = now-lastcalltime;
 		            timeaccumulator+=deltatime;
 		            long simsteps = timeaccumulator/game.getTimer();
@@ -1264,6 +1305,12 @@ public class GLThread extends Thread
 	            	{
 	            		drawFallingBlock(gl,blockoffset);
 	            	}
+	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+		            {
+		            	this.drawCubeExplosion(gl);
+		            	this.drawRingExplosions(gl);
+		            	
+		            }	            	
 	                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 	                {
 
@@ -1286,7 +1333,9 @@ public class GLThread extends Thread
 	                {
 	                 	drawBlocks(gl);
 	                }	            
-		            gl.glPopMatrix();
+		            
+
+	                gl.glPopMatrix();
 		            //game.gameLoop();
             
             	break;
@@ -1328,6 +1377,7 @@ public class GLThread extends Thread
     private Cube 			mPlayfieldCube;
     private Square			mMoon;
     private Square			mEarth;
+    private Square			mExplosionRing;
     private float           mAngle;
     
 
@@ -1343,7 +1393,7 @@ public class GLThread extends Thread
     private float zoff;
     private long now;
     private long lastcalltime;
-    
+    private float testangle;
     
     
     
@@ -1357,6 +1407,7 @@ public class GLThread extends Thread
     //private android.media.MediaPlayer mediaPlayer;
     public String message;
     private java.util.LinkedList<ExplodingCube> explodingCubes;
+    private java.util.LinkedList<ExplodingRing> explodingRings;
     public static final float Y_ACCELERATION=-0.3f;
     public static final float Z_ACCELERATION=0.3f;
     public static final int MAX_EXPLOSION_FRAME=100;
