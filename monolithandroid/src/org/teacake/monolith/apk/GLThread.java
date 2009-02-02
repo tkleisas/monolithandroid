@@ -686,7 +686,7 @@ public class GLThread extends Thread
     		{
     			
     			r=iter.next();
-    			if(r.frame>5)
+    			if(r.frame>7)
     			{
     				
     				iter.remove();
@@ -1305,12 +1305,7 @@ public class GLThread extends Thread
 	            	{
 	            		drawFallingBlock(gl,blockoffset);
 	            	}
-	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-		            {
-		            	this.drawCubeExplosion(gl);
-		            	this.drawRingExplosions(gl);
-		            	
-		            }	            	
+            	
 	                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 	                {
 
@@ -1333,7 +1328,12 @@ public class GLThread extends Thread
 	                {
 	                 	drawBlocks(gl);
 	                }	            
-		            
+	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+		            {
+		            	this.drawCubeExplosion(gl);
+		            	this.drawRingExplosions(gl);
+		            	
+		            }			            
 
 	                gl.glPopMatrix();
 		            //game.gameLoop();
