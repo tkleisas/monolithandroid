@@ -160,15 +160,15 @@ public class GLThread extends Thread
 				
 				gl = (GL10) (glc.getGL());
 				this.textures = new GLTextures(gl,this.context);
-				this.textures.add(R.drawable.moon2);
-				this.textures.add(R.drawable.earth);
-				this.textures.add(R.drawable.ring);
+				this.textures.add(R.drawable.moon2small);
+				this.textures.add(R.drawable.earthsmall);
+				this.textures.add(R.drawable.ringsmall);
 				this.textures.loadTextures();
-				mMoon.setTextureId(R.drawable.moon2);
+				mMoon.setTextureId(R.drawable.moon2small);
 				mMoon.setTextures(this.textures);
-				mEarth.setTextureId(R.drawable.earth);
+				mEarth.setTextureId(R.drawable.earthsmall);
 				mEarth.setTextures(textures);
-				mExplosionRing.setTextureId(R.drawable.ring);
+				mExplosionRing.setTextureId(R.drawable.ringsmall);
 				mExplosionRing.setTextures(textures);
 
 				reinit();
@@ -869,7 +869,7 @@ public class GLThread extends Thread
     	//canvas.drawText("energy="+demogame.getEnergy()+" result="+org.teacake.util.FixedPointFloat.floatToFixedPoint(0.25f), 10, 10, paint);
     	
     	mMoon.setPosition(xoff+13,yoff-22, zoff-50);
-		mMoon.draw(gl,28.0f,28.0f,1.0f);
+		mMoon.draw(gl,18.0f,18.0f,1.0f);
 		//this.drawRingExplosion(gl, 0.0f, 0.0f, 0.0f, 90.0f, 10.0f);
     	
 		//mExplosionRing.setPosition(xoff+10, yoff-22, zoff-45);
@@ -1217,12 +1217,12 @@ public class GLThread extends Thread
 	            	//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
 	        		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
 	        		
-	        		mMoon.draw(gl,40.0f,40.0f,1.0f);
+	        		mMoon.draw(gl,18.0f,18.0f,1.0f);
 	        		gl.glLoadIdentity();
 	        		//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
 	        		mEarth.setPosition(xoff+13,yoff-2, zoff+60);
 	        		gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-	        		mEarth.draw(gl,10.0f,10.0f,1.0f);
+	        		mEarth.draw(gl,8.0f,8.0f,1.0f);
 	            	gl.glLoadIdentity();
 	            	mStarfield.draw(gl,0,rangle);        		
 	        		drawPlayfield(gl);
@@ -1305,7 +1305,7 @@ public class GLThread extends Thread
 	            	{
 	            		drawFallingBlock(gl,blockoffset);
 	            	}
-            	
+	            	
 	                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 	                {
 
@@ -1333,7 +1333,7 @@ public class GLThread extends Thread
 		            	this.drawCubeExplosion(gl);
 		            	this.drawRingExplosions(gl);
 		            	
-		            }			            
+		            }		            
 
 	                gl.glPopMatrix();
 		            //game.gameLoop();
