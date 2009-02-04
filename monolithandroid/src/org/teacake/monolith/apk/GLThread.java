@@ -706,6 +706,7 @@ public class GLThread extends Thread
     {
     	int[] clearedLines = game.getClearedLines();
     	int linecount=game.getClearedLineCount();
+    	
     	for (int y=0;y<clearedLines.length;y++)
     	{
     		if (clearedLines[y]==1)
@@ -751,12 +752,16 @@ public class GLThread extends Thread
     			}
         		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_EXPLOSION);
         		//message.sendToTarget();
-    			if(this.overlay.getOptions().isSoundEnabled())
-    			{
-    				this.soundManager.playSound(R.raw.explosion2);
-    		
-    			}
     		}
+    	}
+    	if(linecount>0)
+    	{
+			if(this.overlay.getOptions().isSoundEnabled())
+			{
+				this.soundManager.playSound(R.raw.explosion2);
+		
+			}
+
     	}
     }
     /*
