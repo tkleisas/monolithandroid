@@ -199,7 +199,7 @@ public class GLThread extends Thread
     	zoff = -50.0f;
 
         
-
+    	this.sayGameOver = true;
         game = overlay.getOptions().getGame();
         
         
@@ -413,6 +413,190 @@ public class GLThread extends Thread
     			
     	}
     }
+    
+    
+    public synchronized void doRotatePlayfieldNormal(long time)
+    {
+    	long offset = time-startGameTime;
+    	long chooser;
+    	switch(overlay.getOptions().getGame().getLevel())
+    	{
+    	
+	    	case 1:
+	    		xy=0;
+	    		zx =0;
+	    		chooser = offset%20000;
+	    		if(chooser<5000)
+	    		{
+	    			zy = (30*chooser/5000);
+	    			
+	    		}
+	    		if(chooser>5000 && chooser<10000)
+	    		{
+	    			zy=30-(30*(chooser-5000)/5000);
+	    		}
+	    		if(chooser>10000 && chooser<15000)
+	    		{
+	    			zy=-(30*(chooser-10000)/5000);
+	    		}
+	    		if(chooser>15000)
+	    		{
+	    			zy=-30 + (30*(chooser-15000)/5000);
+	    		}
+	    		
+	    			
+	    			
+	    		
+	    	break;
+	    	case 2:
+	    		chooser = offset%20000;
+	    		xy=0;
+	    		zy=0;
+	    		
+	    		if(chooser<5000)
+	    		{
+	    			zx = (30*chooser/5000);
+	    		}
+	    		if(chooser>=5000 && chooser<10000)
+	    		{
+	    			zx = 30-(30*(chooser-5000)/5000);
+	    		
+	    		}
+	    		if(chooser>=10000 && chooser<15000)
+	    		{
+	    			zx = -(30*(chooser-10000)/5000);
+	    		}
+	    		if(chooser>=15000)
+	    		{
+	    			zx = -30 + (30*(chooser-15000)/5000	);
+	    		}
+	    		
+	    			
+	    	break;
+	    	case 3:
+	    		chooser = offset%20000;
+	    		if(chooser<5000)
+	    		{
+	    			xy=(30*chooser/5000);
+	    		}
+	    		if(chooser>=5000 && chooser<10000)
+	    		{
+	    			xy=30-(30*(chooser-5000)/5000);
+	    		}
+	    		if(chooser>=10000 && chooser<15000)
+	    		{
+	    			xy = -(30*(chooser-10000)/5000);
+	    		}
+	    		if(chooser>15000)
+	    		{
+	    			xy= -30 + (30*(chooser-15000)/5000	);
+	    		}
+	    		zx = 0;
+	    		zy=0;
+	    		
+	    	break;
+	    	case 4:
+	    		chooser = offset%20000;
+	    		if(chooser<30000)
+	    		{
+	    			zy = (60*chooser)/20000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(60*(chooser-20000))/20000;
+	    		}	    		
+	    		zx = (360*chooser/20000);
+	    		xy=0;	    		
+	    	break;
+	    	case 5:
+	    		chooser = offset%10000;
+	    		zx = (45*chooser/10000);
+	    		xy=(45*chooser/10000);
+	    		zy=0;
+	    	break;
+	    	case 6:
+	    		chooser = offset%10000;
+	    		if(chooser<10000)
+	    		{
+	    			zy = (45*chooser)/10000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(45*(chooser-5000))/10000;
+	    		}	
+	    		xy=(45*chooser/10000);
+	    		zx = 0;
+	    		
+	    	break;
+	    	case 7:
+	    		chooser = offset%10000;
+	    		if(chooser<5000)
+	    		{
+	    			zy = (45*chooser)/10000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(45*(chooser-5000))/10000;
+	    		}	
+	    		xy=(45*chooser/10000);
+	    		zx = (45*chooser/10000);
+	    	break;
+	    	case 8:
+	    		chooser = offset%10000;
+	    		if(chooser<5000)
+	    		{
+	    			zy = (45*chooser)/10000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(45*(chooser-5000))/10000;
+	    		}	
+	    		xy=(90*chooser/10000);
+	    		zx = (90*chooser/10000);	    		
+	    	break;
+	    	case 9:
+	    		chooser = offset%80000;
+	    		if(chooser<2000)
+	    		{
+	    			zy = (50*chooser)/40000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(50*(chooser-2000))/8000;
+	    		}	
+	    		xy=(50*chooser/8000);
+	    		zx = (50*chooser/8000);	    		
+	    	break;
+	    	case 10:
+	    		chooser = offset%10000;
+	    		if(chooser<5000)
+	    		{
+	    			zy = (60*chooser)/5000;
+	    			
+	    		}
+	    		else
+	    		{
+	    			
+	    			zy = -(60*(chooser-5000))/10000;
+	    		}	
+	    		xy=(90*chooser/10000);
+	    		zx = (90*chooser/10000);	    		
+	    	break;
+	    	default:
+	    	break;
+    			
+    	}
+    }    
     public synchronized void doRotateBlock()
     {
     	if(game.getStatus()!=SimpleGameData.STATUS_PLAYING)
@@ -1140,6 +1324,11 @@ public class GLThread extends Thread
 		            {
 			            case SimpleGameData.STATUS_GAME_OVER:
 			            	this.overlay.setMessage("Game Over");
+			            	if(this.sayGameOver)
+			            	{
+			            		this.soundManager.playSound(R.raw.gameover);
+			            		this.sayGameOver = false;
+			            	}
 			            	if(!this.highscoreEntry)
 			            	{
 			            		if(this.overlay.getHighScoreTable().isHighScore(this.game.getScore()))
@@ -1214,6 +1403,10 @@ public class GLThread extends Thread
 	        		{
 	        			
 	        			this.doRotatePlayfield(current);
+	        		}
+	        		if(this.overlay.getOptions().getDifficultyLevel()==Options.DIFFICULTY_NORMAL)
+	        		{
+	        			this.doRotatePlayfieldNormal(current);
 	        		}
 	        		
 	        		gl.glLoadIdentity();
@@ -1465,6 +1658,7 @@ public class GLThread extends Thread
         }
     };
     private boolean sayEvolving;
+    private boolean sayGameOver;
     private GLTextures textures;
     private long startGameTime;
     private long timeaccumulator;

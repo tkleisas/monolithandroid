@@ -118,6 +118,7 @@ public class Monolith extends Activity
 		soundManager.addSound(R.raw.pluck2, false);
 		soundManager.addSound(R.raw.speech, false);
 		soundManager.addSound(R.raw.evolving, false );
+		soundManager.addSound(R.raw.gameover, false);
 		soundManager.startSound();
 		soundManager.addSound(R.raw.monolith, true);
 		//try
