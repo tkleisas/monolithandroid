@@ -246,13 +246,17 @@ public class Options
 			this.changedOption = OPTION_GAMETYPE;
 			break;
 		case OPTION_DIFFICULTY:
-			if(this.difficultyLevel==DIFFICULTY_NORMAL)
+			switch(this.difficultyLevel)
 			{
-				this.difficultyLevel=DIFFICULTY_EXPERT;
-			}
-			else
-			{
-				this.difficultyLevel=DIFFICULTY_NORMAL;
+			case DIFFICULTY_EASY:
+				this.difficultyLevel = DIFFICULTY_NORMAL;
+				break;
+			case DIFFICULTY_NORMAL:
+				this.difficultyLevel = DIFFICULTY_EXPERT;
+				break;
+			case DIFFICULTY_EXPERT:
+				this.difficultyLevel = DIFFICULTY_EASY;
+				break;
 			}
 			this.changedOption = OPTION_DIFFICULTY;
 			break;
@@ -326,14 +330,19 @@ public class Options
 				this.changedOption = OPTION_GAMETYPE;
 			break;
 			case OPTION_DIFFICULTY:
-				if(this.difficultyLevel==DIFFICULTY_NORMAL)
+				switch(this.difficultyLevel)
 				{
-					this.difficultyLevel=DIFFICULTY_EXPERT;
+				case DIFFICULTY_EASY:
+					this.difficultyLevel = DIFFICULTY_EXPERT;
+					break;
+				case DIFFICULTY_NORMAL:
+					this.difficultyLevel = DIFFICULTY_EASY;
+					break;
+				case DIFFICULTY_EXPERT:
+					this.difficultyLevel = DIFFICULTY_NORMAL;
+					break;
 				}
-				else
-				{
-					this.difficultyLevel=DIFFICULTY_NORMAL;
-				}
+				
 				this.changedOption = OPTION_DIFFICULTY;
 			break;
 			case OPTION_STARTING_LEVEL:
@@ -362,6 +371,7 @@ public class Options
 	}
 	public static final int DIFFICULTY_NORMAL = 0;
 	public static final int DIFFICULTY_EXPERT = 1;
+	public static final int DIFFICULTY_EASY=2;
 	private int changedOption;
 	
 	private int currentSelectedOption;
