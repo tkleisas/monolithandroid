@@ -719,8 +719,8 @@ public class GLThread extends Thread
     						yoff-y*2.0f,
     						zoff,
     						(randomgen.nextFloat()-0.5f)/4.0f,
-    						(randomgen.nextFloat()-0.5f)*2,
-    						(randomgen.nextFloat()-0.5f)/4.0f,
+    						(randomgen.nextFloat()-0.5f)*8,
+    						(randomgen.nextFloat()-0.5f)*4,
     						game.getGridValue(x, y),
     						0
     						

@@ -222,6 +222,7 @@ class Cube
         gl.glScalef(scalex, scaley, scalez);
         gl.glDrawElements(GL10.GL_TRIANGLES, 36, GL10.GL_UNSIGNED_BYTE, mIndexBuffer);    	
     }
+    
     private IntBuffer   mVertexBuffer;
     private IntBuffer   mColorBuffer;
     private ByteBuffer  mIndexBuffer;
