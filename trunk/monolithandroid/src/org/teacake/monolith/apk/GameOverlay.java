@@ -369,6 +369,9 @@ public class GameOverlay extends View {
     	
     	switch(options.getDifficultyLevel())
     	{
+    	case Options.DIFFICULTY_EASY:
+    		gameDifficulty = res.getString(R.string.s_difficulty_easy);
+    		break;
     	case Options.DIFFICULTY_NORMAL:
     		gameDifficulty = res.getString(R.string.s_difficulty_normal);
     		break;
