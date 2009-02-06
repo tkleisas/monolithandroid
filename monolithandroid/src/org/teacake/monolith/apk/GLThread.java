@@ -48,6 +48,7 @@ public class GLThread extends Thread
         //this.overlay.setCurtain(100);
         this.game = overlay.getOptions().getGame();
         action = MSG_DO_NOTHING;
+        this.initLinearInterpolators();
         
 	}
 	
@@ -280,138 +281,270 @@ public class GLThread extends Thread
     {
     	long offset = time-startGameTime;
     	long chooser;
+    	int timeunit=60000;
+    	int portion = timeunit/4;
+    	float angle=360;
     	switch(overlay.getOptions().getGame().getLevel())
     	{
-    	
-	    	case 1:
-	    		xy=0;
-	    		zx =0;
-	    		chooser = offset%60000;
-	    		if(chooser<30000)
-	    		{
-	    			zy = (360*chooser)/60000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(360*(chooser-30000))/60000;
-	    		}
-	    	break;
-	    	case 2:
-	    		chooser = offset%60000;
-	    		xy=0;
-	    		zx = (360*chooser/60000);
-	    		zy=0;
-	    	break;
-	    	case 3:
-	    		chooser = offset%60000;
-	    		xy=(360*chooser/60000);
-	    		zx = 0;
-	    		zy=0;
-	    		
-	    	break;
-	    	case 4:
-	    		chooser = offset%60000;
-	    		if(chooser<30000)
-	    		{
-	    			zy = (360*chooser)/60000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(360*(chooser-30000))/60000;
-	    		}	    		
-	    		zx = (360*chooser/60000);
-	    		xy=0;	    		
-	    	break;
-	    	case 5:
-	    		chooser = offset%60000;
-	    		zx = (360*chooser/60000);
-	    		xy=(360*chooser/60000);
-	    		zy=0;
-	    	break;
-	    	case 6:
-	    		chooser = offset%60000;
-	    		if(chooser<30000)
-	    		{
-	    			zy = (360*chooser)/60000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(360*(chooser-30000))/60000;
-	    		}	
-	    		xy=(360*chooser/60000);
-	    		zx = 0;
-	    		
-	    	break;
-	    	case 7:
-	    		chooser = offset%60000;
-	    		if(chooser<30000)
-	    		{
-	    			zy = (360*chooser)/60000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(360*(chooser-30000))/60000;
-	    		}	
-	    		xy=(360*chooser/60000);
-	    		zx = (360*chooser/60000);
-	    	break;
-	    	case 8:
-	    		chooser = offset%60000;
-	    		if(chooser<30000)
-	    		{
-	    			zy = (360*chooser)/60000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(360*(chooser-30000))/60000;
-	    		}	
-	    		xy=(360*chooser/60000);
-	    		zx = (360*chooser/60000);	    		
-	    	break;
-	    	case 9:
-	    		chooser = offset%50000;
-	    		if(chooser<25000)
-	    		{
-	    			zy = (360*chooser)/50000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(360*(chooser-25000))/50000;
-	    		}	
-	    		xy=(360*chooser/60000);
-	    		zx = (360*chooser/50000);	    		
-	    	break;
-	    	case 10:
-	    		chooser = offset%40000;
-	    		if(chooser<20000)
-	    		{
-	    			zy = (360*chooser)/40000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(360*(chooser-20000))/40000;
-	    		}	
-	    		xy=(360*chooser/40000);
-	    		zx = (360*chooser/40000);	    		
-	    	break;
-	    	default:
-	    	break;
+    	case 1:
+    		xy=0;
+    		zx =0;
+    		chooser = offset%timeunit;
+    		if(chooser<portion)
+    		{
+    			zy = ((angle/2)*chooser/portion);
     			
+    		}
+    		if(chooser>=portion && chooser<2*portion)
+    		{
+    			zy=angle/2-((angle/2)*(chooser-portion)/portion);
+    		}
+    		if(chooser>=2*portion && chooser<3*portion)
+    		{
+    			zy=-(angle/2*(chooser-2*portion)/portion);
+    		}
+    		if(chooser>=3*portion)
+    		{
+    			zy=-angle/2 + (angle/2*(chooser-3*portion)/portion);
+    		}
+    		
+    			
+    			
+    		
+    	break;
+    	case 2:
+    		chooser = offset%timeunit;
+    		xy=0;
+    		zy=0;
+    		
+    		if(chooser<portion)
+    		{
+    			zx = (angle/2*chooser/portion);
+    		}
+    		if(chooser>=portion && chooser<2*portion)
+    		{
+    			zx = angle/2-(angle/2*(chooser-portion)/portion);
+    		
+    		}
+    		if(chooser>=2*portion && chooser<3*portion)
+    		{
+    			zx = -(angle/2*(chooser-2*portion)/portion);
+    		}
+    		if(chooser>=3*portion)
+    		{
+    			zx = -angle/2 + (angle/2*(chooser-3*portion)/portion);
+    		}
+    		
+    			
+    	break;
+    	case 3:
+    		chooser = offset%timeunit;
+    		if(chooser<2*portion)
+    		{
+    			xy=(angle/2*chooser/portion);
+    		}
+    		if(chooser>=2*portion)
+    		{
+    			xy= -angle/2 + (angle/2*(chooser-3*portion)/portion	);
+    		}
+    		zx = 0;
+    		zy=0;
+    		
+    	break;
+    	case 4:
+    		xy=0;
+    		zx =0;
+    		chooser = offset%timeunit;
+    		if(chooser<portion)
+    		{
+    			zy = (angle*chooser/portion);
+    			
+    		}
+    		if(chooser>portion && chooser<portion)
+    		{
+    			zy=angle-(angle*(chooser-portion)/portion);
+    		}
+    		if(chooser>2*portion && chooser<3*portion)
+    		{
+    			zy=-(angle*(chooser-2*portion)/portion);
+    		}
+    		if(chooser>3*portion)
+    		{
+    			zy=-angle + (angle*(chooser-3*portion)/portion);
+    		}
+    	break;
+    	case 5:
+    		chooser = offset%timeunit;
+    		xy=0;
+    		zy=0;
+    		
+    		if(chooser<portion)
+    		{
+    			zx = (angle*chooser/portion);
+    		}
+    		if(chooser>=portion && chooser<2*portion)
+    		{
+    			zx = angle-(angle*(chooser-portion)/portion);
+    		
+    		}
+    		if(chooser>=2*portion && chooser<3*portion)
+    		{
+    			zx = -(angle*(chooser-2*portion)/portion);
+    		}
+    		if(chooser>=3*portion)
+    		{
+    			zx = -angle + (angle*(chooser-3*portion)/portion);
+    		}
+    	break;
+    	case 6:
+    		zx=0;
+    		chooser = offset%timeunit;
+    		if(chooser<portion)
+    		{
+    			zy = (angle*chooser/portion);
+    			xy = (angle*chooser/portion);
+
+    		}
+    		if(chooser>portion && chooser<2*portion)
+    		{
+    			zy=angle-(angle*(chooser-portion)/portion);
+    			xy = angle-(angle*(chooser-portion)/portion);
+
+    		}
+    		if(chooser>2*portion && chooser<3*portion)
+    		{
+    			zy=-(angle*(chooser-2*portion)/portion);
+    			xy = -(angle*(chooser-2*portion)/portion);
+
+    		}
+    		if(chooser>15000)
+    		{
+    			zy=-angle + (portion*(chooser-3*portion)/portion);
+    			xy = -angle + (angle*(chooser-3*portion)/portion);
+
+    		}
+    		
+    	break;
+    	case 7:
+    		zx=0;
+    		chooser = offset%timeunit;
+    		if(chooser<portion)
+    		{
+    			zy = (angle*chooser/portion);
+    			xy = (angle*chooser/portion);
+
+    		}
+    		if(chooser>=portion && chooser<2*portion)
+    		{
+    			zy=angle-(angle*(chooser-portion)/portion);
+    			xy = angle-(angle*(chooser-portion)/portion);
+
+    		}
+    		if(chooser>=2*portion && chooser<3*portion)
+    		{
+    			zy=-(angle*(chooser-2*portion)/portion);
+    			xy = -(angle*(chooser-2*portion)/portion);
+
+    		}
+    		if(chooser>=3*portion)
+    		{
+    			zy=-angle + (angle*(chooser-3*portion)/portion);
+    			xy = -angle + (angle*(chooser-3*portion)/portion);
+
+    		}
+    	break;
+    	case 8:
+    		chooser = offset%timeunit;
+    		if(chooser<portion)
+    		{
+    			zy = (angle*chooser/portion);
+    			zx = (angle*chooser/portion);
+    			xy=(angle*chooser/portion);
+    		}
+    		if(chooser>=portion && chooser<2*portion)
+    		{
+    			zy=angle-(angle*(chooser-portion)/portion);
+    			zx = angle-(angle*(chooser-portion)/portion);
+    			xy=angle-(angle*(chooser-portion)/portion);
+    		}
+    		if(chooser>=2*portion && chooser<3*portion)
+    		{
+    			zy=-(angle*(chooser-2*portion)/portion);
+    			zx = -(angle*(chooser-2*portion)/portion);
+    			xy = -(angle*(chooser-2*portion)/portion);
+
+    		}
+    		if(chooser>=3*portion)
+    		{
+    			zy=-angle + (angle*(chooser-3*portion)/portion);
+    			zx = -angle + (angle*(chooser-3*portion)/portion);
+    			xy= -angle + (angle*(chooser-3*portion)/portion);
+
+    		}
+    	break;
+    	case 9:
+    		chooser = offset%timeunit;
+    		if(chooser<portion)
+    		{
+    			zy = (angle*chooser/portion);
+    			zx = (angle*chooser/portion);
+    			xy=(angle*chooser/portion);
+    		}
+    		if(chooser>=portion && chooser<2*portion)
+    		{
+    			zy=angle-(angle*(chooser-portion)/portion);
+    			zx = angle-(angle*(chooser-portion)/portion);
+    			xy=angle-(angle*(chooser-portion)/portion);
+    		}
+    		if(chooser>=2*portion && chooser<3*portion)
+    		{
+    			zy=-(angle*(chooser-2*portion)/portion);
+    			zx = -(angle*(chooser-2*portion)/portion);
+    			xy = -(angle*(chooser-2*portion)/portion);
+
+    		}
+    		if(chooser>=3*portion)
+    		{
+    			zy=-angle + (angle*(chooser-3*portion)/angle);
+    			zx = -angle + (angle*(chooser-3*portion)/portion);
+    			xy= -angle + (angle*(chooser-3*portion)/portion);
+
+    		}
+    	break;
+    	case 10:
+    		chooser = offset%timeunit;
+    		if(chooser<portion)
+    		{
+    			zy = (angle*chooser/portion);
+    			zx = (angle*chooser/portion);
+    			xy=(angle*chooser/portion);
+    		}
+    		if(chooser>portion && chooser<2*portion)
+    		{
+    			zy=angle-(angle*(chooser-portion)/portion);
+    			zx = angle-(angle*(chooser-portion)/portion);
+    			xy=angle-(angle*(chooser-portion)/portion);
+    		}
+    		if(chooser>2*portion && chooser<3*portion)
+    		{
+    			zy=-(angle*(chooser-2*portion)/portion);
+    			zx = -(angle*(chooser-2*portion)/portion);
+    			xy = -(angle*(chooser-2*portion)/portion);
+
+    		}
+    		if(chooser>3*portion)
+    		{
+    			zy=-angle + (angle*(chooser-3*portion)/portion);
+    			zx = -angle + (angle*(chooser-3*portion)/portion);
+    			xy= -angle + (angle*(chooser-3*portion)/portion	);
+
+    		}
+    	break;
+    	default:
+    	break;
+			
     	}
+
     }
     
     
@@ -423,174 +556,213 @@ public class GLThread extends Thread
     	{
     	
 	    	case 1:
+	    		chooser=offset%60000;
+	    		
+	    		xy=this.linearInterpolators[0][0][0].getValue((int)chooser);
+	    		zy=this.linearInterpolators[0][1][0].getValue((int)chooser);
+	    		zx=this.linearInterpolators[0][2][0].getValue((int)chooser);
+	    	break;
+	    	case 2:
+	    		chooser = offset%60000;
+	    		xy=this.linearInterpolators[0][0][1].getValue((int)chooser);
+	    		zy=this.linearInterpolators[0][1][1].getValue((int)chooser);
+	    		zx=this.linearInterpolators[0][2][1].getValue((int)chooser);
+	    	break;
+	    	case 3:
+	    		chooser = offset%60000;
+	    		xy=this.linearInterpolators[0][0][2].getValue((int)chooser);
+	    		zy=this.linearInterpolators[0][1][2].getValue((int)chooser);
+	    		zx=this.linearInterpolators[0][2][2].getValue((int)chooser);
+
+	    	break;
+	    	case 4:
 	    		xy=0;
 	    		zx =0;
 	    		chooser = offset%20000;
 	    		if(chooser<5000)
 	    		{
-	    			zy = (30*chooser/5000);
+	    			zy = (60*chooser/5000);
 	    			
 	    		}
 	    		if(chooser>5000 && chooser<10000)
 	    		{
-	    			zy=30-(30*(chooser-5000)/5000);
+	    			zy=60-(60*(chooser-5000)/5000);
 	    		}
 	    		if(chooser>10000 && chooser<15000)
 	    		{
-	    			zy=-(30*(chooser-10000)/5000);
+	    			zy=-(60*(chooser-10000)/5000);
 	    		}
 	    		if(chooser>15000)
 	    		{
-	    			zy=-30 + (30*(chooser-15000)/5000);
+	    			zy=-60 + (60*(chooser-15000)/5000);
 	    		}
-	    		
-	    			
-	    			
-	    		
 	    	break;
-	    	case 2:
+	    	case 5:
 	    		chooser = offset%20000;
 	    		xy=0;
 	    		zy=0;
 	    		
 	    		if(chooser<5000)
 	    		{
-	    			zx = (30*chooser/5000);
+	    			zx = (60*chooser/5000);
 	    		}
 	    		if(chooser>=5000 && chooser<10000)
 	    		{
-	    			zx = 30-(30*(chooser-5000)/5000);
+	    			zx = 60-(60*(chooser-5000)/5000);
 	    		
 	    		}
 	    		if(chooser>=10000 && chooser<15000)
 	    		{
-	    			zx = -(30*(chooser-10000)/5000);
+	    			zx = -(60*(chooser-10000)/5000);
 	    		}
 	    		if(chooser>=15000)
 	    		{
-	    			zx = -30 + (30*(chooser-15000)/5000	);
+	    			zx = -60 + (60*(chooser-15000)/5000	);
 	    		}
-	    		
-	    			
 	    	break;
-	    	case 3:
+	    	case 6:
+	    		zx=0;
 	    		chooser = offset%20000;
 	    		if(chooser<5000)
 	    		{
+	    			zy = (60*chooser/5000);
+	    			xy = (60*chooser/5000);
+
+	    		}
+	    		if(chooser>5000 && chooser<10000)
+	    		{
+	    			zy=60-(60*(chooser-5000)/5000);
+	    			xy = 60-(60*(chooser-5000)/5000);
+
+	    		}
+	    		if(chooser>10000 && chooser<15000)
+	    		{
+	    			zy=-(60*(chooser-10000)/5000);
+	    			xy = -(60*(chooser-10000)/5000);
+
+	    		}
+	    		if(chooser>15000)
+	    		{
+	    			zy=-60 + (60*(chooser-15000)/5000);
+	    			xy = -60 + (60*(chooser-15000)/5000	);
+
+	    		}
+	    		
+	    	break;
+	    	case 7:
+	    		zx=0;
+	    		chooser = offset%20000;
+	    		if(chooser<5000)
+	    		{
+	    			zy = (75*chooser/5000);
+	    			xy = (75*chooser/5000);
+
+	    		}
+	    		if(chooser>=5000 && chooser<10000)
+	    		{
+	    			zy=75-(75*(chooser-5000)/5000);
+	    			xy = 75-(75*(chooser-5000)/5000);
+
+	    		}
+	    		if(chooser>=10000 && chooser<15000)
+	    		{
+	    			zy=-(75*(chooser-10000)/5000);
+	    			xy = -(75*(chooser-10000)/5000);
+
+	    		}
+	    		if(chooser>=15000)
+	    		{
+	    			zy=-75 + (75*(chooser-15000)/5000);
+	    			xy = -75 + (75*(chooser-15000)/5000	);
+
+	    		}
+	    	break;
+	    	case 8:
+	    		chooser = offset%20000;
+	    		if(chooser<5000)
+	    		{
+	    			zy = (75*chooser/5000);
+	    			zx = (40*chooser/5000);
 	    			xy=(30*chooser/5000);
 	    		}
 	    		if(chooser>=5000 && chooser<10000)
 	    		{
+	    			zy=75-(75*(chooser-5000)/5000);
+	    			zx = 40-(40*(chooser-5000)/5000);
 	    			xy=30-(30*(chooser-5000)/5000);
 	    		}
 	    		if(chooser>=10000 && chooser<15000)
 	    		{
+	    			zy=-(75*(chooser-10000)/5000);
+	    			zx = -(40*(chooser-10000)/5000);
 	    			xy = -(30*(chooser-10000)/5000);
+
+	    		}
+	    		if(chooser>=15000)
+	    		{
+	    			zy=-75 + (75*(chooser-15000)/5000);
+	    			zx = -40 + (40*(chooser-15000)/5000	);
+	    			xy= -30 + (30*(chooser-15000)/5000	);
+
+	    		}
+	    	break;
+	    	case 9:
+	    		chooser = offset%20000;
+	    		if(chooser<5000)
+	    		{
+	    			zy = (75*chooser/5000);
+	    			zx = (40*chooser/5000);
+	    			xy=(45*chooser/5000);
+	    		}
+	    		if(chooser>=5000 && chooser<10000)
+	    		{
+	    			zy=75-(75*(chooser-5000)/5000);
+	    			zx = 40-(40*(chooser-5000)/5000);
+	    			xy=45-(45*(chooser-5000)/5000);
+	    		}
+	    		if(chooser>=10000 && chooser<15000)
+	    		{
+	    			zy=-(75*(chooser-10000)/5000);
+	    			zx = -(40*(chooser-10000)/5000);
+	    			xy = -(45*(chooser-10000)/5000);
+
+	    		}
+	    		if(chooser>=15000)
+	    		{
+	    			zy=-75 + (75*(chooser-15000)/5000);
+	    			zx = -40 + (40*(chooser-15000)/5000	);
+	    			xy= -45 + (45*(chooser-15000)/5000	);
+
+	    		}
+	    	break;
+	    	case 10:
+	    		chooser = offset%20000;
+	    		if(chooser<5000)
+	    		{
+	    			zy = (75*chooser/5000);
+	    			zx = (40*chooser/5000);
+	    			xy=(75*chooser/5000);
+	    		}
+	    		if(chooser>5000 && chooser<10000)
+	    		{
+	    			zy=75-(75*(chooser-5000)/5000);
+	    			zx = 40-(40*(chooser-5000)/5000);
+	    			xy=75-(75*(chooser-5000)/5000);
+	    		}
+	    		if(chooser>10000 && chooser<15000)
+	    		{
+	    			zy=-(75*(chooser-10000)/5000);
+	    			zx = -(40*(chooser-10000)/5000);
+	    			xy = -(75*(chooser-10000)/5000);
+
 	    		}
 	    		if(chooser>15000)
 	    		{
-	    			xy= -30 + (30*(chooser-15000)/5000	);
+	    			zy=-75 + (75*(chooser-15000)/5000);
+	    			zx = -40 + (40*(chooser-15000)/5000	);
+	    			xy= -75 + (75*(chooser-15000)/5000	);
+
 	    		}
-	    		zx = 0;
-	    		zy=0;
-	    		
-	    	break;
-	    	case 4:
-	    		chooser = offset%20000;
-	    		if(chooser<30000)
-	    		{
-	    			zy = (60*chooser)/20000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(60*(chooser-20000))/20000;
-	    		}	    		
-	    		zx = (360*chooser/20000);
-	    		xy=0;	    		
-	    	break;
-	    	case 5:
-	    		chooser = offset%10000;
-	    		zx = (45*chooser/10000);
-	    		xy=(45*chooser/10000);
-	    		zy=0;
-	    	break;
-	    	case 6:
-	    		chooser = offset%10000;
-	    		if(chooser<10000)
-	    		{
-	    			zy = (45*chooser)/10000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(45*(chooser-5000))/10000;
-	    		}	
-	    		xy=(45*chooser/10000);
-	    		zx = 0;
-	    		
-	    	break;
-	    	case 7:
-	    		chooser = offset%10000;
-	    		if(chooser<5000)
-	    		{
-	    			zy = (45*chooser)/10000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(45*(chooser-5000))/10000;
-	    		}	
-	    		xy=(45*chooser/10000);
-	    		zx = (45*chooser/10000);
-	    	break;
-	    	case 8:
-	    		chooser = offset%10000;
-	    		if(chooser<5000)
-	    		{
-	    			zy = (45*chooser)/10000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(45*(chooser-5000))/10000;
-	    		}	
-	    		xy=(90*chooser/10000);
-	    		zx = (90*chooser/10000);	    		
-	    	break;
-	    	case 9:
-	    		chooser = offset%80000;
-	    		if(chooser<2000)
-	    		{
-	    			zy = (50*chooser)/40000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(50*(chooser-2000))/8000;
-	    		}	
-	    		xy=(50*chooser/8000);
-	    		zx = (50*chooser/8000);	    		
-	    	break;
-	    	case 10:
-	    		chooser = offset%10000;
-	    		if(chooser<5000)
-	    		{
-	    			zy = (60*chooser)/5000;
-	    			
-	    		}
-	    		else
-	    		{
-	    			
-	    			zy = -(60*(chooser-5000))/10000;
-	    		}	
-	    		xy=(90*chooser/10000);
-	    		zx = (90*chooser/10000);	    		
 	    	break;
 	    	default:
 	    	break;
@@ -1657,6 +1829,62 @@ public class GLThread extends Thread
         	}
         }
     };
+    public void initLinearInterpolators()
+    {
+    	linearInterpolators = new LinearInterpolator[2][3][10];
+    	for(int a=0;a<2;a++)
+    	{
+    		for(int b=0;b<3;b++)
+    		{
+    			for(int c=0;c<10;c++)
+    			{
+    				linearInterpolators[a][b][c] = new LinearInterpolator();
+    			}
+    		}
+    	}
+    	
+    	
+    	linearInterpolators[0][0][0].addValue(0, 0);         //level 1 Normal 
+    	linearInterpolators[0][0][0].addValue(60, 30000);
+    	linearInterpolators[0][0][0].addValue(0,60000);
+    	linearInterpolators[0][1][0].addValue(0, 0);
+    	linearInterpolators[0][1][0].addValue(0, 60000);
+    	linearInterpolators[0][2][0].addValue(0, 0);
+    	linearInterpolators[0][2][0].addValue(0, 60000);
+
+    	linearInterpolators[0][0][1].addValue(0, 0);        //level 2 Normal
+    	linearInterpolators[0][0][1].addValue(0, 60000);
+    	linearInterpolators[0][1][1].addValue(0,0);
+    	linearInterpolators[0][1][1].addValue(60, 30000);
+    	linearInterpolators[0][1][1].addValue(0, 60000);
+    	linearInterpolators[0][2][1].addValue(0, 0);
+    	linearInterpolators[0][2][1].addValue(0, 60000);
+    	
+    	linearInterpolators[0][0][2].addValue(0, 0);        //level 3 Normal
+    	linearInterpolators[0][0][2].addValue(0, 60000);
+    	linearInterpolators[0][1][2].addValue(0,0);
+    	linearInterpolators[0][1][2].addValue(0, 60000);
+    	linearInterpolators[0][2][2].addValue(0, 0);
+    	linearInterpolators[0][2][2].addValue(30, 15000);
+    	linearInterpolators[0][2][2].addValue(0, 30000);
+    	linearInterpolators[0][2][2].addValue(-30, 45000);
+    	linearInterpolators[0][2][2].addValue(0, 60000);
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    }
+    private LinearInterpolator[][][] linearInterpolators;
     private boolean sayEvolving;
     private boolean sayGameOver;
     private GLTextures textures;
