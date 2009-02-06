@@ -30,6 +30,7 @@
     <string name="s_difficulty">Difficulty</string>
     <string name="s_difficulty_normal">Normal</string>
     <string name="s_difficulty_expert">Expert</string>
+    <string name="s_difficulty_easy">Easy</string>
     <string name="s_starting_level">Starting level</string>
     <string name="s_play">Play</string>
     <string name="s_exit">Exit</string>
