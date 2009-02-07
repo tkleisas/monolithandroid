@@ -4,7 +4,7 @@
 
 Robotic Space Rock is a block game for the android platform.
 
-http://monolithandroid.googlecode.com/files/20080117_monolithandroid_intro.png
+http://monolithandroid.googlecode.com/files/explosion.png
 
 = Details =
 
