@@ -280,270 +280,10 @@ public class GLThread extends Thread
     public synchronized void doRotatePlayfield(long time)
     {
     	long offset = time-startGameTime;
-    	long chooser;
-    	int timeunit=60000;
-    	int portion = timeunit/4;
-    	float angle=360;
-    	switch(overlay.getOptions().getGame().getLevel())
-    	{
-    	case 1:
-    		xy=0;
-    		zx =0;
-    		chooser = offset%timeunit;
-    		if(chooser<portion)
-    		{
-    			zy = ((angle/2)*chooser/portion);
-    			
-    		}
-    		if(chooser>=portion && chooser<2*portion)
-    		{
-    			zy=angle/2-((angle/2)*(chooser-portion)/portion);
-    		}
-    		if(chooser>=2*portion && chooser<3*portion)
-    		{
-    			zy=-(angle/2*(chooser-2*portion)/portion);
-    		}
-    		if(chooser>=3*portion)
-    		{
-    			zy=-angle/2 + (angle/2*(chooser-3*portion)/portion);
-    		}
-    		
-    			
-    			
-    		
-    	break;
-    	case 2:
-    		chooser = offset%timeunit;
-    		xy=0;
-    		zy=0;
-    		
-    		if(chooser<portion)
-    		{
-    			zx = (angle/2*chooser/portion);
-    		}
-    		if(chooser>=portion && chooser<2*portion)
-    		{
-    			zx = angle/2-(angle/2*(chooser-portion)/portion);
-    		
-    		}
-    		if(chooser>=2*portion && chooser<3*portion)
-    		{
-    			zx = -(angle/2*(chooser-2*portion)/portion);
-    		}
-    		if(chooser>=3*portion)
-    		{
-    			zx = -angle/2 + (angle/2*(chooser-3*portion)/portion);
-    		}
-    		
-    			
-    	break;
-    	case 3:
-    		chooser = offset%timeunit;
-    		if(chooser<2*portion)
-    		{
-    			xy=(angle/2*chooser/portion);
-    		}
-    		if(chooser>=2*portion)
-    		{
-    			xy= -angle/2 + (angle/2*(chooser-3*portion)/portion	);
-    		}
-    		zx = 0;
-    		zy=0;
-    		
-    	break;
-    	case 4:
-    		xy=0;
-    		zx =0;
-    		chooser = offset%timeunit;
-    		if(chooser<portion)
-    		{
-    			zy = (angle*chooser/portion);
-    			
-    		}
-    		if(chooser>portion && chooser<portion)
-    		{
-    			zy=angle-(angle*(chooser-portion)/portion);
-    		}
-    		if(chooser>2*portion && chooser<3*portion)
-    		{
-    			zy=-(angle*(chooser-2*portion)/portion);
-    		}
-    		if(chooser>3*portion)
-    		{
-    			zy=-angle + (angle*(chooser-3*portion)/portion);
-    		}
-    	break;
-    	case 5:
-    		chooser = offset%timeunit;
-    		xy=0;
-    		zy=0;
-    		
-    		if(chooser<portion)
-    		{
-    			zx = (angle*chooser/portion);
-    		}
-    		if(chooser>=portion && chooser<2*portion)
-    		{
-    			zx = angle-(angle*(chooser-portion)/portion);
-    		
-    		}
-    		if(chooser>=2*portion && chooser<3*portion)
-    		{
-    			zx = -(angle*(chooser-2*portion)/portion);
-    		}
-    		if(chooser>=3*portion)
-    		{
-    			zx = -angle + (angle*(chooser-3*portion)/portion);
-    		}
-    	break;
-    	case 6:
-    		zx=0;
-    		chooser = offset%timeunit;
-    		if(chooser<portion)
-    		{
-    			zy = (angle*chooser/portion);
-    			xy = (angle*chooser/portion);
-
-    		}
-    		if(chooser>portion && chooser<2*portion)
-    		{
-    			zy=angle-(angle*(chooser-portion)/portion);
-    			xy = angle-(angle*(chooser-portion)/portion);
-
-    		}
-    		if(chooser>2*portion && chooser<3*portion)
-    		{
-    			zy=-(angle*(chooser-2*portion)/portion);
-    			xy = -(angle*(chooser-2*portion)/portion);
-
-    		}
-    		if(chooser>15000)
-    		{
-    			zy=-angle + (portion*(chooser-3*portion)/portion);
-    			xy = -angle + (angle*(chooser-3*portion)/portion);
-
-    		}
-    		
-    	break;
-    	case 7:
-    		zx=0;
-    		chooser = offset%timeunit;
-    		if(chooser<portion)
-    		{
-    			zy = (angle*chooser/portion);
-    			xy = (angle*chooser/portion);
-
-    		}
-    		if(chooser>=portion && chooser<2*portion)
-    		{
-    			zy=angle-(angle*(chooser-portion)/portion);
-    			xy = angle-(angle*(chooser-portion)/portion);
-
-    		}
-    		if(chooser>=2*portion && chooser<3*portion)
-    		{
-    			zy=-(angle*(chooser-2*portion)/portion);
-    			xy = -(angle*(chooser-2*portion)/portion);
-
-    		}
-    		if(chooser>=3*portion)
-    		{
-    			zy=-angle + (angle*(chooser-3*portion)/portion);
-    			xy = -angle + (angle*(chooser-3*portion)/portion);
-
-    		}
-    	break;
-    	case 8:
-    		chooser = offset%timeunit;
-    		if(chooser<portion)
-    		{
-    			zy = (angle*chooser/portion);
-    			zx = (angle*chooser/portion);
-    			xy=(angle*chooser/portion);
-    		}
-    		if(chooser>=portion && chooser<2*portion)
-    		{
-    			zy=angle-(angle*(chooser-portion)/portion);
-    			zx = angle-(angle*(chooser-portion)/portion);
-    			xy=angle-(angle*(chooser-portion)/portion);
-    		}
-    		if(chooser>=2*portion && chooser<3*portion)
-    		{
-    			zy=-(angle*(chooser-2*portion)/portion);
-    			zx = -(angle*(chooser-2*portion)/portion);
-    			xy = -(angle*(chooser-2*portion)/portion);
-
-    		}
-    		if(chooser>=3*portion)
-    		{
-    			zy=-angle + (angle*(chooser-3*portion)/portion);
-    			zx = -angle + (angle*(chooser-3*portion)/portion);
-    			xy= -angle + (angle*(chooser-3*portion)/portion);
-
-    		}
-    	break;
-    	case 9:
-    		chooser = offset%timeunit;
-    		if(chooser<portion)
-    		{
-    			zy = (angle*chooser/portion);
-    			zx = (angle*chooser/portion);
-    			xy=(angle*chooser/portion);
-    		}
-    		if(chooser>=portion && chooser<2*portion)
-    		{
-    			zy=angle-(angle*(chooser-portion)/portion);
-    			zx = angle-(angle*(chooser-portion)/portion);
-    			xy=angle-(angle*(chooser-portion)/portion);
-    		}
-    		if(chooser>=2*portion && chooser<3*portion)
-    		{
-    			zy=-(angle*(chooser-2*portion)/portion);
-    			zx = -(angle*(chooser-2*portion)/portion);
-    			xy = -(angle*(chooser-2*portion)/portion);
-
-    		}
-    		if(chooser>=3*portion)
-    		{
-    			zy=-angle + (angle*(chooser-3*portion)/angle);
-    			zx = -angle + (angle*(chooser-3*portion)/portion);
-    			xy= -angle + (angle*(chooser-3*portion)/portion);
-
-    		}
-    	break;
-    	case 10:
-    		chooser = offset%timeunit;
-    		if(chooser<portion)
-    		{
-    			zy = (angle*chooser/portion);
-    			zx = (angle*chooser/portion);
-    			xy=(angle*chooser/portion);
-    		}
-    		if(chooser>portion && chooser<2*portion)
-    		{
-    			zy=angle-(angle*(chooser-portion)/portion);
-    			zx = angle-(angle*(chooser-portion)/portion);
-    			xy=angle-(angle*(chooser-portion)/portion);
-    		}
-    		if(chooser>2*portion && chooser<3*portion)
-    		{
-    			zy=-(angle*(chooser-2*portion)/portion);
-    			zx = -(angle*(chooser-2*portion)/portion);
-    			xy = -(angle*(chooser-2*portion)/portion);
-
-    		}
-    		if(chooser>3*portion)
-    		{
-    			zy=-angle + (angle*(chooser-3*portion)/portion);
-    			zx = -angle + (angle*(chooser-3*portion)/portion);
-    			xy= -angle + (angle*(chooser-3*portion)/portion	);
-
-    		}
-    	break;
-    	default:
-    	break;
-			
-    	}
+    	long chooser = offset%60000;
+    	xy=this.linearInterpolators[1][0][overlay.getOptions().getGame().getLevel()-1].getValue((int)chooser);
+    	zy=this.linearInterpolators[1][1][overlay.getOptions().getGame().getLevel()-1].getValue((int)chooser);
+    	zx=this.linearInterpolators[1][2][overlay.getOptions().getGame().getLevel()-1].getValue((int)chooser);
 
     }
     
@@ -551,223 +291,10 @@ public class GLThread extends Thread
     public synchronized void doRotatePlayfieldNormal(long time)
     {
     	long offset = time-startGameTime;
-    	long chooser;
-    	switch(overlay.getOptions().getGame().getLevel())
-    	{
-    	
-	    	case 1:
-	    		chooser=offset%60000;
-	    		
-	    		xy=this.linearInterpolators[0][0][0].getValue((int)chooser);
-	    		zy=this.linearInterpolators[0][1][0].getValue((int)chooser);
-	    		zx=this.linearInterpolators[0][2][0].getValue((int)chooser);
-	    	break;
-	    	case 2:
-	    		chooser = offset%60000;
-	    		xy=this.linearInterpolators[0][0][1].getValue((int)chooser);
-	    		zy=this.linearInterpolators[0][1][1].getValue((int)chooser);
-	    		zx=this.linearInterpolators[0][2][1].getValue((int)chooser);
-	    	break;
-	    	case 3:
-	    		chooser = offset%60000;
-	    		xy=this.linearInterpolators[0][0][2].getValue((int)chooser);
-	    		zy=this.linearInterpolators[0][1][2].getValue((int)chooser);
-	    		zx=this.linearInterpolators[0][2][2].getValue((int)chooser);
-
-	    	break;
-	    	case 4:
-	    		xy=0;
-	    		zx =0;
-	    		chooser = offset%20000;
-	    		if(chooser<5000)
-	    		{
-	    			zy = (60*chooser/5000);
-	    			
-	    		}
-	    		if(chooser>5000 && chooser<10000)
-	    		{
-	    			zy=60-(60*(chooser-5000)/5000);
-	    		}
-	    		if(chooser>10000 && chooser<15000)
-	    		{
-	    			zy=-(60*(chooser-10000)/5000);
-	    		}
-	    		if(chooser>15000)
-	    		{
-	    			zy=-60 + (60*(chooser-15000)/5000);
-	    		}
-	    	break;
-	    	case 5:
-	    		chooser = offset%20000;
-	    		xy=0;
-	    		zy=0;
-	    		
-	    		if(chooser<5000)
-	    		{
-	    			zx = (60*chooser/5000);
-	    		}
-	    		if(chooser>=5000 && chooser<10000)
-	    		{
-	    			zx = 60-(60*(chooser-5000)/5000);
-	    		
-	    		}
-	    		if(chooser>=10000 && chooser<15000)
-	    		{
-	    			zx = -(60*(chooser-10000)/5000);
-	    		}
-	    		if(chooser>=15000)
-	    		{
-	    			zx = -60 + (60*(chooser-15000)/5000	);
-	    		}
-	    	break;
-	    	case 6:
-	    		zx=0;
-	    		chooser = offset%20000;
-	    		if(chooser<5000)
-	    		{
-	    			zy = (60*chooser/5000);
-	    			xy = (60*chooser/5000);
-
-	    		}
-	    		if(chooser>5000 && chooser<10000)
-	    		{
-	    			zy=60-(60*(chooser-5000)/5000);
-	    			xy = 60-(60*(chooser-5000)/5000);
-
-	    		}
-	    		if(chooser>10000 && chooser<15000)
-	    		{
-	    			zy=-(60*(chooser-10000)/5000);
-	    			xy = -(60*(chooser-10000)/5000);
-
-	    		}
-	    		if(chooser>15000)
-	    		{
-	    			zy=-60 + (60*(chooser-15000)/5000);
-	    			xy = -60 + (60*(chooser-15000)/5000	);
-
-	    		}
-	    		
-	    	break;
-	    	case 7:
-	    		zx=0;
-	    		chooser = offset%20000;
-	    		if(chooser<5000)
-	    		{
-	    			zy = (75*chooser/5000);
-	    			xy = (75*chooser/5000);
-
-	    		}
-	    		if(chooser>=5000 && chooser<10000)
-	    		{
-	    			zy=75-(75*(chooser-5000)/5000);
-	    			xy = 75-(75*(chooser-5000)/5000);
-
-	    		}
-	    		if(chooser>=10000 && chooser<15000)
-	    		{
-	    			zy=-(75*(chooser-10000)/5000);
-	    			xy = -(75*(chooser-10000)/5000);
-
-	    		}
-	    		if(chooser>=15000)
-	    		{
-	    			zy=-75 + (75*(chooser-15000)/5000);
-	    			xy = -75 + (75*(chooser-15000)/5000	);
-
-	    		}
-	    	break;
-	    	case 8:
-	    		chooser = offset%20000;
-	    		if(chooser<5000)
-	    		{
-	    			zy = (75*chooser/5000);
-	    			zx = (40*chooser/5000);
-	    			xy=(30*chooser/5000);
-	    		}
-	    		if(chooser>=5000 && chooser<10000)
-	    		{
-	    			zy=75-(75*(chooser-5000)/5000);
-	    			zx = 40-(40*(chooser-5000)/5000);
-	    			xy=30-(30*(chooser-5000)/5000);
-	    		}
-	    		if(chooser>=10000 && chooser<15000)
-	    		{
-	    			zy=-(75*(chooser-10000)/5000);
-	    			zx = -(40*(chooser-10000)/5000);
-	    			xy = -(30*(chooser-10000)/5000);
-
-	    		}
-	    		if(chooser>=15000)
-	    		{
-	    			zy=-75 + (75*(chooser-15000)/5000);
-	    			zx = -40 + (40*(chooser-15000)/5000	);
-	    			xy= -30 + (30*(chooser-15000)/5000	);
-
-	    		}
-	    	break;
-	    	case 9:
-	    		chooser = offset%20000;
-	    		if(chooser<5000)
-	    		{
-	    			zy = (75*chooser/5000);
-	    			zx = (40*chooser/5000);
-	    			xy=(45*chooser/5000);
-	    		}
-	    		if(chooser>=5000 && chooser<10000)
-	    		{
-	    			zy=75-(75*(chooser-5000)/5000);
-	    			zx = 40-(40*(chooser-5000)/5000);
-	    			xy=45-(45*(chooser-5000)/5000);
-	    		}
-	    		if(chooser>=10000 && chooser<15000)
-	    		{
-	    			zy=-(75*(chooser-10000)/5000);
-	    			zx = -(40*(chooser-10000)/5000);
-	    			xy = -(45*(chooser-10000)/5000);
-
-	    		}
-	    		if(chooser>=15000)
-	    		{
-	    			zy=-75 + (75*(chooser-15000)/5000);
-	    			zx = -40 + (40*(chooser-15000)/5000	);
-	    			xy= -45 + (45*(chooser-15000)/5000	);
-
-	    		}
-	    	break;
-	    	case 10:
-	    		chooser = offset%20000;
-	    		if(chooser<5000)
-	    		{
-	    			zy = (75*chooser/5000);
-	    			zx = (40*chooser/5000);
-	    			xy=(75*chooser/5000);
-	    		}
-	    		if(chooser>5000 && chooser<10000)
-	    		{
-	    			zy=75-(75*(chooser-5000)/5000);
-	    			zx = 40-(40*(chooser-5000)/5000);
-	    			xy=75-(75*(chooser-5000)/5000);
-	    		}
-	    		if(chooser>10000 && chooser<15000)
-	    		{
-	    			zy=-(75*(chooser-10000)/5000);
-	    			zx = -(40*(chooser-10000)/5000);
-	    			xy = -(75*(chooser-10000)/5000);
-
-	    		}
-	    		if(chooser>15000)
-	    		{
-	    			zy=-75 + (75*(chooser-15000)/5000);
-	    			zx = -40 + (40*(chooser-15000)/5000	);
-	    			xy= -75 + (75*(chooser-15000)/5000	);
-
-	    		}
-	    	break;
-	    	default:
-	    	break;
-    			
-    	}
+    	long chooser = offset%60000;
+    	xy=this.linearInterpolators[0][0][overlay.getOptions().getGame().getLevel()-1].getValue((int)chooser);
+    	zy=this.linearInterpolators[0][1][overlay.getOptions().getGame().getLevel()-1].getValue((int)chooser);
+    	zx=this.linearInterpolators[0][2][overlay.getOptions().getGame().getLevel()-1].getValue((int)chooser);
     }    
     public synchronized void doRotateBlock()
     {
@@ -1843,22 +1370,26 @@ public class GLThread extends Thread
     		}
     	}
     	
-    	
-    	linearInterpolators[0][0][0].addValue(0, 0);         //level 1 Normal 
-    	linearInterpolators[0][0][0].addValue(60, 30000);
-    	linearInterpolators[0][0][0].addValue(0,60000);
-    	linearInterpolators[0][1][0].addValue(0, 0);
+
+    	linearInterpolators[0][0][0].addValue(0, 0);        //level 1 Normal
+    	linearInterpolators[0][0][0].addValue(0, 60000);
+    	linearInterpolators[0][1][0].addValue(0,0);
+    	linearInterpolators[0][1][0].addValue(60, 30000);
     	linearInterpolators[0][1][0].addValue(0, 60000);
     	linearInterpolators[0][2][0].addValue(0, 0);
     	linearInterpolators[0][2][0].addValue(0, 60000);
 
-    	linearInterpolators[0][0][1].addValue(0, 0);        //level 2 Normal
-    	linearInterpolators[0][0][1].addValue(0, 60000);
-    	linearInterpolators[0][1][1].addValue(0,0);
-    	linearInterpolators[0][1][1].addValue(60, 30000);
+    	
+    	linearInterpolators[0][0][1].addValue(0, 0);         //level 2 Normal 
+    	linearInterpolators[0][0][1].addValue(60, 15000);
+    	linearInterpolators[0][0][1].addValue(0, 30000);
+    	linearInterpolators[0][0][1].addValue(-60,45000);
+    	linearInterpolators[0][0][1].addValue(0,60000);
+    	linearInterpolators[0][1][1].addValue(0, 0);
     	linearInterpolators[0][1][1].addValue(0, 60000);
     	linearInterpolators[0][2][1].addValue(0, 0);
     	linearInterpolators[0][2][1].addValue(0, 60000);
+
     	
     	linearInterpolators[0][0][2].addValue(0, 0);        //level 3 Normal
     	linearInterpolators[0][0][2].addValue(0, 60000);
@@ -1870,11 +1401,213 @@ public class GLThread extends Thread
     	linearInterpolators[0][2][2].addValue(-30, 45000);
     	linearInterpolators[0][2][2].addValue(0, 60000);
     	
+    	linearInterpolators[0][0][3].addValue(0, 0);        //level 4 Normal
+    	linearInterpolators[0][0][3].addValue(0, 60000);
+    	linearInterpolators[0][1][3].addValue(0,0);
+    	linearInterpolators[0][1][3].addValue(60, 15000);
+    	linearInterpolators[0][1][3].addValue(0, 30000);
+    	linearInterpolators[0][1][3].addValue(-60, 45000);
+    	linearInterpolators[0][1][3].addValue(0, 60000);
+    	linearInterpolators[0][2][3].addValue(0, 0);
+    	linearInterpolators[0][2][3].addValue(0, 60000);
+    	
+    	linearInterpolators[0][0][4].addValue(0, 0);         //level 5 Normal 
+    	linearInterpolators[0][0][4].addValue(90, 15000);
+    	linearInterpolators[0][0][4].addValue(0,30000);
+    	linearInterpolators[0][0][4].addValue(-90,45000);
+    	linearInterpolators[0][0][4].addValue(0,60000);
+    	linearInterpolators[0][1][4].addValue(0, 0);
+    	linearInterpolators[0][1][4].addValue(0, 60000);
+    	linearInterpolators[0][2][4].addValue(0, 0);
+    	linearInterpolators[0][2][4].addValue(0, 60000);
+    	
+    	linearInterpolators[0][0][5].addValue(0, 0);         //level 6 Normal 
+    	linearInterpolators[0][0][5].addValue(60, 15000);
+    	linearInterpolators[0][0][5].addValue(0,30000);
+    	linearInterpolators[0][0][5].addValue(-60,45000);
+    	linearInterpolators[0][0][5].addValue(0,60000);
+    	linearInterpolators[0][1][5].addValue(0,0);
+    	linearInterpolators[0][1][5].addValue(30, 15000);
+    	linearInterpolators[0][1][5].addValue(0, 30000);
+    	linearInterpolators[0][1][5].addValue(-30, 45000);
+    	linearInterpolators[0][1][5].addValue(0, 60000);
+    	linearInterpolators[0][2][5].addValue(0, 0);
+    	linearInterpolators[0][2][5].addValue(0, 60000);
+    	
+    	linearInterpolators[0][0][6].addValue(0, 0);         //level 7 Normal 
+    	linearInterpolators[0][0][6].addValue(60, 15000);
+    	linearInterpolators[0][0][6].addValue(0,30000);
+    	linearInterpolators[0][0][6].addValue(-60,45000);
+    	linearInterpolators[0][0][6].addValue(0,60000);
+    	linearInterpolators[0][1][6].addValue(0,0);
+    	linearInterpolators[0][1][6].addValue(60, 15000);
+    	linearInterpolators[0][1][6].addValue(0, 30000);
+    	linearInterpolators[0][1][6].addValue(-60, 45000);
+    	linearInterpolators[0][1][6].addValue(0, 60000);
+    	linearInterpolators[0][2][6].addValue(0, 0);
+    	linearInterpolators[0][2][6].addValue(0, 60000);
+    	
+    	linearInterpolators[0][0][7].addValue(0, 0);         //level 8 Normal 
+    	linearInterpolators[0][0][7].addValue(60, 15000);
+    	linearInterpolators[0][0][7].addValue(0,30000);
+    	linearInterpolators[0][0][7].addValue(-60,45000);
+    	linearInterpolators[0][0][7].addValue(0,60000);
+    	linearInterpolators[0][1][7].addValue(0,0);
+    	linearInterpolators[0][1][7].addValue(60, 15000);
+    	linearInterpolators[0][1][7].addValue(0, 30000);
+    	linearInterpolators[0][1][7].addValue(-60, 45000);
+    	linearInterpolators[0][1][7].addValue(0, 60000);
+    	linearInterpolators[0][2][7].addValue(0, 0);
+    	linearInterpolators[0][2][7].addValue(15, 30000);
+    	linearInterpolators[0][2][7].addValue(0, 60000);
+    	
+    	linearInterpolators[0][0][8].addValue(0, 0);         //level 9 Normal 
+    	linearInterpolators[0][0][8].addValue(60, 15000);
+    	linearInterpolators[0][0][8].addValue(0,30000);
+    	linearInterpolators[0][0][8].addValue(-60,45000);
+    	linearInterpolators[0][0][8].addValue(0,60000);
+    	linearInterpolators[0][1][8].addValue(0,0);
+    	linearInterpolators[0][1][8].addValue(60, 15000);
+    	linearInterpolators[0][1][8].addValue(0, 30000);
+    	linearInterpolators[0][1][8].addValue(-60, 45000);
+    	linearInterpolators[0][1][8].addValue(0, 60000);
+    	linearInterpolators[0][2][8].addValue(0, 0);
+    	linearInterpolators[0][2][8].addValue(15, 30000);
+    	linearInterpolators[0][2][8].addValue(0, 60000);
+
+    	linearInterpolators[0][0][9].addValue(0, 0);         //level 10 Normal 
+    	linearInterpolators[0][0][9].addValue(-60, 15000);
+    	linearInterpolators[0][0][9].addValue(0,30000);
+    	linearInterpolators[0][0][9].addValue(60,45000);
+    	linearInterpolators[0][0][9].addValue(0,60000);
+    	linearInterpolators[0][1][9].addValue(0,0);
+    	linearInterpolators[0][1][9].addValue(-60, 15000);
+    	linearInterpolators[0][1][9].addValue(0, 30000);
+    	linearInterpolators[0][1][9].addValue(60, 45000);
+    	linearInterpolators[0][1][9].addValue(0, 60000);
+    	linearInterpolators[0][2][9].addValue(0, 0);
+    	linearInterpolators[0][2][9].addValue(15, 30000);
+    	linearInterpolators[0][2][9].addValue(0, 60000);
     	
     	
     	
+    	linearInterpolators[1][0][0].addValue(0, 0);        //level 1 Expert
+    	linearInterpolators[1][0][0].addValue(0, 60000);
+    	linearInterpolators[1][1][0].addValue(0,0);
+    	linearInterpolators[1][1][0].addValue(180, 30000);
+    	linearInterpolators[1][1][0].addValue(0, 60000);
+    	linearInterpolators[1][2][0].addValue(0, 0);
+    	linearInterpolators[1][2][0].addValue(0, 60000);
+
     	
+    	linearInterpolators[1][0][1].addValue(0, 0);         //level 2 Expert 
+    	linearInterpolators[1][0][1].addValue(180, 15000);
+    	linearInterpolators[1][0][1].addValue(0, 30000);
+    	linearInterpolators[1][0][1].addValue(-180,45000);
+    	linearInterpolators[1][0][1].addValue(0,60000);
+    	linearInterpolators[1][1][1].addValue(0, 0);
+    	linearInterpolators[1][1][1].addValue(0, 60000);
+    	linearInterpolators[1][2][1].addValue(0, 0);
+    	linearInterpolators[1][2][1].addValue(0, 60000);
+
     	
+    	linearInterpolators[1][0][2].addValue(0, 0);        //level 3 Expert
+    	linearInterpolators[1][0][2].addValue(0, 60000);
+    	linearInterpolators[1][1][2].addValue(0,0);
+    	linearInterpolators[1][1][2].addValue(0, 60000);
+    	linearInterpolators[1][2][2].addValue(0, 0);
+    	linearInterpolators[1][2][2].addValue(180, 15000);
+    	linearInterpolators[1][2][2].addValue(0, 30000);
+    	linearInterpolators[1][2][2].addValue(-180, 45000);
+    	linearInterpolators[1][2][2].addValue(0, 60000);
+    	
+    	linearInterpolators[1][0][3].addValue(0, 0);        //level 4 Expert
+    	linearInterpolators[1][0][3].addValue(0, 60000);
+    	linearInterpolators[1][1][3].addValue(0,0);
+    	linearInterpolators[1][1][3].addValue(180, 15000);
+    	linearInterpolators[1][1][3].addValue(0, 30000);
+    	linearInterpolators[1][1][3].addValue(-180, 45000);
+    	linearInterpolators[1][1][3].addValue(0, 60000);
+    	linearInterpolators[1][2][3].addValue(0, 0);
+    	linearInterpolators[1][2][3].addValue(0, 60000);
+    	
+    	linearInterpolators[1][0][4].addValue(0, 0);         //level 5 Expert 
+    	linearInterpolators[1][0][4].addValue(360, 15000);
+    	linearInterpolators[1][0][4].addValue(0,30000);
+    	linearInterpolators[1][0][4].addValue(-360,45000);
+    	linearInterpolators[1][0][4].addValue(0,60000);
+    	linearInterpolators[1][1][4].addValue(0, 0);
+    	linearInterpolators[1][1][4].addValue(0, 60000);
+    	linearInterpolators[1][2][4].addValue(0, 0);
+    	linearInterpolators[1][2][4].addValue(0, 60000);
+    
+    	linearInterpolators[1][0][5].addValue(0, 0);         //level 6 Expert 
+    	linearInterpolators[1][0][5].addValue(180, 15000);
+    	linearInterpolators[1][0][5].addValue(0,30000);
+    	linearInterpolators[1][0][5].addValue(-180,45000);
+    	linearInterpolators[1][0][5].addValue(0,60000);
+    	linearInterpolators[1][1][5].addValue(0,0);
+    	linearInterpolators[1][1][5].addValue(30, 15000);
+    	linearInterpolators[1][1][5].addValue(0, 30000);
+    	linearInterpolators[1][1][5].addValue(-30, 45000);
+    	linearInterpolators[1][1][5].addValue(0, 60000);
+    	linearInterpolators[1][2][5].addValue(0, 0);
+    	linearInterpolators[1][2][5].addValue(0, 60000);
+    	
+    	linearInterpolators[1][0][6].addValue(0, 0);         //level 7 Expert 
+    	linearInterpolators[1][0][6].addValue(180, 15000);
+    	linearInterpolators[1][0][6].addValue(0,30000);
+    	linearInterpolators[1][0][6].addValue(-180,45000);
+    	linearInterpolators[1][0][6].addValue(0,60000);
+    	linearInterpolators[1][1][6].addValue(0,0);
+    	linearInterpolators[1][1][6].addValue(180, 15000);
+    	linearInterpolators[1][1][6].addValue(0, 30000);
+    	linearInterpolators[1][1][6].addValue(-180, 45000);
+    	linearInterpolators[1][1][6].addValue(0, 60000);
+    	linearInterpolators[1][2][6].addValue(0, 0);
+    	linearInterpolators[1][2][6].addValue(0, 60000);
+    	
+    	linearInterpolators[1][0][7].addValue(0, 0);         //level 8 Expert 
+    	linearInterpolators[1][0][7].addValue(180, 15000);
+    	linearInterpolators[1][0][7].addValue(0,30000);
+    	linearInterpolators[1][0][7].addValue(-180,45000);
+    	linearInterpolators[1][0][7].addValue(0,60000);
+    	linearInterpolators[1][1][7].addValue(0,0);
+    	linearInterpolators[1][1][7].addValue(180, 15000);
+    	linearInterpolators[1][1][7].addValue(0, 30000);
+    	linearInterpolators[1][1][7].addValue(-180, 45000);
+    	linearInterpolators[1][1][7].addValue(0, 60000);
+    	linearInterpolators[1][2][7].addValue(0, 0);
+    	linearInterpolators[1][2][7].addValue(15, 30000);
+    	linearInterpolators[1][2][7].addValue(0, 60000);
+    
+    	linearInterpolators[1][0][8].addValue(0, 0);         //level 9 Expert 
+    	linearInterpolators[1][0][8].addValue(360, 15000);
+    	linearInterpolators[1][0][8].addValue(0,30000);
+    	linearInterpolators[1][0][8].addValue(-360,45000);
+    	linearInterpolators[1][0][8].addValue(0,60000);
+    	linearInterpolators[1][1][8].addValue(0,0);
+    	linearInterpolators[1][1][8].addValue(180, 15000);
+    	linearInterpolators[1][1][8].addValue(0, 30000);
+    	linearInterpolators[1][1][8].addValue(-180, 45000);
+    	linearInterpolators[1][1][8].addValue(0, 60000);
+    	linearInterpolators[1][2][8].addValue(0, 0);
+    	linearInterpolators[1][2][8].addValue(15, 30000);
+    	linearInterpolators[1][2][8].addValue(0, 60000);
+
+    	linearInterpolators[1][0][9].addValue(0, 0);         //level 10 Expert 
+    	linearInterpolators[1][0][9].addValue(-360, 15000);
+    	linearInterpolators[1][0][9].addValue(0,30000);
+    	linearInterpolators[1][0][9].addValue(360,45000);
+    	linearInterpolators[1][0][9].addValue(0,60000);
+    	linearInterpolators[1][1][9].addValue(0,0);
+    	linearInterpolators[1][1][9].addValue(-360, 15000);
+    	linearInterpolators[1][1][9].addValue(0, 30000);
+    	linearInterpolators[1][1][9].addValue(360, 45000);
+    	linearInterpolators[1][1][9].addValue(0, 60000);
+    	linearInterpolators[1][2][9].addValue(0, 0);
+    	linearInterpolators[1][2][9].addValue(15, 30000);
+    	linearInterpolators[1][2][9].addValue(0, 60000);   	
     	
     	
     	
