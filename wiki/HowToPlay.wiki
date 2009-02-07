@@ -15,4 +15,4 @@ Robotic Space Rock at present provides two modes of gameplay. "Classic" and "Mon
 
 You can rotate the playfield around the x and y axes by dragging on the touch screen. If you drag near the top left of the screen you reset the playfield to it's original position
  You can use the options menu to set various settings like the starting level, the difficulty and the game mode. Options can be accessed by the game menu. To start the game just press play. To exit the game, press exit or the home or back menu of your emulator.
-http://monolithandroid.googlecode.com/files/20080117_monolith_in_game.png
+http://monolithandroid.googlecode.com/files/options.png
