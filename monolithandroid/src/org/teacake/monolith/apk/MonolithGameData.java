@@ -1,5 +1,7 @@
 package org.teacake.monolith.apk;
 
+import java.util.prefs.Preferences;
+
 public class MonolithGameData implements Game
 {
 	public static int BOUNDARY_CONDITION_ZEROES=0;
@@ -806,6 +808,105 @@ public class MonolithGameData implements Game
 		// TODO Auto-generated method stub
 
 	}	
+	public void loadGame(android.content.SharedPreferences preferences)
+	{
+		this.boundaryCondition = preferences.getInt("MonolithGameData.boundaryCondition", BOUNDARY_CONDITION_ZEROES);
+		Block.enableMonolithBlocks=preferences.getBoolean("MonolithGameData.enableMonolithBlocks",true);
+		this.score = preferences.getInt("MonolithGameData.score", 0);
+		this.lines = preferences.getInt("MonolithGameData.lines", 0);
+		this.level = preferences.getInt("MonolithGameData.level", 1);
+		this.timer = preferences.getInt("MonolithGameData.timer", 1000);
+		this.timerEnabled = preferences.getBoolean("MonolithGameData.timerEnabled",false);
+		this.newLevel = preferences.getInt("MonolithGameData.newLevel", 1);
+		this.startingLevel = preferences.getInt("MonolithGameData.startingLevel", 1);
+		this.gridMaxWidth = preferences.getInt("MonolithGameData.gridMaxWidth", 10);
+		this.gridMaxHeight = preferences.getInt("MonolithGameData.gridMaxHeight", 20) ;
+		this.grid = new int[gridMaxWidth][gridMaxHeight];
+		this.newgrid = new int[gridMaxWidth][gridMaxHeight];
+		this.oldgrid = new int[gridMaxWidth][gridMaxHeight];
+		this.randomgen = new java.util.Random();
+		this.energy = preferences.getInt("MonolithGameData.energy", 0);
+		this.step = 0;
+		this.blockPlaced = false;
+		
+		for(int y=0;y<gridMaxHeight;y++)
+		{
+			String line = preferences.getString("MonolithGameData.line"+y, "");
+			
+			for(int x=0;x<gridMaxWidth;x++)
+			{
+				int currentSubblock=-1;
+				if(line.length()<gridMaxWidth)
+				{
+					currentSubblock=-1;
+				}
+				else
+				{
+					if(line.substring(x,x+1).equals(" "))
+					{
+						currentSubblock=-1;
+					}
+					else 
+					{
+						int subblock = Integer.parseInt(line.substring(x, x+1));
+						if(subblock<0 || subblock>6)
+						{
+							currentSubblock=-1;
+						}
+						else
+						{
+							currentSubblock=subblock;
+						}
+					}
+				}
+				this.grid[x][y]=currentSubblock;
+				this.oldgrid[x][y]=currentSubblock;
+			}
+		}
+		
+		this.clearedLines = new int[gridMaxHeight];
+		for(int y=0;y<gridMaxHeight;y++)
+		{
+			this.clearedLines[y]=0;
+		}		
+	}
+	public void saveGame(android.content.SharedPreferences preferences)
+	{
+
+		android.content.SharedPreferences.Editor editor = preferences.edit();
+		editor.putInt("MonolithGameData.boundaryCondition", this.boundaryCondition);
+		editor.putBoolean("MonolithGameData.enableMonolithBlocks", Block.enableMonolithBlocks);
+		editor.putInt("MonolithGameData.score", this.score);
+		editor.putInt("MonolithGameData.lines", this.lines);
+		editor.putInt("MonolithGameData.level", this.level);
+		editor.putInt("MonolithGameData.timer", this.timer);
+		editor.putInt("MonolithGameData.newLevel", this.newLevel);
+		editor.putInt("MonolithGameData.startingLevel", this.startingLevel);
+		editor.putInt("MonolithGameData.gridMaxWidth", this.gridMaxWidth);
+		editor.putInt("MonolithGameData.gridMaxHeight", this.gridMaxHeight);
+		editor.putInt("MonolithGameData.energy", this.energy);
+		for(int y=0;y<gridMaxHeight;y++)
+		{
+			String line = "";
+			String currentChar = "";
+			for(int x=0;x<gridMaxWidth;x++)
+			{
+				if(this.grid[x][y]==-1)
+				{
+					currentChar=" ";
+				}
+				else
+				{
+					currentChar=""+this.grid[x][y];
+				}
+				
+				line = line+currentChar;
+				
+			}
+			editor.putString("MonolithGameData.line"+y, line);
+		}
+	}
+	
 	
 
 }
