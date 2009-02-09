@@ -547,6 +547,99 @@ package org.teacake.monolith.apk;
 		{
 			return Game.GAME_CLASSIC;
 		}
+		public void loadGame(android.content.SharedPreferences preferences)
+		{
+			Block.enableMonolithBlocks=preferences.getBoolean("SimpleGameData.enableMonolithBlocks",true);
+			this.score = preferences.getInt("SimpleGameData.score", 0);
+			this.lines = preferences.getInt("SimpleGameData.lines", 0);
+			this.level = preferences.getInt("SimpleGameData.level", 1);
+			this.timer = preferences.getInt("SimpleGameData.timer", 1000);
+			this.timerEnabled = preferences.getBoolean("SimpleGameData.timerEnabled",false);
+			this.newLevel = preferences.getInt("SimpleGameData.newLevel", 1);
+			this.startingLevel = preferences.getInt("SimpleGameData.startingLevel", 1);
+			this.gridMaxWidth = preferences.getInt("SimpleGameData.gridMaxWidth", 10);
+			this.gridMaxHeight = preferences.getInt("SimpleGameData.gridMaxHeight", 20) ;
+			this.grid = new int[gridMaxWidth][gridMaxHeight];
+			this.step = 0;
+			this.blockPlaced = false;
+			
+			for(int y=0;y<gridMaxHeight;y++)
+			{
+				String line = preferences.getString("SimpleGameData.line"+y, "");
+				
+				for(int x=0;x<gridMaxWidth;x++)
+				{
+					int currentSubblock=-1;
+					if(line.length()<gridMaxWidth)
+					{
+						currentSubblock=-1;
+					}
+					else
+					{
+						if(line.substring(x,x+1).equals(" "))
+						{
+							currentSubblock=-1;
+						}
+						else 
+						{
+							int subblock = Integer.parseInt(line.substring(x, x+1));
+							if(subblock<0 || subblock>6)
+							{
+								currentSubblock=-1;
+							}
+							else
+							{
+								currentSubblock=subblock;
+							}
+						}
+					}
+					this.grid[x][y]=currentSubblock;
+					
+				}
+			}
+			
+			this.clearedLines = new int[gridMaxHeight];
+			for(int y=0;y<gridMaxHeight;y++)
+			{
+				this.clearedLines[y]=0;
+			}		
+		}
+		public void saveGame(android.content.SharedPreferences preferences)
+		{
+
+			android.content.SharedPreferences.Editor editor = preferences.edit();
+
+			editor.putBoolean("SimpleGameData.enableMonolithBlocks", Block.enableMonolithBlocks);
+			editor.putInt("SimpleGameData.score", this.score);
+			editor.putInt("SimpleGameData.lines", this.lines);
+			editor.putInt("SimpleGameData.level", this.level);
+			editor.putInt("SimpleGameData.timer", this.timer);
+			editor.putInt("SimpleGameData.newLevel", this.newLevel);
+			editor.putInt("SimpleGameData.startingLevel", this.startingLevel);
+			editor.putInt("SimpleGameData.gridMaxWidth", this.gridMaxWidth);
+			editor.putInt("SimpleGameData.gridMaxHeight", this.gridMaxHeight);
+			
+			for(int y=0;y<gridMaxHeight;y++)
+			{
+				String line = "";
+				String currentChar = "";
+				for(int x=0;x<gridMaxWidth;x++)
+				{
+					if(this.grid[x][y]==-1)
+					{
+						currentChar=" ";
+					}
+					else
+					{
+						currentChar=""+this.grid[x][y];
+					}
+					
+					line = line+currentChar;
+					
+				}
+				editor.putString("SimpleGameData.line"+y, line);
+			}
+		}
 
 	}
 

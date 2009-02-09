@@ -729,5 +729,14 @@ public class PuzzleGameData implements Game
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-	}	
+	}
+	public void loadGame(android.content.SharedPreferences preferences)
+	{
+		
+	}
+	public void saveGame(android.content.SharedPreferences preferences)
+	{
+		
+	}
+	
 }

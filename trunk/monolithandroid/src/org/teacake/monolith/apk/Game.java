@@ -48,4 +48,6 @@ public interface Game
 	public void setStep(int step);
 	public boolean isBlockPlaced();
 	public int getGameType();
+	public void saveGame(android.content.SharedPreferences preferences);
+	public void loadGame(android.content.SharedPreferences preferences);
 }
