@@ -33,14 +33,14 @@ public class Monolith extends Activity
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         soundInitialized = false;
+        
         prefs = this.getPreferences(android.content.Context.MODE_PRIVATE);
         prefsEditor = prefs.edit();
+        
         //prefsEditor.putBoolean("LicenseAccepted", false);
         //prefsEditor.commit();
-        
         if(false/*!prefs.getBoolean("LicenseAccepted", false)*/)
         {
-        	
         	//this.licenseView = this.findViewById(R.layout.licenseagreement);
         	this.licenseView = View.inflate(this, R.layout.licenseagreement, null);
         	this.setContentView(licenseView);
@@ -65,9 +65,7 @@ public class Monolith extends Activity
 							if(checkboxAcceptLicense.isChecked())
 							{
 								startAcceptedApplication();
-								
 							}
-							
 						}
 					}
 				);
@@ -76,9 +74,6 @@ public class Monolith extends Activity
         {
         	initActivity();
         }
- 
-        
-         
     }
     public void startAcceptedApplication()
     {
@@ -87,16 +82,35 @@ public class Monolith extends Activity
 		licenseView.setVisibility(View.INVISIBLE);
 		licenseView = null;		
 		initActivity();
-		
-		
     }
     public void initActivity()
     {
         this.soundManager = new SoundPoolManager(this);
         this.soundInitialized = true;
         hsTable = new HighScoreTable(this,10);
-        game = new MonolithGameData();
-        
+        if(prefs.getBoolean("gamesaved", false))
+        {
+        	switch(prefs.getInt("gametype", Game.GAME_MONOLITH))
+        	{
+        	case Game.GAME_CLASSIC:
+        		game = new SimpleGameData();
+        		game.loadGame(prefs);
+        		break;
+        	case Game.GAME_MONOLITH:
+        		game= new MonolithGameData();
+        		game.loadGame(prefs);
+        		break;
+        	}
+        }
+        else
+        {
+        	game = new MonolithGameData();
+            
+        		
+        	
+       
+        	
+        }
         options = new Options(game,prefs);
         overlay = new GameOverlay(this,hsTable,options);
         overlay.setVisibility(View.VISIBLE);
@@ -145,6 +159,8 @@ public class Monolith extends Activity
     	{
     		this.soundManager.stopSound();
     	}
+    	
+    	this.game.saveGame(this.prefs);
     	//gsf.stopMusic();
     }
     @Override
@@ -180,6 +196,8 @@ public class Monolith extends Activity
 
     public void exitApplication()
     {
+    	prefsEditor.putBoolean("gamesaved", false);
+    	prefsEditor.commit();
     		this.soundManager.stopSound();
     	
 			finish();

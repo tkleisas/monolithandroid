@@ -874,6 +874,8 @@ public class MonolithGameData implements Game
 	{
 
 		android.content.SharedPreferences.Editor editor = preferences.edit();
+		editor.putBoolean("gamesaved", true);
+		editor.putInt("gametype", Game.GAME_MONOLITH);
 		editor.putInt("MonolithGameData.boundaryCondition", this.boundaryCondition);
 		editor.putBoolean("MonolithGameData.enableMonolithBlocks", Block.enableMonolithBlocks);
 		editor.putInt("MonolithGameData.score", this.score);
@@ -905,6 +907,7 @@ public class MonolithGameData implements Game
 			}
 			editor.putString("MonolithGameData.line"+y, line);
 		}
+		editor.commit();
 	}
 	
 	
