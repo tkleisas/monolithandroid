@@ -88,36 +88,21 @@ public class Monolith extends Activity
         this.soundManager = new SoundPoolManager(this);
         this.soundInitialized = true;
         hsTable = new HighScoreTable(this,10);
-        if(prefs.getBoolean("gamesaved", false))
-        {
-        	switch(prefs.getInt("gametype", Game.GAME_MONOLITH))
-        	{
-        	case Game.GAME_CLASSIC:
-        		game = new SimpleGameData();
-        		game.loadGame(prefs);
-        		break;
-        	case Game.GAME_MONOLITH:
-        		game= new MonolithGameData();
-        		game.loadGame(prefs);
-        		break;
-        	}
-        }
-        else
-        {
+        
+        
         	game = new MonolithGameData();
             
         		
         	
        
         	
-        }
         options = new Options(game,prefs);
         overlay = new GameOverlay(this,hsTable,options);
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         
         
-        gsf = new GameSurfaceView(this,overlay,this.soundManager);
+        gsf = new GameSurfaceView(this,overlay,this.soundManager,this.prefs);
 
         setContentView(gsf);
         gsf.setVisibility(View.VISIBLE);   

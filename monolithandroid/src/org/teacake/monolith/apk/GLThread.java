@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import android.graphics.Canvas;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import android.os.Handler;
 import android.os.Message;
@@ -18,8 +19,10 @@ public class GLThread extends Thread
 
 	private  final org.teacake.monolith.apk.GameSurfaceView view;
 	private boolean done;
-	public GLThread(org.teacake.monolith.apk.GameSurfaceView view, GameOverlay overlay, android.content.Context context,Sound soundManager)
+	public GLThread(org.teacake.monolith.apk.GameSurfaceView view, GameOverlay overlay, android.content.Context context,Sound soundManager,    SharedPreferences prefs)
 	{
+		this.prefs = prefs;
+		this.prefsEditor = prefs.edit();
 		done=false;
 		this.view = view;
 		this.overlay = overlay;
@@ -46,7 +49,27 @@ public class GLThread extends Thread
         this.explodingRings = new java.util.LinkedList<ExplodingRing>();
         randomgen = new java.util.Random(SystemClock.uptimeMillis());
         //this.overlay.setCurtain(100);
-        this.game = overlay.getOptions().getGame();
+        
+        
+        if(prefs.getBoolean("gamesaved", false))
+        {
+        	switch(prefs.getInt("gametype", Game.GAME_MONOLITH))
+        	{
+        	case Game.GAME_CLASSIC:
+        		game = new SimpleGameData();
+        		game.loadGame(prefs);
+        		break;
+        	case Game.GAME_MONOLITH:
+        		game= new MonolithGameData();
+        		game.loadGame(prefs);
+        		break;
+        	}
+        	this.overlay.getOptions().setGame(game);
+        }        
+        else
+        {
+        	this.game = overlay.getOptions().getGame();
+        }
         action = MSG_DO_NOTHING;
         this.initLinearInterpolators();
         
@@ -1623,4 +1646,6 @@ public class GLThread extends Thread
     private GLTextures textures;
     private long startGameTime;
     private long timeaccumulator;
+    private SharedPreferences.Editor prefsEditor;
+    private SharedPreferences prefs;
 }
