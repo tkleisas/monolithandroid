@@ -22,7 +22,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
 		
 	}
-
+	
 	public void surfaceChanged(SurfaceHolder holder, int format,
 	int w, int h) {
 	// TODO: handle window size changes

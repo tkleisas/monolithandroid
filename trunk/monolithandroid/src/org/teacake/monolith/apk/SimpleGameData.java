@@ -608,7 +608,8 @@ package org.teacake.monolith.apk;
 		{
 
 			android.content.SharedPreferences.Editor editor = preferences.edit();
-
+			editor.putBoolean("gamesaved", true);
+			editor.putInt("gametype", Game.GAME_CLASSIC);
 			editor.putBoolean("SimpleGameData.enableMonolithBlocks", Block.enableMonolithBlocks);
 			editor.putInt("SimpleGameData.score", this.score);
 			editor.putInt("SimpleGameData.lines", this.lines);
@@ -639,6 +640,7 @@ package org.teacake.monolith.apk;
 				}
 				editor.putString("SimpleGameData.line"+y, line);
 			}
+			editor.commit();
 		}
 
 	}
