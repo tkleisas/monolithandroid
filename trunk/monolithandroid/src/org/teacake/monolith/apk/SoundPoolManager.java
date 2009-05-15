@@ -40,6 +40,7 @@ public class SoundPoolManager extends Thread implements Sound
 		handles = new java.util.HashMap<Integer, Integer>();
 		mediaPlayers = new java.util.HashMap<Integer, android.media.MediaPlayer>();
 		isRunning = false;
+		finished = false;
 		
 	}
 	public void addSound(int resid, boolean isLooping)
@@ -143,6 +144,7 @@ public class SoundPoolManager extends Thread implements Sound
 				
 			}			
 		}
+		finished = true;
 	}
 
 
@@ -163,31 +165,52 @@ public class SoundPoolManager extends Thread implements Sound
 	}
 	public void stopSound()
 	{
-		java.util.Iterator <Integer> iterator = sounds.keySet().iterator();
+		try
+		{
+			java.util.Iterator <Integer> iterator = sounds.keySet().iterator();
 		
-		while(iterator.hasNext())
+			while(iterator.hasNext())
+			{
+				
+				int soundid = iterator.next().intValue();
+				if(this.sounds.get(soundid).booleanValue())
+				{
+					android.media.MediaPlayer mp = mediaPlayers.get(soundid);
+					mp.stop();
+					mp.release();
+					mp=null;
+				}
+				else
+				{
+					this.soundPool.pause( this.handles.get(soundid).intValue());
+					this.soundPool.stop(this.handles.get(soundid).intValue());
+					
+				}
+				
+				
+			}		
+		}
+		catch(Exception e)
 		{
 			
-			int soundid = iterator.next().intValue();
-			if(this.sounds.get(soundid).booleanValue())
+		}
+		finally
+		{
+			isRunning=false;
+			this.soundPool.release();			
+		}
+
+		while(!finished)
+		{
+			try
 			{
-				android.media.MediaPlayer mp = mediaPlayers.get(soundid);
-				mp.stop();
-				mp.release();
-				mp=null;
+				Thread.currentThread().sleep(500);
 			}
-			else
+			catch(Exception e)
 			{
-				this.soundPool.pause( this.handles.get(soundid).intValue());
-				this.soundPool.stop(this.handles.get(soundid).intValue());
 				
 			}
-			
-			
-		}		
-		
-		isRunning=false;
-		this.soundPool.release();
+		}
 	}
 
 	public int currentPlayer;
@@ -287,6 +310,6 @@ public class SoundPoolManager extends Thread implements Sound
 		}		
 	}
 	SoundPool soundPool;
-	
+	boolean finished = false;
 	
 }
