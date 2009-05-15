@@ -13,7 +13,7 @@ public class Monolith extends Activity
 	private static final int ID_EXIT = Menu.FIRST+2;
     
 
-    private GameSurfaceView gsf;
+    private GLGameSurfaceView gsf;
     private GameOverlay overlay;
     
     private HighScoreTable hsTable;
@@ -33,14 +33,14 @@ public class Monolith extends Activity
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         soundInitialized = false;
-        
         prefs = this.getPreferences(android.content.Context.MODE_PRIVATE);
         prefsEditor = prefs.edit();
-        
         //prefsEditor.putBoolean("LicenseAccepted", false);
         //prefsEditor.commit();
+        
         if(false/*!prefs.getBoolean("LicenseAccepted", false)*/)
         {
+        	
         	//this.licenseView = this.findViewById(R.layout.licenseagreement);
         	this.licenseView = View.inflate(this, R.layout.licenseagreement, null);
         	this.setContentView(licenseView);
@@ -65,7 +65,9 @@ public class Monolith extends Activity
 							if(checkboxAcceptLicense.isChecked())
 							{
 								startAcceptedApplication();
+								
 							}
+							
 						}
 					}
 				);
@@ -74,6 +76,9 @@ public class Monolith extends Activity
         {
         	initActivity();
         }
+ 
+        
+         
     }
     public void startAcceptedApplication()
     {
@@ -82,27 +87,23 @@ public class Monolith extends Activity
 		licenseView.setVisibility(View.INVISIBLE);
 		licenseView = null;		
 		initActivity();
+		
+		
     }
     public void initActivity()
     {
         this.soundManager = new SoundPoolManager(this);
         this.soundInitialized = true;
         hsTable = new HighScoreTable(this,10);
+        game = new MonolithGameData();
         
-        
-        	game = new MonolithGameData();
-            
-        		
-        	
-       
-        	
         options = new Options(game,prefs);
         overlay = new GameOverlay(this,hsTable,options);
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         
         
-        gsf = new GameSurfaceView(this,overlay,this.soundManager,this.prefs);
+        gsf = new GLGameSurfaceView(this,overlay,this.soundManager);
 
         setContentView(gsf);
         gsf.setVisibility(View.VISIBLE);   
@@ -144,8 +145,6 @@ public class Monolith extends Activity
     	{
     		this.soundManager.stopSound();
     	}
-    	
-    	this.game.saveGame(this.prefs);
     	//gsf.stopMusic();
     }
     @Override
@@ -164,7 +163,7 @@ public class Monolith extends Activity
     	
 		gsf.setGameType(overlay.getOptions().getGameType());
 		
-		gsf.initGame(GLThread.VIEW_GAME);
+		gsf.initGame(GameRenderer.VIEW_GAME);
 		
     	
     }
@@ -172,7 +171,7 @@ public class Monolith extends Activity
     {
     	gsf.setGameType(game.getGameType());
     	
-    	gsf.initGame(GLThread.VIEW_OPTIONS);
+    	gsf.initGame(GameRenderer.VIEW_OPTIONS);
     	
     	
     }
@@ -181,8 +180,6 @@ public class Monolith extends Activity
 
     public void exitApplication()
     {
-    	prefsEditor.putBoolean("gamesaved", false);
-    	prefsEditor.commit();
     		this.soundManager.stopSound();
     	
 			finish();
@@ -226,7 +223,7 @@ public class Monolith extends Activity
         {
         	try
         	{
-        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_MOVE_DOWN);
+        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_MOVE_DOWN);
         		message.sendToTarget();
         	}
         	catch(Exception e)
@@ -239,7 +236,7 @@ public class Monolith extends Activity
         {
         	try
         	{
-        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_MOVE_LEFT);
+        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_MOVE_LEFT);
         		message.sendToTarget();
         		
         	}
@@ -253,7 +250,7 @@ public class Monolith extends Activity
         {
         	try
         	{
-        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_MOVE_RIGHT);
+        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_MOVE_RIGHT);
         		message.sendToTarget();
         	}
         	catch(Exception e)
@@ -266,7 +263,7 @@ public class Monolith extends Activity
         {
         	try
         	{
-        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_ROTATE);
+        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_ROTATE);
         		message.sendToTarget();
         	}
         	catch(Exception e)
@@ -317,7 +314,7 @@ public class Monolith extends Activity
     			zy =0 ;
         		try
         		{
-        			android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_ROTATE_PLAYFIELD);
+        			android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_ROTATE_PLAYFIELD);
         			message.arg1 = zx;
         			message.arg2 = zy;
         			message.sendToTarget();
@@ -337,7 +334,7 @@ public class Monolith extends Activity
       	  	yval=(int)event.getY();
     		try
     		{
-    			android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GLThread.MSG_ROTATE_PLAYFIELD);
+    			android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_ROTATE_PLAYFIELD);
     			message.arg1 = zx;
     			message.arg2 = zy;
     			message.sendToTarget();
