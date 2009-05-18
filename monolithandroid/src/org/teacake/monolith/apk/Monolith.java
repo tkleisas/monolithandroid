@@ -110,7 +110,7 @@ public class Monolith extends Activity
         
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
 		
-		
+        soundManager.addSound(R.raw.monolith, true);
 		soundManager.addSound(R.raw.explosion2, false);
 		soundManager.addSound(R.raw.place, false);
 		soundManager.addSound(R.raw.rotate,false);
@@ -119,8 +119,9 @@ public class Monolith extends Activity
 		soundManager.addSound(R.raw.speech, false);
 		soundManager.addSound(R.raw.evolving, false );
 		soundManager.addSound(R.raw.gameover, false);
+		
+		
 		soundManager.startSound();
-		soundManager.addSound(R.raw.monolith, true);
 		//try
 		//{
 		//	Thread.currentThread().sleep(10000);
