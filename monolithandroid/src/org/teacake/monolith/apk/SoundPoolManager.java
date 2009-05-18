@@ -1,6 +1,6 @@
 package org.teacake.monolith.apk;
 import android.media.SoundPool;
-import android.util.Log;
+import android.media.JetPlayer;
 class SoundPoolEvent
 {
 	public SoundPoolEvent(int eventType,int eventSound)
@@ -38,42 +38,25 @@ public class SoundPoolManager extends Thread implements Sound
 		soundEvents = new java.util.LinkedList<SoundPoolEvent>();
 		sounds = new java.util.HashMap<Integer, Boolean>();
 		handles = new java.util.HashMap<Integer, Integer>();
-		mediaPlayers = new java.util.HashMap<Integer, android.media.MediaPlayer>();
+		streamIds =  new java.util.HashMap<Integer, Integer>();
 		isRunning = false;
 		finished = false;
-		
+		this.musicPlayer =JetPlayer.getJetPlayer();
+		this.musicPlayer.loadJetFile(context.getResources().openRawResourceFd(R.raw.monolith));
+		byte segmentId = 0;
+
+		this.musicPlayer.queueJetSegment(0, -1, -1, 0, 0, segmentId++);
 	}
 	public void addSound(int resid, boolean isLooping)
 	{
 		
 		sounds.put(resid, new Boolean(isLooping));
-		if(isLooping)
-		{
-			try
-			{
-				android.media.MediaPlayer mp = android.media.MediaPlayer.create(context, resid);
-				mp.setLooping(true);
-				mp.seekTo(0);
-				//mp.prepare();
-				mediaPlayers.put(resid, mp);
-				
-			
-				//mp.seekTo(0);
-				//mp.setAudioStreamType(android.media.AudioManager.STREAM_MUSIC);
-			}
-			catch(Exception e)
-			{
-				Log.d("ERROR",e.getMessage());
-			}
-				
-
-			
-		}
+		
 	}
 	
 	public void run()
 	{
-		android.media.MediaPlayer mp = null;
+		
 		while(isRunning)
 		{
 			try
@@ -88,40 +71,23 @@ public class SoundPoolManager extends Thread implements Sound
 						case SoundPoolEvent.SOUND_PLAY:
 							android.media.AudioManager mgr = (android.media.AudioManager) context.getSystemService(android.content.Context.AUDIO_SERVICE); 
 							int streamVolume = mgr.getStreamVolume(android.media.AudioManager.STREAM_MUSIC); 
-							soundPool.play(handles.get( event.eventSound).intValue(), streamVolume, streamVolume, 1, 0, 1.0f);
-
+							int streamID = soundPool.play(handles.get( event.eventSound).intValue(), streamVolume, streamVolume, 1, 0, 1.0f);
+							this.streamIds.put(event.eventSound, streamID);
 							break;
 						case SoundPoolEvent.SOUND_STOP:
 
 							break;
 						case SoundPoolEvent.SOUND_MUSIC_PLAY:
-							currentPlayer = event.eventSound;
-							if(sounds.get(currentPlayer)!=null)
-							{
-								mp = mediaPlayers.get(currentPlayer);
-								
-								if(!mp.isPlaying())
-								{
-									mp.seekTo(0);
-									mp.start();
-								}
-							}
-							
+							this.musicPlayer.play();
 							break;
 						case SoundPoolEvent.SOUND_MUSIC_STOP:
-							currentPlayer = event.eventSound;
-							mp = mediaPlayers.get(currentPlayer);
-							mp.pause();							
+							
 							break;
 						case SoundPoolEvent.SOUND_MUSIC_PAUSE:
-							currentPlayer = event.eventSound;
-							mp = mediaPlayers.get(currentPlayer);
-							mp.pause();							
+							this.musicPlayer.pause();							
 							break;
 						case SoundPoolEvent.SOUND_MUSIC_RESUME:
-							currentPlayer = event.eventSound;
-							mp = mediaPlayers.get(currentPlayer);
-							mp.start();
+							soundPool.resume(streamIds.get(event.eventSound).intValue());
 							break;
 						
 						}
@@ -173,19 +139,10 @@ public class SoundPoolManager extends Thread implements Sound
 			{
 				
 				int soundid = iterator.next().intValue();
-				if(this.sounds.get(soundid).booleanValue())
-				{
-					android.media.MediaPlayer mp = mediaPlayers.get(soundid);
-					mp.stop();
-					mp.release();
-					mp=null;
-				}
-				else
-				{
-					this.soundPool.pause( this.handles.get(soundid).intValue());
-					this.soundPool.stop(this.handles.get(soundid).intValue());
+
+				this.soundPool.pause( this.handles.get(soundid).intValue());
+				this.soundPool.stop(this.handles.get(soundid).intValue());
 					
-				}
 				
 				
 			}		
@@ -217,6 +174,7 @@ public class SoundPoolManager extends Thread implements Sound
 	private boolean isRunning;
 	private java.util.HashMap<Integer, Boolean> sounds;
 	private java.util.HashMap<Integer, Integer> handles;
+	private java.util.HashMap<Integer, Integer> streamIds;
 	private android.content.Context context;
 	private java.util.LinkedList<SoundPoolEvent > soundEvents;
 	private java.util.HashMap<Integer, android.media.MediaPlayer> mediaPlayers;
@@ -310,6 +268,8 @@ public class SoundPoolManager extends Thread implements Sound
 		}		
 	}
 	SoundPool soundPool;
+	JetPlayer musicPlayer;
+	
 	boolean finished = false;
 	
 }
