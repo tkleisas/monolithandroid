@@ -54,7 +54,7 @@ public class GameRenderer implements Renderer {
         action = MSG_DO_NOTHING;
         this.initLinearInterpolators();		
 	}
-	@Override
+	
 	public void onDrawFrame(GL10 gl) {
 		// TODO Auto-generated method stub
 		//Initialize OpenGL...
@@ -65,14 +65,14 @@ public class GameRenderer implements Renderer {
 		this.drawFrame(gl);
 	}
 
-	@Override
+	
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		// TODO Auto-generated method stub
 		w=width;
 		h=height;
 	}
 
-	@Override
+	
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// TODO Auto-generated method stub
 		
