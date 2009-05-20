@@ -74,7 +74,7 @@ public class Monolith extends Activity
         }
         else
         {
-        	initActivity();
+        	
         }
  
         
@@ -138,24 +138,38 @@ public class Monolith extends Activity
 		}
 		
     }
+    
+    
+    @Override
+    public void onResume()
+    {
+    	super.onResume();
+    	initActivity();
+    }
     @Override
     public void onPause()
     {
     	super.onPause();
-    	if(soundInitialized)
+    	gsf.onPause();
+    	gsf = null;
+    	overlay = null;
+    	if(this.soundManager!=null)
     	{
     		this.soundManager.stopSound();
     	}
+    	this.finish();
     	//gsf.stopMusic();
     }
     @Override
     public void onStop()
     {
     	super.onStop();
-    	if(soundInitialized)
+    	
+    	if(this.soundManager!=null)
     	{
     		this.soundManager.stopSound();
     	}
+    	this.finish();
     }
 
     
@@ -199,9 +213,9 @@ public class Monolith extends Activity
         case ID_OPTIONS:
         	showOptions();
         	return true;
-        case ID_EXIT:
-        	exitApplication();
-        	return true;
+        //case ID_EXIT:
+        //	exitApplication();
+        //	return true;
         
         }
        
@@ -213,7 +227,7 @@ public class Monolith extends Activity
 
         menu.add(0, ID_PLAY_GAME,0 ,R.string.s_play);
         menu.add(0, ID_OPTIONS,0,R.string.s_options);
-        menu.add(0, ID_EXIT,0,R.string.s_exit);
+        //menu.add(0, ID_EXIT,0,R.string.s_exit);
         return true;
     }   
     
