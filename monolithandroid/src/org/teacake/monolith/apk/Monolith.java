@@ -18,7 +18,7 @@ public class Monolith extends Activity
     
     private HighScoreTable hsTable;
     private Options options;
-    private Sound soundManager;
+    
     private Game game;
     private android.widget.CheckBox checkboxAcceptLicense;
     private android.widget.Button buttonOK;
@@ -32,9 +32,8 @@ public class Monolith extends Activity
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        soundInitialized = false;
-        prefs = this.getPreferences(android.content.Context.MODE_PRIVATE);
-        prefsEditor = prefs.edit();
+        
+
         //prefsEditor.putBoolean("LicenseAccepted", false);
         //prefsEditor.commit();
         
@@ -74,7 +73,7 @@ public class Monolith extends Activity
         }
         else
         {
-        	
+        	initActivity();
         }
  
         
@@ -92,8 +91,9 @@ public class Monolith extends Activity
     }
     public void initActivity()
     {
-        this.soundManager = new SoundPoolManager(this);
-        this.soundInitialized = true;
+        
+        prefs = this.getPreferences(android.content.Context.MODE_PRIVATE);
+        prefsEditor = prefs.edit();        
         hsTable = new HighScoreTable(this,10);
         game = new MonolithGameData();
         
@@ -103,25 +103,14 @@ public class Monolith extends Activity
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         
         
-        gsf = new GLGameSurfaceView(this,overlay,this.soundManager);
+        gsf = new GLGameSurfaceView(this,overlay);
 
         setContentView(gsf);
         gsf.setVisibility(View.VISIBLE);   
         
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
 		
-        soundManager.addSound(R.raw.monolith, true);
-		soundManager.addSound(R.raw.explosion2, false);
-		soundManager.addSound(R.raw.place, false);
-		soundManager.addSound(R.raw.rotate,false);
-		soundManager.addSound(R.raw.pluck, false);
-		soundManager.addSound(R.raw.pluck2, false);
-		soundManager.addSound(R.raw.speech, false);
-		soundManager.addSound(R.raw.evolving, false );
-		soundManager.addSound(R.raw.gameover, false);
-		
-		
-		soundManager.startSound();
+
 		//try
 		//{
 		//	Thread.currentThread().sleep(10000);
@@ -131,11 +120,7 @@ public class Monolith extends Activity
 		//	
 		//}
 	
-		soundManager.startMusic(R.raw.monolith);
-		if(!options.isMusicEnabled())
-		{
-			soundManager.pauseMusic(R.raw.monolith);
-		}
+
 		
     }
     
@@ -144,33 +129,20 @@ public class Monolith extends Activity
     public void onResume()
     {
     	super.onResume();
-    	initActivity();
+    	gsf.onResume();
     }
     @Override
     public void onPause()
     {
     	super.onPause();
     	gsf.onPause();
-    	gsf = null;
-    	overlay = null;
-    	if(this.soundManager!=null)
-    	{
-    		this.soundManager.stopSound();
-    	}
-    	this.finish();
+    	
+
+
+    	
     	//gsf.stopMusic();
     }
-    @Override
-    public void onStop()
-    {
-    	super.onStop();
-    	
-    	if(this.soundManager!=null)
-    	{
-    		this.soundManager.stopSound();
-    	}
-    	this.finish();
-    }
+
 
     
     public void playGame()
@@ -195,7 +167,7 @@ public class Monolith extends Activity
 
     public void exitApplication()
     {
-    		this.soundManager.stopSound();
+
     	
 			finish();
     }

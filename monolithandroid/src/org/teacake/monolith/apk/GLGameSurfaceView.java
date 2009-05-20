@@ -8,17 +8,21 @@ import android.content.SharedPreferences;
 public class GLGameSurfaceView extends GLSurfaceView
 {
 
-	public GLGameSurfaceView(Context context,GameOverlay overlay, Sound manager) {
+	public GLGameSurfaceView(Context context,GameOverlay overlay) {
 		super(context);
 		// TODO Auto-generated constructor stub
         this.prefs = prefs;
-        this.soundManager = soundManager;
+        
         this.context = context;
         this.overlay = overlay;
         //this.overlay.setCurtain(100);
         this.viewType = GameRenderer.VIEW_INTRO;
         this.gameType = Game.GAME_MONOLITH;
-		this.mRenderer = new GameRenderer(context,overlay,manager);
+        if (this.mRenderer!=null)
+        {
+        	this.mRenderer = null;
+        }
+		this.mRenderer = new GameRenderer(context,overlay);
 		this.setRenderer(mRenderer);
 	}
 	
@@ -27,9 +31,23 @@ public class GLGameSurfaceView extends GLSurfaceView
 	
 	
 
-
-    
-
+	@Override
+	public void onPause()
+	{
+		
+		super.onPause();
+		mRenderer.onPause();
+	    
+		//this.mRenderer = null;
+	}
+    @Override
+    public void onResume()
+    {
+    	super.onResume();
+    	mRenderer.onResume();
+		//this.mRenderer = new GameRenderer(context,overlay);
+		//this.setRenderer(mRenderer);
+    }
     @Override
     public android.os.Handler getHandler()
     {
@@ -93,7 +111,7 @@ public class GLGameSurfaceView extends GLSurfaceView
 
     public void stopMusic()
     {
-    	this.mRenderer.stopMusic();
+    	
             //glThread.requestExitAndWait();
             //glThread = null;
     }
