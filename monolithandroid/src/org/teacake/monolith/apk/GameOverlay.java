@@ -58,7 +58,7 @@ public class GameOverlay extends View {
 		
 	}
 	
-	@Override protected synchronized void onDraw(Canvas canvas)
+	@Override protected void onDraw(Canvas canvas)
 	{
 		timer = System.currentTimeMillis();
 		int timeindex = this.currentTextColor%5000;
