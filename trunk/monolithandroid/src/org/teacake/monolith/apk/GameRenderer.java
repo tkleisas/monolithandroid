@@ -21,14 +21,14 @@ public class GameRenderer implements Renderer {
 	private boolean done;
 
 
-	public GameRenderer( android.content.Context context,GameOverlay overlay,Sound soundManager)
+	public GameRenderer( android.content.Context context,GameOverlay overlay)
 	{
 		
 		done=false;
-		
+		isPaused = false;
 		this.overlay = overlay;
 		this.context = context;
-		this.soundManager = soundManager;
+		initSound();
         mCube = new Cube[8];
         mCube[0] = new Cube(0xff00,0,0,0x10000);
         mCube[1] = new Cube(0,0xff00,0,0x10000);
@@ -54,22 +54,65 @@ public class GameRenderer implements Renderer {
         action = MSG_DO_NOTHING;
         this.initLinearInterpolators();		
 	}
-	
+	public void initSound()
+	{
+		this.soundManager = new SoundPoolManager(context);
+        soundManager.addSound(R.raw.monolith, true);
+		soundManager.addSound(R.raw.explosion2, false);
+		soundManager.addSound(R.raw.place, false);
+		soundManager.addSound(R.raw.rotate,false);
+		soundManager.addSound(R.raw.pluck, false);
+		soundManager.addSound(R.raw.pluck2, false);
+		soundManager.addSound(R.raw.speech, false);
+		soundManager.addSound(R.raw.evolving, false );
+		soundManager.addSound(R.raw.gameover, false);
+		
+		
+		soundManager.startSound();
+		soundManager.startMusic(R.raw.monolith);
+		if(!overlay.getOptions().isMusicEnabled())
+		{
+			soundManager.pauseMusic(R.raw.monolith);
+		}	
+	}
 	public void onDrawFrame(GL10 gl) {
 		// TODO Auto-generated method stub
 		//Initialize OpenGL...
 		/*
          * Get an EGL instance
          */
-        		
-		this.drawFrame(gl);
-	}
+
+        	this.drawFrame(gl);
 
 	
+		
+	}
+
+	public void onPause()
+	{
+		this.isPaused = true;
+		if(this.soundManager!=null)
+		{
+			this.soundManager.pauseMusic(R.raw.monolith);
+		}
+		this.soundManager =null;
+	}
+	public void onResume()
+	{
+		this.isPaused = false;
+		if(overlay.getOptions().isMusicEnabled())
+		{
+			this.soundManager.resumeMusic(R.raw.monolith);
+		}
+	}
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		// TODO Auto-generated method stub
 		w=width;
 		h=height;
+	    gl.glViewport(0, 0, w, h);
+
+
+		
 	}
 
 	
@@ -698,476 +741,402 @@ public class GameRenderer implements Renderer {
     private void drawFrame(GL10 gl)
 	{
 		
+        float ratio = (float)w / h;
+        gl.glMatrixMode(GL10.GL_PROJECTION);
+        gl.glLoadIdentity();
+        
+        android.opengl.GLU.gluPerspective(gl, 60, ratio, 1, 130);
 	    
-		if (running)
-		{
-			/*
-			long current = SystemClock.uptimeMillis();
-             
-			if (mNextTime < current && action==MSG_DO_NOTHING)
-			{
-             	
-                 mNextTime = current + 20;
-                 return;
-            }
-			else
-			{
-				overlay.postInvalidate();
-	         	rangle=rangle+2.0f;
-	         	if(rangle>360.0f)
-	         	{
-	         		rangle=0.0f;
-	         	}			
-				
-			}
-			overlay.postInvalidate();
-			*/
-			//this.overlay.setCurtain(0);
-			long current = SystemClock.uptimeMillis();
-			
-			rangle=rangle+((current-lastdrawtime)/1000.0f)*2.0f;
-         	if(rangle>360.0f)
-         	{
-         		rangle=0.0f;
-         	}			
-         	lastdrawtime=current;
-         	overlay.postInvalidate(); 
-            
-        /*
-         * First, we need to get to the appropriate GL interface.
-         * This is simply done by casting the GL context to either
-         * GL10 or GL11.
-         */
-         	//gl = (GL10)(mGLContext.getGL());
+
+		long current = SystemClock.uptimeMillis();
+		
+		rangle=rangle+((current-lastdrawtime)/1000.0f)*2.0f;
+     	if(rangle>360.0f)
+     	{
+     		rangle=0.0f;
+     	}			
+     	lastdrawtime=current;
+     	overlay.postInvalidate(); 
 
         /*
-         * Before we can issue GL commands, we need to make sure all
-         * native drawing commands are completed. Simply call
-         * waitNative() to accomplish this. Once this is done, no native
-         * calls should be issued.
+         * dithering is enabled by default in OpenGL, unfortunately
+         * it has a significant impact on performance in software
+         * implementation. Often, it's better to just turn it off.
          */
-        //mGLContext.waitNative(canvas, this);
-        //mGLContext.waitNative();
-        //mGLContext.makeCurrent(view.getHolder());
-            
+         gl.glDisable(GL10.GL_DITHER);
 
-            /*
-             * Set the viewport. This doesn't have to be done each time
-             * draw() is called. Typically this is called when the view
-             * is resized.
-             */
+        /*
+         * Usually, the first thing one might want to do is to clear
+         * the screen. The most efficient way of doing this is to use
+         * glClear(). However we must make sure to set the scissor
+         * correctly first. The scissor is always specified in window
+         * coordinates:
+         */
+        gl.glClearColor(0,0,0,0);
+        
+        
+        gl.glEnable(GL10.GL_SCISSOR_TEST);
+        gl.glScissor(0, 0, w, h);
+        gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+        gl.glEnable(GL10.GL_CULL_FACE);
+        //gl.glCullFace(GL10.GL_CW);
+        gl.glShadeModel(GL10.GL_SMOOTH);
+        //gl.glDepthFunc(GL10.GL_GREATER);
+        //gl.glDepthRangef(1, 100);
+        //gl.glDepthMask(false);
+        gl.glEnable(GL10.GL_DEPTH_TEST);            
 
-            
-            gl.glViewport(0, 0, w, h);
+        /*
+         * Now we're ready to draw some 3D object
+         */
+        
+        
+        gl.glScalef(0.5f, 0.5f, 0.5f);
 
-            /*
-             * Set our projection matrix. This doesn't have to be done
-             * each time we draw, but usually a new projection needs to be set
-             * when the viewport is resized.
-             */
+        //gl.glRotatef(zy, 1, 0, 0);
+        gl.glTranslatef(0, 0, zoff);
+        if(this.viewType==VIEW_INTRO)
+        {
+        	gl.glRotatef(rangle, 0.0f, 0.0f, 1.0f);
+        }
+        gl.glRotatef(zx, 0.0f, 1.0f, 0.0f);
+        gl.glRotatef(zy, 1.0f, 0.0f, 0.0f);
+        gl.glRotatef(xy, 0.0f, 0.0f, 1.0f);
+        gl.glTranslatef(0,0,-zoff);
+        gl.glMatrixMode(GL10.GL_MODELVIEW);
+        gl.glPushMatrix();
+        gl.glLoadIdentity();
+        
 
-            float ratio = (float)w / h;
-            /*
-            if(w<h)
-            {
-            	ratio = (float)w/h;
-            }
-            else
-            {
-            	ratio = (float)(h/w);
-            }
-            */
-            gl.glMatrixMode(GL10.GL_PROJECTION);
-            gl.glLoadIdentity();
-            //gl.glFrustumf(-ratio, ratio, -ratio, ratio, 2, 60);
-            
-            android.opengl.GLU.gluPerspective(gl, 60, ratio, 1, 130);
-            /*
-             * dithering is enabled by default in OpenGL, unfortunately
-             * it has a significant impact on performance in software
-             * implementation. Often, it's better to just turn it off.
-             */
-             gl.glDisable(GL10.GL_DITHER);
+        
+        gl.glColor4f(0.7f, 0.7f, 0.7f, 1.0f);
+        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+        gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
 
-            /*
-             * Usually, the first thing one might want to do is to clear
-             * the screen. The most efficient way of doing this is to use
-             * glClear(). However we must make sure to set the scissor
-             * correctly first. The scissor is always specified in window
-             * coordinates:
-             */
-            gl.glClearColor(0,0,0,0);
-            
-            
-            gl.glEnable(GL10.GL_SCISSOR_TEST);
-            gl.glScissor(0, 0, w, h);
-            gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-            gl.glEnable(GL10.GL_CULL_FACE);
-            //gl.glCullFace(GL10.GL_CW);
-            gl.glShadeModel(GL10.GL_SMOOTH);
-            //gl.glDepthFunc(GL10.GL_GREATER);
-            //gl.glDepthRangef(1, 100);
-            //gl.glDepthMask(false);
-            gl.glEnable(GL10.GL_DEPTH_TEST);            
+        if(!this.backgroundInitialized)
+        {
+        	this.backgroundInitialized = true;
+        }
+        switch(this.viewType)
+        {
+        	case VIEW_INTRO:
+        	
+	            now = SystemClock.uptimeMillis();
+	            if(now>lastcalltime+demogame.getTimer())
+	            {
 
-            /*
-             * Now we're ready to draw some 3D object
-             */
-            
-            
-            gl.glScalef(0.5f, 0.5f, 0.5f);
-
-            //gl.glRotatef(zy, 1, 0, 0);
-            gl.glTranslatef(0, 0, zoff);
-            if(this.viewType==VIEW_INTRO)
-            {
-            	gl.glRotatef(rangle, 0.0f, 0.0f, 1.0f);
-            }
-            gl.glRotatef(zx, 0.0f, 1.0f, 0.0f);
-            gl.glRotatef(zy, 1.0f, 0.0f, 0.0f);
-            gl.glRotatef(xy, 0.0f, 0.0f, 1.0f);
-            gl.glTranslatef(0,0,-zoff);
-            gl.glMatrixMode(GL10.GL_MODELVIEW);
-            gl.glPushMatrix();
-            gl.glLoadIdentity();
-            
-
-            
-            gl.glColor4f(0.7f, 0.7f, 0.7f, 1.0f);
-            gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-            gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-
-            if(!this.backgroundInitialized)
-            {
-            	this.backgroundInitialized = true;
-            }
-            switch(this.viewType)
-            {
-            	case VIEW_INTRO:
+	            		lastcalltime = now;
+	            		this.demogame.gameLoop();
+	            }
+	            this.drawIntroScreen(gl,w,h);
+            	//String logo="MonolithAndroid";            	
+        	break;
+        	
+        	case VIEW_OPTIONS:
+        		//int savedaction = action;
             	
-		            now = SystemClock.uptimeMillis();
-		            if(now>lastcalltime+demogame.getTimer())
-		            {
-	
-		            		lastcalltime = now;
-		            		this.demogame.gameLoop();
-		            }
-		            this.drawIntroScreen(gl,w,h);
-	            	//String logo="MonolithAndroid";            	
-            	break;
-            	
-            	case VIEW_OPTIONS:
-	        		//int savedaction = action;
-	            	
-		            now = SystemClock.uptimeMillis();
-		            if(now>lastcalltime+demogame.getTimer())
-		            {
-	
-		            		lastcalltime = now;
-		            		this.demogame.gameLoop();
-		            }
-		            this.drawIntroScreen(gl,w,h);
-	            	//this.drawIntroScreen(gl, canvas, w, h);
-	            	if (action == MSG_ROTATE)
-	        		{
-	            		
-	        			action=MSG_DO_NOTHING;
-	        			overlay.getOptions().previousOption();
-	        			if(overlay.getOptions().isSoundEnabled())
-	        			{
-	        				this.soundManager.playSound(R.raw.pluck2);
-	        			}
-	        		}
-	        		if (action == MSG_MOVE_LEFT)
-	        		{
-	        			action=MSG_DO_NOTHING;
-	        			overlay.getOptions().setPreviousValue();
-	        			if(overlay.getOptions().isSoundEnabled())
-	        			{
-	        				this.soundManager.playSound(R.raw.pluck);
-	        			}
-	            	
-	        		}
-	        		if (action == MSG_MOVE_RIGHT)
-	        		{
-	        			action=MSG_DO_NOTHING;
-	        			overlay.getOptions().setNextValue();
-	        			if(overlay.getOptions().isSoundEnabled())
-	        			{
-	        				this.soundManager.playSound(R.raw.pluck);
-	        			}
-	
-	        		}
-	        		if (action == MSG_MOVE_DOWN)
-	        		{
-	        			action=MSG_DO_NOTHING;
-	        			overlay.getOptions().nextOption();
-	        			if(overlay.getOptions().isSoundEnabled())
-	        			{
-	        				this.soundManager.playSound(R.raw.pluck2);
-	        			}
-	
-	        		}
-	        		if(overlay.getOptions().getSelectionStatus()==Options.STATUS_BACK)
-	        		{
-	        			this.viewType=VIEW_GAME;
-	        			this.setViewType(VIEW_INTRO);
-	        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
-	        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
-	        		}
-	        		if(overlay.getOptions().getSelectionStatus()==Options.STATUS_OK)
-	        		{
-	        			this.game = this.overlay.getOptions().getGame();
-	        			this.game.setLevel(this.overlay.getOptions().getStartingLevel());
-	        			this.overlay.getOptions().getGame().setLevel(this.overlay.getOptions().getStartingLevel());
-	        			this.viewType=VIEW_GAME;
-	        			this.setViewType(VIEW_INTRO);
-	        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
-	        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
-	        			overlay.getOptions().savePreferences();
-	        			
-	        		}
-	        		int changed = overlay.getOptions().getChangedOption();
-	        		if(changed == Options.OPTION_MUSIC)
-	        		{
-	        			if(overlay.getOptions().isMusicEnabled())
-	        			{
-	        				this.soundManager.resumeMusic(R.raw.monolith);
-	        				
-	        			}
-	        			else
-	        			{
-	        				this.soundManager.pauseMusic(R.raw.monolith);
-	        			}
-	        		}
-        		break;
-            	case VIEW_GAME:
-		            switch (game.getStatus())
-		            {
-			            case SimpleGameData.STATUS_GAME_OVER:
-			            	this.overlay.setMessage("Game Over");
-			            	if(this.sayGameOver)
-			            	{
-			            		this.soundManager.playSound(R.raw.gameover);
-			            		this.sayGameOver = false;
-			            	}
-			            	if(!this.highscoreEntry)
-			            	{
-			            		if(this.overlay.getHighScoreTable().isHighScore(this.game.getScore()))
-			            		{
-			            			this.highscoreEntry=true;
-			            			this.overlay.setDrawType(GameOverlay.DRAW_NAME_ENTRY);
-			            		}
-			            	}
-			            	else
-			            	{
-		            			if(action==MSG_ROTATE)
-		            			{
-		            				this.overlay.selectPreviousChar();
-		            			}
-		            			if(action==MSG_MOVE_DOWN)
-		            			{
-		            				this.overlay.selectNextChar();
-		            			}
-		            			if(action==MSG_MOVE_LEFT)
-		            			{
-		            				this.overlay.moveBack();
-		            			}
-		            			if(action==MSG_MOVE_RIGHT)
-		            			{
-		            				this.highscoreEntry = this.overlay.moveForward();
-		            				if(!this.highscoreEntry)
-		            				{
-		            					this.viewType =VIEW_INTRO;
-		            					this.overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
-		            				}
-		            			}
-			            	}
-			            	break;
-			            case SimpleGameData.STATUS_EVOLVING:
-			            	this.overlay.setMessage("Evolving...");
-		                	if(this.sayEvolving)
-		                	{
-		                		if(this.overlay.getOptions().isSoundEnabled())
-		                		{
-		                			this.soundManager.playSound(R.raw.evolving);
-		                		}
-		                		this.sayEvolving = false;
-		                	}
-			            break;
-			            default:
-			            	this.overlay.setMessage("");
-			            	
-			            break;
-		            }
-	            	if (action == MSG_ROTATE)
-	        		{
-	        			action=MSG_DO_NOTHING;
-	        			doRotateBlock();
-	        		}
-	        		if (action == MSG_MOVE_LEFT)
-	        		{
-	        			action=MSG_DO_NOTHING;
-	        			doMoveLeft();
-	            	
-	        		}
-	        		if (action == MSG_MOVE_RIGHT)
-	        		{
-	        			action=MSG_DO_NOTHING;
-	        			doMoveRight();
-	        		}
-	        		if (action == MSG_MOVE_DOWN)
-	        		{
-	        			action=MSG_DO_NOTHING;
-	        			doMoveDown();
-	        		}            	
-	        		if(this.overlay.getOptions().getDifficultyLevel() == Options.DIFFICULTY_EXPERT)
-	        		{
-	        			
-	        			this.doRotatePlayfield(current);
-	        		}
-	        		if(this.overlay.getOptions().getDifficultyLevel()==Options.DIFFICULTY_NORMAL)
-	        		{
-	        			this.doRotatePlayfieldNormal(current);
-	        		}
-	        		
-	        		gl.glLoadIdentity();
-	            	
-	            	
-	            	//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
-	        		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
-	        		
-	        		mMoon.draw(gl,18.0f,18.0f,1.0f);
-	        		gl.glLoadIdentity();
-	        		//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
-	        		mEarth.setPosition(xoff+13,yoff-2, zoff+60);
-	        		gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-	        		mEarth.draw(gl,8.0f,8.0f,1.0f);
-	            	gl.glLoadIdentity();
-	            	mStarfield.draw(gl,0,rangle);        		
-	        		drawPlayfield(gl);
-	                
-	
-	                drawNextPiece(gl);
-	
-	        		//gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-	        		
-	        		//gl.glPopMatrix();
-	                //this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
-	                //this.drawString(canvas,""+game.getScore(), 10, 34);
-	                //this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
-	                //this.drawString(canvas,""+game.getLevel(), 10, 74);
-	                //this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
-	                //this.drawString(canvas,""+game.getLines(),10,114);
-	        		this.overlay.setLevel(this.overlay.getOptions().getGame().getLevelName());
-	        		this.overlay.setScore(""+this.overlay.getOptions().getGame().getScore());
-	        		this.overlay.setLines(""+this.overlay.getOptions().getGame().getLines());
-		            if(this.gametype==Game.GAME_MONOLITH)
-		            {
-		            	
-		            	this.overlay.setEnergy(""+game.getEnergy());
-		            	//this.drawString(canvas,res.getString(R.string.s_energy),10,134);
-		            	//this.drawString(canvas,""+game.getEnergy(),10,154);
-	
-		            }
-		            
-		            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
+	            now = SystemClock.uptimeMillis();
+	            if(now>lastcalltime+demogame.getTimer())
+	            {
 
-	
-		            
-		            Cube c = this.mCube[0];
-		            c.setPosition(0.0f, 0.0f, -30.0f);
-		            mAngle += 1.2f;
-		            
-		            now = SystemClock.uptimeMillis();
-		            if(game.getStatus()==SimpleGameData.STATUS_PLAYING)
-		            {
-		            	this.sayEvolving = true;
-		            }
-		            long deltatime = now-lastcalltime;
-		            timeaccumulator+=deltatime;
-		            long simsteps = timeaccumulator/game.getTimer();
-		            long remainder = timeaccumulator%game.getTimer();
-		            int blockoffset = 0;
-	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-	            	{
-	            		if(simsteps>0)
-	            		{
-	            			for(long i=0;i<simsteps;i++)
+	            		lastcalltime = now;
+	            		this.demogame.gameLoop();
+	            }
+	            this.drawIntroScreen(gl,w,h);
+            	//this.drawIntroScreen(gl, canvas, w, h);
+            	if (action == MSG_ROTATE)
+        		{
+            		
+        			action=MSG_DO_NOTHING;
+        			overlay.getOptions().previousOption();
+        			if(overlay.getOptions().isSoundEnabled())
+        			{
+        				this.soundManager.playSound(R.raw.pluck2);
+        			}
+        		}
+        		if (action == MSG_MOVE_LEFT)
+        		{
+        			action=MSG_DO_NOTHING;
+        			overlay.getOptions().setPreviousValue();
+        			if(overlay.getOptions().isSoundEnabled())
+        			{
+        				this.soundManager.playSound(R.raw.pluck);
+        			}
+            	
+        		}
+        		if (action == MSG_MOVE_RIGHT)
+        		{
+        			action=MSG_DO_NOTHING;
+        			overlay.getOptions().setNextValue();
+        			if(overlay.getOptions().isSoundEnabled())
+        			{
+        				this.soundManager.playSound(R.raw.pluck);
+        			}
+
+        		}
+        		if (action == MSG_MOVE_DOWN)
+        		{
+        			action=MSG_DO_NOTHING;
+        			overlay.getOptions().nextOption();
+        			if(overlay.getOptions().isSoundEnabled())
+        			{
+        				this.soundManager.playSound(R.raw.pluck2);
+        			}
+
+        		}
+        		if(overlay.getOptions().getSelectionStatus()==Options.STATUS_BACK)
+        		{
+        			this.viewType=VIEW_GAME;
+        			this.setViewType(VIEW_INTRO);
+        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
+        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+        		}
+        		if(overlay.getOptions().getSelectionStatus()==Options.STATUS_OK)
+        		{
+        			this.game = this.overlay.getOptions().getGame();
+        			this.game.setLevel(this.overlay.getOptions().getStartingLevel());
+        			this.overlay.getOptions().getGame().setLevel(this.overlay.getOptions().getStartingLevel());
+        			this.viewType=VIEW_GAME;
+        			this.setViewType(VIEW_INTRO);
+        			overlay.setDrawType(GameOverlay.DRAW_NORMAL);
+        			overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+        			overlay.getOptions().savePreferences();
+        			
+        		}
+        		int changed = overlay.getOptions().getChangedOption();
+        		if(changed == Options.OPTION_MUSIC)
+        		{
+        			if(overlay.getOptions().isMusicEnabled())
+        			{
+        				this.soundManager.resumeMusic(R.raw.monolith);
+        				
+        			}
+        			else
+        			{
+        				this.soundManager.pauseMusic(R.raw.monolith);
+        			}
+        		}
+    		break;
+        	case VIEW_GAME:
+	            switch (game.getStatus())
+	            {
+		            case SimpleGameData.STATUS_GAME_OVER:
+		            	this.overlay.setMessage("Game Over");
+		            	if(this.sayGameOver)
+		            	{
+		            		this.soundManager.playSound(R.raw.gameover);
+		            		this.sayGameOver = false;
+		            	}
+		            	if(!this.highscoreEntry)
+		            	{
+		            		if(this.overlay.getHighScoreTable().isHighScore(this.game.getScore()))
+		            		{
+		            			this.highscoreEntry=true;
+		            			this.overlay.setDrawType(GameOverlay.DRAW_NAME_ENTRY);
+		            		}
+		            	}
+		            	else
+		            	{
+	            			if(action==MSG_ROTATE)
 	            			{
-	            				
-	            				game.gameLoop();
-	            				if(game.isBlockPlaced())
-	            				{
-	                		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
-	                		//message.sendToTarget();
-	            					if(this.overlay.getOptions().isSoundEnabled())
-	            					{
-	            						this.soundManager.playSound(R.raw.place);
-	            					}
-	            				}
-	            				game.flagCompletedLines();
-	            				this.createExplosions(game);
-		            		
+	            				this.overlay.selectPreviousChar();
 	            			}
-	            			timeaccumulator=remainder;
-	            		}
-	            		blockoffset=((int)remainder*10)/game.getTimer();
-	            		
+	            			if(action==MSG_MOVE_DOWN)
+	            			{
+	            				this.overlay.selectNextChar();
+	            			}
+	            			if(action==MSG_MOVE_LEFT)
+	            			{
+	            				this.overlay.moveBack();
+	            			}
+	            			if(action==MSG_MOVE_RIGHT)
+	            			{
+	            				this.highscoreEntry = this.overlay.moveForward();
+	            				if(!this.highscoreEntry)
+	            				{
+	            					this.viewType =VIEW_INTRO;
+	            					this.overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
+	            				}
+	            			}
+		            	}
+		            	break;
+		            case SimpleGameData.STATUS_EVOLVING:
+		            	this.overlay.setMessage("Evolving...");
+	                	if(this.sayEvolving)
+	                	{
+	                		if(this.overlay.getOptions().isSoundEnabled())
+	                		{
+	                			this.soundManager.playSound(R.raw.evolving);
+	                		}
+	                		this.sayEvolving = false;
+	                	}
+		            break;
+		            default:
+		            	this.overlay.setMessage("");
 		            	
-	            	}
-	            	lastcalltime = now;
-	            	if(this.game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-	            	{
-	            		drawFallingBlock(gl,0);
-	            	}
-	            	else
-	            	{
-	            		drawFallingBlock(gl,blockoffset);
-	            	}
+		            break;
+	            }
+            	if (action == MSG_ROTATE)
+        		{
+        			action=MSG_DO_NOTHING;
+        			doRotateBlock();
+        		}
+        		if (action == MSG_MOVE_LEFT)
+        		{
+        			action=MSG_DO_NOTHING;
+        			doMoveLeft();
+            	
+        		}
+        		if (action == MSG_MOVE_RIGHT)
+        		{
+        			action=MSG_DO_NOTHING;
+        			doMoveRight();
+        		}
+        		if (action == MSG_MOVE_DOWN)
+        		{
+        			action=MSG_DO_NOTHING;
+        			doMoveDown();
+        		}            	
+        		if(this.overlay.getOptions().getDifficultyLevel() == Options.DIFFICULTY_EXPERT)
+        		{
+        			
+        			this.doRotatePlayfield(current);
+        		}
+        		if(this.overlay.getOptions().getDifficultyLevel()==Options.DIFFICULTY_NORMAL)
+        		{
+        			this.doRotatePlayfieldNormal(current);
+        		}
+        		
+        		gl.glLoadIdentity();
+            	
+            	
+            	//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+        		mMoon.setPosition(xoff+13,yoff-22, zoff-50);
+        		
+        		mMoon.draw(gl,18.0f,18.0f,1.0f);
+        		gl.glLoadIdentity();
+        		//gl.glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+        		mEarth.setPosition(xoff+13,yoff-2, zoff+60);
+        		gl.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+        		mEarth.draw(gl,8.0f,8.0f,1.0f);
+            	gl.glLoadIdentity();
+            	mStarfield.draw(gl,0,rangle);        		
+        		drawPlayfield(gl);
+                
+
+                drawNextPiece(gl);
+
+        		//gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+        		
+        		//gl.glPopMatrix();
+                //this.drawString(canvas, res.getString(R.string.s_score), 10, 14);
+                //this.drawString(canvas,""+game.getScore(), 10, 34);
+                //this.drawString(canvas,res.getString(R.string.s_level), 10, 54);
+                //this.drawString(canvas,""+game.getLevel(), 10, 74);
+                //this.drawString(canvas,res.getString(R.string.s_lines), 10, 94);
+                //this.drawString(canvas,""+game.getLines(),10,114);
+        		this.overlay.setLevel(this.overlay.getOptions().getGame().getLevelName());
+        		this.overlay.setScore(""+this.overlay.getOptions().getGame().getScore());
+        		this.overlay.setLines(""+this.overlay.getOptions().getGame().getLines());
+	            if(this.gametype==Game.GAME_MONOLITH)
+	            {
 	            	
-	                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-	                {
+	            	this.overlay.setEnergy(""+game.getEnergy());
+	            	//this.drawString(canvas,res.getString(R.string.s_energy),10,134);
+	            	//this.drawString(canvas,""+game.getEnergy(),10,154);
 
-	                	int result=10;
-	                	long now = SystemClock.uptimeMillis();;
-	                	if(now-lastcalltime>game.getTimer())
-	                	{
-	                		result=10;
-	                	}
-	                	else
-	                	{
-	                		result = (int)((now-lastcalltime)%game.getTimer());
-	                		result = (result*10)/game.getTimer();
-	                	}
-	            	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
-	
-	            		this.drawBlocks(gl,game,result,10);
-	                }
-	                else
-	                {
-	                 	drawBlocks(gl);
-	                }	            
-	            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
-		            {
-		            	this.drawCubeExplosion(gl);
-		            	this.drawRingExplosions(gl);
-		            	
-		            }		            
+	            }
+	            
+	            //canvas.drawText("zx="+zx+" zy="+zy,10,134,paint);
 
-	                gl.glPopMatrix();
-		            //game.gameLoop();
-            
-            	break;
+
+	            
+	            Cube c = this.mCube[0];
+	            c.setPosition(0.0f, 0.0f, -30.0f);
+	            mAngle += 1.2f;
+	            
+	            now = SystemClock.uptimeMillis();
+	            if(game.getStatus()==SimpleGameData.STATUS_PLAYING)
+	            {
+	            	this.sayEvolving = true;
+	            }
+	            long deltatime = now-lastcalltime;
+	            timeaccumulator+=deltatime;
+	            long simsteps = timeaccumulator/game.getTimer();
+	            long remainder = timeaccumulator%game.getTimer();
+	            int blockoffset = 0;
+            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+            	{
+            		if(simsteps>0)
+            		{
+            			for(long i=0;i<simsteps;i++)
+            			{
+            				
+            				game.gameLoop();
+            				if(game.isBlockPlaced())
+            				{
+                		//android.os.Message message = android.os.Message.obtain(soundSystem.messageHandler, SoundSystem.SOUND_PLAY_PLACE_BLOCK);
+                		//message.sendToTarget();
+            					if(this.overlay.getOptions().isSoundEnabled())
+            					{
+            						this.soundManager.playSound(R.raw.place);
+            					}
+            				}
+            				game.flagCompletedLines();
+            				this.createExplosions(game);
+	            		
+            			}
+            			timeaccumulator=remainder;
+            		}
+            		blockoffset=((int)remainder*10)/game.getTimer();
+            		
+	            	
             	}
-            }
+            	lastcalltime = now;
+            	if(this.game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+            	{
+            		drawFallingBlock(gl,0);
+            	}
+            	else
+            	{
+            		drawFallingBlock(gl,blockoffset);
+            	}
+            	
+                if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+                {
+
+                	int result=10;
+                	long now = SystemClock.uptimeMillis();;
+                	if(now-lastcalltime>game.getTimer())
+                	{
+                		result=10;
+                	}
+                	else
+                	{
+                		result = (int)((now-lastcalltime)%game.getTimer());
+                		result = (result*10)/game.getTimer();
+                	}
+            	//canvas.drawText("result="+result+" now-lastcalltime="+(now-lastcalltime), 10, 10, paint);
+
+            		this.drawBlocks(gl,game,result,10);
+                }
+                else
+                {
+                 	drawBlocks(gl);
+                }	            
+            	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
+	            {
+	            	this.drawCubeExplosion(gl);
+	            	this.drawRingExplosions(gl);
+	            	
+	            }		            
+
+                gl.glPopMatrix();
+	            //game.gameLoop();
+        
+        	break;
+        	}
             
-        /*
-         * Once we're done with GL, we need to flush all GL commands and
-         * make sure they complete before we can issue more native
-         * drawing commands. This is done by calling waitGL().
-         */
-        //mGLContext.waitGL();
         
     }
 
@@ -1548,5 +1517,6 @@ public class GameRenderer implements Renderer {
     private long timeaccumulator;
     private int w;
     private int h;
-
+    private boolean isPaused;
 }
+    

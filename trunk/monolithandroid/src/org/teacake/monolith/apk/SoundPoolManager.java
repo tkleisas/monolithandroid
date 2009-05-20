@@ -94,9 +94,31 @@ public class SoundPoolManager implements Sound
 		}
 		finally
 		{
-			this.musicPlayer.pause();
-			this.musicPlayer.release();
-			this.soundPool.release();			
+			try
+			{
+				this.musicPlayer.pause();
+			}
+			catch(Exception e1)
+			{
+				
+			}
+			try
+			{
+				this.musicPlayer.release();
+			}
+			catch(Exception e2)
+			{
+				
+			}
+			try
+			{
+				this.soundPool.release();
+			}
+			catch(Exception e3)
+			{
+				
+			}
+						
 		}
 
 

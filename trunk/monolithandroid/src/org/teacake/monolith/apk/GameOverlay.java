@@ -60,6 +60,7 @@ public class GameOverlay extends View {
 	
 	@Override protected void onDraw(Canvas canvas)
 	{
+		
 		timer = System.currentTimeMillis();
 		int timeindex = this.currentTextColor%5000;
 		
@@ -606,6 +607,7 @@ public class GameOverlay extends View {
 	{
 		return this.options;
 	}
+	
 	private Paint curtainPaint;
 	private Paint gameOverPaint;
 	private Paint gameOverPaint2;
