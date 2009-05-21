@@ -1,6 +1,9 @@
 package org.teacake.monolith.apk;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 import android.content.SharedPreferences;
 
@@ -24,6 +27,7 @@ public class GLGameSurfaceView extends GLSurfaceView
         }
 		this.mRenderer = new GameRenderer(context,overlay);
 		this.setRenderer(mRenderer);
+		setFocusableInTouchMode(true);
 	}
 	
 	private GameRenderer mRenderer;
@@ -48,18 +52,7 @@ public class GLGameSurfaceView extends GLSurfaceView
 		//this.mRenderer = new GameRenderer(context,overlay);
 		//this.setRenderer(mRenderer);
     }
-    @Override
-    public android.os.Handler getHandler()
-    {
-            try
-            {
-                    return this.mRenderer.messageHandler;
-            }
-            catch(Exception e)
-            {
-                    return null;
-            }
-    }
+
     
     public void initGame(int gameType)
     {
@@ -128,6 +121,157 @@ public class GLGameSurfaceView extends GLSurfaceView
             
     }
     
+
+    public boolean onKeyDown(int keyCode, final KeyEvent msg) {
+        boolean handled = false;
+        Log.d("GLGameSurfaceView", "test");
+        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN||keyCode==KeyEvent.KEYCODE_Z||keyCode==KeyEvent.KEYCODE_X||keyCode==KeyEvent.KEYCODE_C)
+        {
+        	try
+        	{
+        		queueEvent(new Runnable(){
+                    public void run() {
+                        mRenderer.setAction(GameRenderer.MSG_MOVE_DOWN, 0, 0);
+                    }});
+
+
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
+        	return true;
+        }
+        if(keyCode == KeyEvent.KEYCODE_DPAD_LEFT||keyCode== KeyEvent.KEYCODE_A||keyCode== KeyEvent.KEYCODE_S)
+        {
+        	try
+        	{
+        		queueEvent(new Runnable(){
+                    public void run() {
+                        mRenderer.setAction(GameRenderer.MSG_MOVE_LEFT, 0, 0);
+                    }});
+        		
+        		
+
+        		
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
+        	return true;
+        }
+        if(keyCode == KeyEvent.KEYCODE_DPAD_RIGHT||keyCode== KeyEvent.KEYCODE_D||keyCode== KeyEvent.KEYCODE_F)
+        {
+        	try
+        	{
+        		
+        		queueEvent(new Runnable(){
+                    public void run() {
+                        mRenderer.setAction(GameRenderer.MSG_MOVE_RIGHT, 0, 0);
+                    }});        		
+
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
+        	return true;
+        }
+        if(keyCode == KeyEvent.KEYCODE_SPACE || keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_L)
+        {
+        	try
+        	{
+        		queueEvent(new Runnable(){
+                    public void run() {
+                        mRenderer.setAction(GameRenderer.MSG_ROTATE, 0, 0);
+                    }});            		
+        		
+        	}
+        	catch(Exception e)
+        	{
+        		
+        	}
+        	return true;
+        }
+        if(keyCode == KeyEvent.KEYCODE_BACK)
+        {
+        	
+        }
+        
+
+        
+        return super.onKeyDown(keyCode, msg);
+    }
+
+    /**
+     * Standard override for key-up. We actually care about these,
+     * so we can turn off the engine or stop rotating.
+     */
+
+    @Override
+    public boolean onTouchEvent(final MotionEvent event)
+    {
+    	int action = event.getAction();
+    	boolean handled = false;
+    	if(action==MotionEvent.ACTION_DOWN)
+    	{
+    		xval=(int)event.getX();
+    		yval=(int)event.getY();
+
+    		return true;
+    	}
+    	
+    	if(action==MotionEvent.ACTION_UP)
+    	{
+    		int xnow = (int)event.getX();
+    		int ynow = (int)event.getY();
+    		if(xnow<20 && ynow<20)
+    		{
+    			zx =0 ;
+    			zy =0 ;
+        		try
+        		{
+            		queueEvent(new Runnable(){
+                        public void run() {
+                            mRenderer.setAction(GameRenderer.MSG_ROTATE_PLAYFIELD, zx, zy);
+                        }});                			
+
+        		}
+        		catch(Exception e)
+        		{
+        			
+        		}
+    		}
+    		return true;
+    	}
+    	if(action==MotionEvent.ACTION_MOVE)
+    	{
+            zx = zx+((int)event.getX()-xval);
+            zy = zy+((int)event.getY()-yval);
+      	  	xval=(int)event.getX();
+      	  	yval=(int)event.getY();
+    		try
+    		{
+        		queueEvent(new Runnable(){
+                    public void run() {
+                        mRenderer.setAction(GameRenderer.MSG_ROTATE_PLAYFIELD, zx, zy);
+                    }});   
+    		}
+    		catch(Exception e)
+    		{
+    			
+    		}      	  	
+      	  	return true;
+    	}
+
+        return super.onTouchEvent(event);
+    } 
+
+    private int xval;
+    private int yval;
+    private int zx;
+    private int zy;    
     private SharedPreferences prefs;
     private int viewType;
     private int gameType;
