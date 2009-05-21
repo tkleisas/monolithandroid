@@ -18,7 +18,7 @@ public class Monolith extends Activity
     
     private HighScoreTable hsTable;
     private Options options;
-    private Sound soundManager;
+    
     private Game game;
     private android.widget.CheckBox checkboxAcceptLicense;
     private android.widget.Button buttonOK;
@@ -74,7 +74,7 @@ public class Monolith extends Activity
         }
         else
         {
-        	
+        	initActivity();
         }
  
         
@@ -92,7 +92,7 @@ public class Monolith extends Activity
     }
     public void initActivity()
     {
-        this.soundManager = new SoundPoolManager(this);
+        
         this.soundInitialized = true;
         hsTable = new HighScoreTable(this,10);
         game = new MonolithGameData();
@@ -110,32 +110,7 @@ public class Monolith extends Activity
         
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
 		
-        soundManager.addSound(R.raw.monolith, true);
-		soundManager.addSound(R.raw.explosion2, false);
-		soundManager.addSound(R.raw.place, false);
-		soundManager.addSound(R.raw.rotate,false);
-		soundManager.addSound(R.raw.pluck, false);
-		soundManager.addSound(R.raw.pluck2, false);
-		soundManager.addSound(R.raw.speech, false);
-		soundManager.addSound(R.raw.evolving, false );
-		soundManager.addSound(R.raw.gameover, false);
-		
-		
-		soundManager.startSound();
-		//try
-		//{
-		//	Thread.currentThread().sleep(10000);
-		//}
-		//catch(Exception e)
-		//{
-		//	
-		//}
-	
-		soundManager.startMusic(R.raw.monolith);
-		if(!options.isMusicEnabled())
-		{
-			soundManager.pauseMusic(R.raw.monolith);
-		}
+
 		
     }
     
@@ -144,20 +119,14 @@ public class Monolith extends Activity
     public void onResume()
     {
     	super.onResume();
-    	initActivity();
+    	gsf.onResume();
     }
     @Override
     public void onPause()
     {
     	super.onPause();
     	gsf.onPause();
-    	gsf = null;
-    	overlay = null;
-    	if(this.soundManager!=null)
-    	{
-    		this.soundManager.stopSound();
-    	}
-    	this.finish();
+
     	//gsf.stopMusic();
     }
 
@@ -184,7 +153,7 @@ public class Monolith extends Activity
 
     public void exitApplication()
     {
-    		this.soundManager.stopSound();
+    		
     	
 			finish();
     }
