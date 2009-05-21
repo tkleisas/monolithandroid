@@ -95,7 +95,7 @@ public class GameRenderer implements Renderer {
 		{
 			this.soundManager.pauseMusic(R.raw.monolith);
 		}
-		this.soundManager =null;
+		
 	}
 	public void onResume()
 	{
