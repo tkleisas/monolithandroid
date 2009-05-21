@@ -40,6 +40,7 @@ public class GLGameSurfaceView extends GLSurfaceView
 	{
 		
 		super.onPause();
+		
 		mRenderer.onPause();
 	    
 		//this.mRenderer = null;

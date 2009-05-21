@@ -98,21 +98,25 @@ public class GameRenderer implements Renderer {
 		{
 			this.soundManager.pauseMusic(R.raw.monolith);
 		}
-		
+	    Log.d("GameRenderer", "onPause");
 	}
 	public void onResume()
 	{
+		this.reinit();
 		this.isPaused = false;
 		if(overlay.getOptions().isMusicEnabled())
 		{
 			this.soundManager.resumeMusic(R.raw.monolith);
 		}
+	    Log.d("GameRenderer", "onResume");
 	}
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		// TODO Auto-generated method stub
+		Log.d("GameRenderer", "onSurfaceChanged");
 		w=width;
 		h=height;
 	    gl.glViewport(0, 0, w, h);
+
 
 
 		
@@ -120,6 +124,7 @@ public class GameRenderer implements Renderer {
 
 	
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+	    Log.d("GameRenderer", "onSurfaceCreated");
 		// TODO Auto-generated method stub
 		if(this.textures!=null)
 		{

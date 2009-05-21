@@ -110,7 +110,7 @@ public class Monolith extends Activity
         
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
 		
-
+        
 		
     }
     
@@ -118,7 +118,9 @@ public class Monolith extends Activity
     @Override
     public void onResume()
     {
+    	
     	super.onResume();
+    	//initActivity();
     	gsf.onResume();
     }
     @Override
