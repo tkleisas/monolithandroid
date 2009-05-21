@@ -81,8 +81,11 @@ public class GameRenderer implements Renderer {
 		/*
          * Get an EGL instance
          */
-
-        	this.drawFrame(gl);
+		if(!this.isPaused)
+		{
+			this.drawFrame(gl);
+		}
+        	
 
 	
 		
@@ -118,7 +121,10 @@ public class GameRenderer implements Renderer {
 	
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		// TODO Auto-generated method stub
-		
+		if(this.textures!=null)
+		{
+			this.textures = null;
+		}
 		this.textures = new GLTextures(gl,this.context);
 		this.textures.add(R.drawable.moon2small);
 		this.textures.add(R.drawable.earthsmall);
