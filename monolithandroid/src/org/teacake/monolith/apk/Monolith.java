@@ -18,7 +18,7 @@ public class Monolith extends Activity
     
     private HighScoreTable hsTable;
     private Options options;
-    
+    private Sound soundManager;
     private Game game;
     private android.widget.CheckBox checkboxAcceptLicense;
     private android.widget.Button buttonOK;
@@ -32,8 +32,9 @@ public class Monolith extends Activity
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        
-
+        soundInitialized = false;
+        prefs = this.getPreferences(android.content.Context.MODE_PRIVATE);
+        prefsEditor = prefs.edit();
         //prefsEditor.putBoolean("LicenseAccepted", false);
         //prefsEditor.commit();
         
@@ -73,7 +74,7 @@ public class Monolith extends Activity
         }
         else
         {
-        	initActivity();
+        	
         }
  
         
@@ -91,9 +92,8 @@ public class Monolith extends Activity
     }
     public void initActivity()
     {
-        
-        prefs = this.getPreferences(android.content.Context.MODE_PRIVATE);
-        prefsEditor = prefs.edit();        
+        this.soundManager = new SoundPoolManager(this);
+        this.soundInitialized = true;
         hsTable = new HighScoreTable(this,10);
         game = new MonolithGameData();
         
@@ -110,7 +110,18 @@ public class Monolith extends Activity
         
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
 		
-
+        soundManager.addSound(R.raw.monolith, true);
+		soundManager.addSound(R.raw.explosion2, false);
+		soundManager.addSound(R.raw.place, false);
+		soundManager.addSound(R.raw.rotate,false);
+		soundManager.addSound(R.raw.pluck, false);
+		soundManager.addSound(R.raw.pluck2, false);
+		soundManager.addSound(R.raw.speech, false);
+		soundManager.addSound(R.raw.evolving, false );
+		soundManager.addSound(R.raw.gameover, false);
+		
+		
+		soundManager.startSound();
 		//try
 		//{
 		//	Thread.currentThread().sleep(10000);
@@ -120,7 +131,11 @@ public class Monolith extends Activity
 		//	
 		//}
 	
-
+		soundManager.startMusic(R.raw.monolith);
+		if(!options.isMusicEnabled())
+		{
+			soundManager.pauseMusic(R.raw.monolith);
+		}
 		
     }
     
@@ -129,22 +144,24 @@ public class Monolith extends Activity
     public void onResume()
     {
     	super.onResume();
-    	gsf.onResume();
+    	initActivity();
     }
     @Override
     public void onPause()
     {
     	super.onPause();
     	gsf.onPause();
-    	
-
-
-    	
+    	gsf = null;
+    	overlay = null;
+    	if(this.soundManager!=null)
+    	{
+    		this.soundManager.stopSound();
+    	}
+    	this.finish();
     	//gsf.stopMusic();
     }
 
-
-    
+ 
     public void playGame()
     {
     	
@@ -167,7 +184,7 @@ public class Monolith extends Activity
 
     public void exitApplication()
     {
-
+    		this.soundManager.stopSound();
     	
 			finish();
     }
@@ -203,143 +220,7 @@ public class Monolith extends Activity
         return true;
     }   
     
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent msg) {
-        boolean handled = false;
-        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN||keyCode==KeyEvent.KEYCODE_Z||keyCode==KeyEvent.KEYCODE_X||keyCode==KeyEvent.KEYCODE_C)
-        {
-        	try
-        	{
-        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_MOVE_DOWN);
-        		message.sendToTarget();
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        	handled = true;
-        }
-        if(keyCode == KeyEvent.KEYCODE_DPAD_LEFT||keyCode== KeyEvent.KEYCODE_A||keyCode== KeyEvent.KEYCODE_S)
-        {
-        	try
-        	{
-        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_MOVE_LEFT);
-        		message.sendToTarget();
-        		
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        	handled = true;
-        }
-        if(keyCode == KeyEvent.KEYCODE_DPAD_RIGHT||keyCode== KeyEvent.KEYCODE_D||keyCode== KeyEvent.KEYCODE_F)
-        {
-        	try
-        	{
-        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_MOVE_RIGHT);
-        		message.sendToTarget();
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        	handled = true;
-        }
-        if(keyCode == KeyEvent.KEYCODE_SPACE || keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_L)
-        {
-        	try
-        	{
-        		android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_ROTATE);
-        		message.sendToTarget();
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        	handled = true;
-        }
-        if(keyCode == KeyEvent.KEYCODE_BACK)
-        {
-        	this.exitApplication();
-        }
-        
 
-        
-        return handled;
-    }
-
-    /**
-     * Standard override for key-up. We actually care about these,
-     * so we can turn off the engine or stop rotating.
-     */
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent msg) {
-        boolean handled = false;
-        return handled;
-    }
-    @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-    	int action = event.getAction();
-    	boolean handled = false;
-    	if(action==MotionEvent.ACTION_DOWN)
-    	{
-    		xval=(int)event.getX();
-    		yval=(int)event.getY();
-
-    		handled = true;
-    	}
-    	
-    	if(action==MotionEvent.ACTION_UP)
-    	{
-    		int xnow = (int)event.getX();
-    		int ynow = (int)event.getY();
-    		if(xnow<20 && ynow<20)
-    		{
-    			zx =0 ;
-    			zy =0 ;
-        		try
-        		{
-        			android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_ROTATE_PLAYFIELD);
-        			message.arg1 = zx;
-        			message.arg2 = zy;
-        			message.sendToTarget();
-        		}
-        		catch(Exception e)
-        		{
-        			
-        		}
-    		}
-    		handled=true;
-    	}
-    	if(action==MotionEvent.ACTION_MOVE)
-    	{
-            zx = zx+((int)event.getX()-xval);
-            zy = zy+((int)event.getY()-yval);
-      	  	xval=(int)event.getX();
-      	  	yval=(int)event.getY();
-    		try
-    		{
-    			android.os.Message message = android.os.Message.obtain(gsf.getHandler(), GameRenderer.MSG_ROTATE_PLAYFIELD);
-    			message.arg1 = zx;
-    			message.arg2 = zy;
-    			message.sendToTarget();
-    		}
-    		catch(Exception e)
-    		{
-    			
-    		}      	  	
-      	  	handled = true;
-    	}
-
-        return handled;
-    } 
-
-    private int xval;
-    private int yval;
-    private int zx;
-    private int zy;
     
      
 }

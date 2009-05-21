@@ -12,9 +12,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.opengl.GLSurfaceView.Renderer;
-import android.os.Handler;
-import android.os.Message;
+
 import android.os.SystemClock;
+import android.util.Log;
 
 public class GameRenderer implements Renderer {
 	
@@ -1218,36 +1218,24 @@ public class GameRenderer implements Renderer {
     //private SoundSystem soundSystem;
     private Sound soundManager;
     private android.content.Context context;
-    public final Handler messageHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg)
-        {
-        	try
-        	{
-        		action=msg.what;
-        		
-        		if (msg.what == MSG_ROTATE_PLAYFIELD)
-        		{
-        			if(getGameOverlay().getOptions().getDifficultyLevel()== Options.DIFFICULTY_EXPERT)
-        			{
-        				
-        			}
-        			else
-        			{
-        				doRotatePlayfield(msg.arg1,msg.arg2);
-        			}
-        			
-        				//zx=msg.arg1;
-        				//zy=msg.arg2;
-        			
-        		}
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        }
-    };
+    public void setAction(int action,int arg1, int arg2)
+    {
+    	this.action = action;
+    	Log.d("action", "action is ="+action);
+    			
+    	if(action==MSG_ROTATE_PLAYFIELD)
+    	{
+			if(getGameOverlay().getOptions().getDifficultyLevel()== Options.DIFFICULTY_EXPERT)
+			{
+				
+			}
+			else
+			{
+				doRotatePlayfield(arg1,arg2);
+			}   		
+    	}
+    }
+
     public void initLinearInterpolators()
     {
     	linearInterpolators = new LinearInterpolator[2][3][10];
