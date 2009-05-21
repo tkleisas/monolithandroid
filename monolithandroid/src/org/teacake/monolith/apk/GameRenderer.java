@@ -148,16 +148,7 @@ public class GameRenderer implements Renderer {
 	{
 		this.gametype = gametype;
 	}
-	
-	
 
-
-
-	
-	
-
-	
-	
 
 	
 	public void reinit()
