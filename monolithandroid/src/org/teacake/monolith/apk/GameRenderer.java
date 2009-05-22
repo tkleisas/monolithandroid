@@ -143,8 +143,8 @@ public class GameRenderer implements Renderer {
 		mEarth.setTextures(textures);
 		mExplosionRing.setTextureId(R.drawable.ringsmall);
 		mExplosionRing.setTextures(textures);
-
-		reinit();		
+		this.reinit();
+				
 
 	}
 	public void setViewType(int viewtype)
