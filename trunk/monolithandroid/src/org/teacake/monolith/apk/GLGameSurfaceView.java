@@ -25,7 +25,9 @@ public class GLGameSurfaceView extends GLSurfaceView
         {
         	this.mRenderer = null;
         }
-		this.mRenderer = new GameRenderer(context,overlay);
+        //this.setDebugFlags(DEBUG_CHECK_GL_ERROR);
+        this.mRenderer = new GameRenderer(context,overlay);
+		
 		this.setRenderer(mRenderer);
 		setFocusableInTouchMode(true);
 	}
