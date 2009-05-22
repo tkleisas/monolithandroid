@@ -127,6 +127,7 @@ public class GameRenderer implements Renderer {
 	
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 	    Log.d("GameRenderer", "onSurfaceCreated");
+	    
 		// TODO Auto-generated method stub
 		if(this.textures!=null)
 		{

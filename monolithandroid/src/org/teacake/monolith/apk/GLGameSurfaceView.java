@@ -25,6 +25,7 @@ public class GLGameSurfaceView extends GLSurfaceView
         {
         	this.mRenderer = null;
         }
+        this.getHolder().setType(android.view.SurfaceHolder.SURFACE_TYPE_GPU);
         //this.setDebugFlags(DEBUG_CHECK_GL_ERROR);
         this.mRenderer = new GameRenderer(context,overlay);
 		
