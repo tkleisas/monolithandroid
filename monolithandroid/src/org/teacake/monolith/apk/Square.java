@@ -78,11 +78,16 @@ package org.teacake.monolith.apk;
 	        int one = 0x10000;
 	        int texCoords[] = {
 	    			
-	        		0, one, one, one, 0, 0, one, 0
+	        		one, one,
+	        		one, 0, 
+	        		0, 0, 
+	        		0, one
 	    	};
 	        int vertices[] = {
-	        		-one, -one, one, one, -one, one,
-	        		-one, one, one, one, one, one
+	        		-one, -one, one,
+	        		-one,  one, one,
+	        		 one,  one, one, 
+	        		 one, -one, one
 
 
 	    		            };
@@ -95,7 +100,9 @@ package org.teacake.monolith.apk;
 	            };
 
 	        byte indices[] = {
-	        		0, 1, 2, 0, 2, 3
+	        		1,3,0,1,2,3
+	        		//0, 1, 2, 0, 2, 3
+	        		
 	        };
 
 	        // Buffers to be passed to gl*Pointer() functions
@@ -276,7 +283,7 @@ package org.teacake.monolith.apk;
 	    }
 	    public void draw(GL10 gl, float scalex, float scaley, float scalez)
 	    {
-            gl.glFrontFace(GL10.GL_CCW);
+            gl.glFrontFace(GL10.GL_CW);
             gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
             gl.glEnable(GL10.GL_TEXTURE_2D);
             this.textures.setTexture(textureid);
@@ -291,8 +298,11 @@ package org.teacake.monolith.apk;
             
             gl.glScalef(scalex, scaley, scalez);
             gl.glTexCoordPointer(2, GL10.GL_FIXED, 0, mTextureBuffer);
-            gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-           
+            
+            gl.glDrawElements(GL10.GL_TRIANGLES, 6, GL10.GL_UNSIGNED_BYTE, mIndexBuffer);
+            //gl.glDrawArrays(GL10.GL_TRIANGLE_FAN, 0, 3);
+            //gl.glDrawArrays(GL10.GL_TRIANGLES, 3, 3);
+            //gl.glDrawArrays(GL10.GL_TRIANGLE_FAN, 3, 3);
             gl.glDisable(GL10.GL_TEXTURE_2D);
             gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
         }
@@ -322,8 +332,10 @@ package org.teacake.monolith.apk;
                     GL10.GL_MODULATE
                     );
 
-	        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-	       
+	        //gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 6);
+	        //gl.glDrawArrays(mode, first, count)
+	        //gl.glDrawElements(GL10.GL_TRIANGLES, 6, GL10.GL_UNSIGNED_BYTE, mIndexBuffer);
+	        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 6);
 	        gl.glDisable(GL10.GL_TEXTURE_2D);
 	        gl.glDisable(GL10.GL_BLEND);
 	        gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);

@@ -94,6 +94,7 @@ public class GameRenderer implements Renderer {
 	public void onPause()
 	{
 		this.isPaused = true;
+		
 		if(this.soundManager!=null)
 		{
 			this.soundManager.pauseMusic(R.raw.monolith);
@@ -102,8 +103,9 @@ public class GameRenderer implements Renderer {
 	}
 	public void onResume()
 	{
-		this.reinit();
+		//this.reinit();
 		this.isPaused = false;
+		this.lastcalltime = System.currentTimeMillis();
 		if(overlay.getOptions().isMusicEnabled())
 		{
 			this.soundManager.resumeMusic(R.raw.monolith);
@@ -1133,13 +1135,13 @@ public class GameRenderer implements Renderer {
 	            	
 	            }		            
 
-                gl.glPopMatrix();
+                
 	            //game.gameLoop();
         
         	break;
         	}
             
-        
+        	gl.glPopMatrix();
     }
 
 
