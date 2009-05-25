@@ -145,6 +145,8 @@ public class SoundPoolManager implements Sound
 				android.media.AudioManager mgr = (android.media.AudioManager) context.getSystemService(android.content.Context.AUDIO_SERVICE); 
 				int streamVolume = mgr.getStreamVolume(android.media.AudioManager.STREAM_MUSIC); 
 				int streamID = soundPool.play(handles.get( resid).intValue(), streamVolume, streamVolume, 1, 0, 1.0f);
+				int maxvolume = mgr.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC);
+				mgr.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, maxvolume, 0);
 				this.streamIds.put(resid, streamID);
 
 			}
@@ -156,7 +158,9 @@ public class SoundPoolManager implements Sound
 	}
 	public void startMusic(int resid)
 	{
-		this.musicPlayer.play();		
+		
+		this.musicPlayer.play();	
+		
 	}
 	public void stopMusic(int resid)
 	{
