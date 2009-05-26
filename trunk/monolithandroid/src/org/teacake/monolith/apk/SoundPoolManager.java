@@ -42,7 +42,7 @@ public class SoundPoolManager implements Sound
 		isRunning = false;
 		finished = false;
 		this.musicPlayer =JetPlayer.getJetPlayer();
-		this.musicPlayer.loadJetFile(context.getResources().openRawResourceFd(R.raw.punkster));
+		this.musicPlayer.loadJetFile(context.getResources().openRawResourceFd(R.raw.monolith3));
 		byte segmentId = 0;
 
 		this.musicPlayer.queueJetSegment(0, -1, -1, 0, 0, segmentId++);
