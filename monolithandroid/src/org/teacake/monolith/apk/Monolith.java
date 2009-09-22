@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.*;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 public class Monolith extends Activity
 {
@@ -15,7 +17,7 @@ public class Monolith extends Activity
 
     private GLGameSurfaceView gsf;
     private GameOverlay overlay;
-    
+    private View gameHudView;
     private HighScoreTable hsTable;
     private Options options;
     
@@ -102,16 +104,109 @@ public class Monolith extends Activity
         overlay.setVisibility(View.VISIBLE);
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         
-        
+        gameHudView = View.inflate(this, R.layout.game, null);
         gsf = new GLGameSurfaceView(this,overlay);
 
         setContentView(gsf);
         gsf.setVisibility(View.VISIBLE);   
         
         this.addContentView(overlay,new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
-		
+        this.addContentView(gameHudView, new android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.FILL_PARENT,android.view.ViewGroup.LayoutParams.FILL_PARENT));
+        gameHudView.findViewById(R.id.ImageButton01).setOnClickListener(
+        		new View.OnClickListener()
+				{
+					public void onClick(View view)
+					{
+						try
+			        	{
+			        		gsf.queueEvent(new Runnable(){
+			                    public void run() {
+			                        gsf.getRenderer().setAction(GameRenderer.MSG_MOVE_LEFT, 0, 0);
+			                    }});
+			        		
+			        		
+
+			        		
+			        	}
+			        	catch(Exception e)
+			        	{
+			        		
+			        	}
+					}
+				}
+			);		
+        gameHudView.findViewById(R.id.ImageButton02).setOnClickListener(
+        		new View.OnClickListener()
+				{
+					public void onClick(View view)
+					{
+						try
+			        	{
+			        		gsf.queueEvent(new Runnable(){
+			                    public void run() {
+			                        gsf.getRenderer().setAction(GameRenderer.MSG_MOVE_RIGHT, 0, 0);
+			                    }});
+			        		
+			        		
+
+			        		
+			        	}
+			        	catch(Exception e)
+			        	{
+			        		
+			        	}
+					}
+				}
+			);	
+        gameHudView.findViewById(R.id.ImageButton03).setOnClickListener(
+        		new View.OnClickListener()
+				{
+					public void onClick(View view)
+					{
+						try
+			        	{
+			        		gsf.queueEvent(new Runnable(){
+			                    public void run() {
+			                        gsf.getRenderer().setAction(GameRenderer.MSG_ROTATE, 0, 0);
+			                    }});
+			        		
+			        		
+
+			        		
+			        	}
+			        	catch(Exception e)
+			        	{
+			        		
+			        	}
+					}
+				}
+			);		
+        gameHudView.findViewById(R.id.ImageButton04).setOnClickListener(
+        		new View.OnClickListener()
+				{
+					public void onClick(View view)
+					{
+						try
+			        	{
+			        		gsf.queueEvent(new Runnable(){
+			                    public void run() {
+			                        gsf.getRenderer().setAction(GameRenderer.MSG_MOVE_DOWN, 0, 0);
+			                    }});
+			        		
+			        		
+
+			        		
+			        	}
+			        	catch(Exception e)
+			        	{
+			        		
+			        	}
+					}
+				}
+			);
         
-		
+        
+        
     }
     
     
