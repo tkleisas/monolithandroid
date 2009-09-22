@@ -1226,7 +1226,7 @@ public class GameRenderer implements Renderer {
     public void setAction(int action,int arg1, int arg2)
     {
     	this.action = action;
-    	Log.d("action", "action is ="+action);
+    	//Log.d("action", "action is ="+action);
     			
     	if(action==MSG_ROTATE_PLAYFIELD)
     	{
