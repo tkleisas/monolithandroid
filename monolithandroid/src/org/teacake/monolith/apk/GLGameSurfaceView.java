@@ -128,7 +128,7 @@ public class GLGameSurfaceView extends GLSurfaceView
 
     public boolean onKeyDown(int keyCode, final KeyEvent msg) {
         boolean handled = false;
-        Log.d("GLGameSurfaceView", "test");
+        
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN||keyCode==KeyEvent.KEYCODE_Z||keyCode==KeyEvent.KEYCODE_X||keyCode==KeyEvent.KEYCODE_C)
         {
         	try
@@ -271,7 +271,10 @@ public class GLGameSurfaceView extends GLSurfaceView
 
         return super.onTouchEvent(event);
     } 
-
+    public GameRenderer getRenderer()
+    {
+    	return this.mRenderer;
+    }
     private int xval;
     private int yval;
     private int zx;
