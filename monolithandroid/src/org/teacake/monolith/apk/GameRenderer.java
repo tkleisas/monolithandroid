@@ -929,7 +929,10 @@ public class GameRenderer implements Renderer {
 		            	this.overlay.setMessage("Game Over");
 		            	if(this.sayGameOver)
 		            	{
-		            		this.soundManager.playSound(R.raw.gameover);
+		            		if(overlay.getOptions().isSoundEnabled())
+		            		{
+		            			this.soundManager.playSound(R.raw.gameover);
+		            		}
 		            		this.sayGameOver = false;
 		            	}
 		            	if(!this.highscoreEntry)
@@ -1097,7 +1100,7 @@ public class GameRenderer implements Renderer {
             		
 	            	
             	}
-            	lastcalltime = now;
+            	//lastcalltime = now;
             	if(this.game.getStatus()==SimpleGameData.STATUS_EVOLVING)
             	{
             		drawFallingBlock(gl,0);
@@ -1110,6 +1113,11 @@ public class GameRenderer implements Renderer {
                 if(game.getStatus()==SimpleGameData.STATUS_EVOLVING)
                 {
 
+                	
+
+                	
+                	
+                	
                 	int result=10;
                 	long now = SystemClock.uptimeMillis();;
                 	if(now-lastcalltime>game.getTimer())
@@ -1128,7 +1136,8 @@ public class GameRenderer implements Renderer {
                 else
                 {
                  	drawBlocks(gl);
-                }	            
+                }
+                lastcalltime = now;
             	if(game.getStatus()==SimpleGameData.STATUS_PLAYING || game.getStatus()==SimpleGameData.STATUS_EVOLVING)
 	            {
 	            	this.drawCubeExplosion(gl);
@@ -1230,14 +1239,16 @@ public class GameRenderer implements Renderer {
     			
     	if(action==MSG_ROTATE_PLAYFIELD)
     	{
-			if(getGameOverlay().getOptions().getDifficultyLevel()== Options.DIFFICULTY_EXPERT)
-			{
-				
-			}
-			else
-			{
-				doRotatePlayfield(arg1,arg2);
-			}   		
+    		switch(getGameOverlay().getOptions().getDifficultyLevel())
+    		{
+    		case Options.DIFFICULTY_EXPERT:
+    			break;
+    		case Options.DIFFICULTY_NORMAL:
+    			break;
+    			default:
+    			doRotatePlayfield(arg1,arg2);	
+    			
+    		}
     	}
     }
 

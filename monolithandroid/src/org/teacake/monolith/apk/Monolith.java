@@ -223,7 +223,7 @@ public class Monolith extends Activity
     {
     	super.onPause();
     	gsf.onPause();
-
+    	System.exit(0);
     	//gsf.stopMusic();
     }
 
