@@ -105,7 +105,7 @@ public class Monolith extends Activity
         overlay.setOverlayType(GameOverlay.OVERLAY_TYPE_INTRO);
         
         gameHudView = View.inflate(this, R.layout.game, null);
-        gsf = new GLGameSurfaceView(this,overlay);
+        gsf = new GLGameSurfaceView(this,overlay,prefs);
 
         setContentView(gsf);
         gsf.setVisibility(View.VISIBLE);   

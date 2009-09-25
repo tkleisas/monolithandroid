@@ -57,7 +57,7 @@ public class GameRenderer implements Renderer {
 	public void initSound()
 	{
 		this.soundManager = new SoundPoolManager(context);
-        soundManager.addSound(R.raw.monolith, true);
+        soundManager.addSound(R.raw.monolith3, true);
 		soundManager.addSound(R.raw.explosion2, false);
 		soundManager.addSound(R.raw.place, false);
 		soundManager.addSound(R.raw.rotate,false);
@@ -69,10 +69,10 @@ public class GameRenderer implements Renderer {
 		
 		
 		soundManager.startSound();
-		soundManager.startMusic(R.raw.monolith);
+		soundManager.startMusic(R.raw.monolith3);
 		if(!overlay.getOptions().isMusicEnabled())
 		{
-			soundManager.pauseMusic(R.raw.monolith);
+			soundManager.pauseMusic(R.raw.monolith3);
 		}	
 	}
 	public void onDrawFrame(GL10 gl) {
@@ -97,7 +97,7 @@ public class GameRenderer implements Renderer {
 		
 		if(this.soundManager!=null)
 		{
-			this.soundManager.pauseMusic(R.raw.monolith);
+			this.soundManager.pauseMusic(R.raw.monolith3);
 		}
 	    Log.d("GameRenderer", "onPause");
 	}
@@ -108,7 +108,7 @@ public class GameRenderer implements Renderer {
 		this.lastcalltime = System.currentTimeMillis();
 		if(overlay.getOptions().isMusicEnabled())
 		{
-			this.soundManager.resumeMusic(R.raw.monolith);
+			this.soundManager.resumeMusic(R.raw.monolith3);
 		}
 	    Log.d("GameRenderer", "onResume");
 	}
@@ -913,12 +913,12 @@ public class GameRenderer implements Renderer {
         		{
         			if(overlay.getOptions().isMusicEnabled())
         			{
-        				this.soundManager.resumeMusic(R.raw.monolith);
+        				this.soundManager.resumeMusic(R.raw.monolith3);
         				
         			}
         			else
         			{
-        				this.soundManager.pauseMusic(R.raw.monolith);
+        				this.soundManager.pauseMusic(R.raw.monolith3);
         			}
         		}
     		break;
