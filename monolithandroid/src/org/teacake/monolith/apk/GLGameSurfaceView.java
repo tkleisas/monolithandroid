@@ -11,10 +11,10 @@ import android.content.SharedPreferences;
 public class GLGameSurfaceView extends GLSurfaceView
 {
 
-	public GLGameSurfaceView(Context context,GameOverlay overlay) {
+	public GLGameSurfaceView(Context context,GameOverlay overlay,SharedPreferences preferences) {
 		super(context);
 		// TODO Auto-generated constructor stub
-        this.prefs = prefs;
+        this.prefs = preferences;
         
         this.context = context;
         this.overlay = overlay;
@@ -45,7 +45,10 @@ public class GLGameSurfaceView extends GLSurfaceView
 		super.onPause();
 		
 		mRenderer.onPause();
-	    
+		if(this.gameType==Game.GAME_CLASSIC || this.gameType==Game.GAME_MONOLITH)
+		{
+			this.getOverlay().getOptions().getGame().saveGame(prefs);
+		}
 		//this.mRenderer = null;
 	}
     @Override

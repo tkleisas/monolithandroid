@@ -70,7 +70,7 @@ public class GameOverlay extends View {
 			direction=-8;
 			goalpha=goalpha+direction;
 		}
-		if(goalpha<32)
+		if(goalpha<16)
 		{
 			direction=8;
 			goalpha=goalpha+direction;
@@ -78,13 +78,17 @@ public class GameOverlay extends View {
 		
 		if(overlayType==OVERLAY_TYPE_INTRO)
 		{
-			if(timeindex<2500)
+			if(timeindex<1500)
 			{
-				goalpha = (timeindex*255)/2500;
+				goalpha = (timeindex*255)/1500;
+			}
+			else if(timeindex>3500)
+			{
+				goalpha = 255-((timeindex-3500)*255)/1500;
 			}
 			else
 			{
-				goalpha = 255-((timeindex-2500)*255)/2500;
+				goalpha = 255;
 			}
 			
 		}
