@@ -12,8 +12,8 @@
     <string name="s_previous_level">-</string>
     <string name="s_classic">Classic. "Tetris" style game.</string>
     <string name="s_dizzy">Dizzy. "Tetris" style game with a twist!</string>
-    <string name="s_monolith">Monolith. Block game with Conway's game of life.</string>
-    <string name="s_dizzy_monolith">Dizzy Monolith. "Tetris" meets Conway's game of life with a twist!</string>
+    <string name="s_monolith">Monolith. Block game with Conway\'s game of life.</string>
+    <string name="s_dizzy_monolith">Dizzy Monolith. "Tetris" meets Conway\'s game of life with a twist!</string>
     <string name="s_game_over">GAME OVER</string>
     <string name="s_next_game_mode">next</string>
     <string name="s_previous_game_mode">previous</string>
@@ -44,6 +44,4 @@
     <string name="s_authorname">by Tasos Kleisas</string>
     <string name="s_website">www.mprizols.org</string>
     <string name="s_press_menu_to_play">Press MENU to play</string>
-    
-
 </resources>
